@@ -7,7 +7,7 @@
 
 typedef struct s_prenotazione *Prenotazione;
 
-Prenotazione creaPrenotazione(int id, char *CF, char *targa, int giorno, int mese, int anno, int oraInizio, int oraFine);
+Prenotazione creaPrenotazione(char *CF, char *targa, int giorno, int mese, int anno, int oraInizio, int oraFine);
 int getIDPrenotazione(Prenotazione prenotazione);
 char *getCFPrenotazione(Prenotazione prenotazione);
 char *getTargaPrenotazione(Prenotazione prenotazione);

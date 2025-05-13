@@ -1,7 +1,3 @@
-//
-// Created by extra on 06/05/2025.
-//
-
 #include "prenotazione.h"
 
 #ifndef LIST_PRENOTAZIONE_H

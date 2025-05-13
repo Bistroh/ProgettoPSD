@@ -1,7 +1,3 @@
-//
-// Created by extra on 30/04/2025.
-//
-
 #include "Utente.h"
 #include <stdio.h>
 #include <stdlib.h>
