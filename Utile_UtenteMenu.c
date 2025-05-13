@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 #include "List_Prenotazione.h"
 #include "prenotazione.h"
 #include "Utile_UtenteMenu.h"
@@ -32,15 +31,18 @@ void switchUtente(int scelta){
       printf("Prenotazione auto...\n");
       break;
     case 2:
-      printf("Visualizzazione auto disponibili...\n");
+      printf("Calcolo tariffa per auto prenotata...\n");
       break;
     case 3:
-      printf("Visualizzazione prenotazioni...\n");
+      printf("Visualizzazione auto disponibili...\n");
       break;
     case 4:
-      printf("Visualizzazione prenotazioni precedenti...\n");
+      printf("Visualizzazione prenotazioni...\n");
       break;
     case 5:
+      printf("Visualizzazione prenotazioni precedenti...\n");
+      break;
+    case 6:
       printf("Uscita...\n");
       exit(0);
       break;
@@ -55,10 +57,11 @@ int menuUtente(){
   int scelta;
   printf("\n========== Car Sharing ==========\n");
   printf("1. Prenotazione Auto\n");
-  printf("2. Visualizza auto disponibili\n");
-  printf("3. Visualizza prenotazioni\n");
-  printf("4. Visualizza prenotazioni precedenti\n");
-  printf("5. Esci\n");
+  printf("2. Calcolo tariffa per auto prenotata");
+  printf("3. Visualizza auto disponibili\n");
+  printf("4. Visualizza prenotazioni\n");
+  printf("5. Visualizza prenotazioni precedenti\n");
+  printf("6. Esci\n");
   printf("==================================\n");
   scanf("%d", &scelta);
   return scelta;
