@@ -1,14 +1,11 @@
-//
-// Created by extra on 06/05/2025.
-//
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "prenotazione.h" // Includi il file di intestazione per l'elemento (item)
 #include "List_Prenotazione.h"// Includi il file di intestazione per la lista (list)
 
-struct node { // Definizione della struttura node
+// Definizione della struttura node
+struct node {
     Prenotazione value;
     struct node *next;
 };

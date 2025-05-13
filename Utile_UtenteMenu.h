@@ -1,7 +1,3 @@
-//
-// Created by extra on 06/05/2025.
-//
-
 #ifndef UTILE_UTENTEMENU_H
 #define UTILE_UTENTEMENU_H
 #include "utente.h"

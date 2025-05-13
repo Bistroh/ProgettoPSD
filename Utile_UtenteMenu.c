@@ -1,7 +1,3 @@
-//
-// Created by extra on 06/05/2025.
-//
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,19 +7,6 @@
 #include "Auto.h"
 #include "Utente.h"
 
-/*int codiceFiscaleValido(const char *CF) {
-    if (strlen(CF) != 16) {
-        return 0; // deve essere lungo esattamente 16 caratteri
-    }
-
-    for (int i = 0; i < 16; i++) {
-        if (!isalnum(CF[i]) || !isupper(CF[i])) {
-            return 0; // deve contenere solo caratteri alfanumerici maiuscoli
-        }
-    }
-
-    return 1; // valido
-}*/
 void switchUtente(int scelta){
   // Funzione per gestire le scelte dell'utente
   switch(scelta){
@@ -70,14 +53,15 @@ int menuUtente(){
 void prenotazioneAuto(list l, Utente u) {
     // Funzione per prenotare un'auto
     char CF[17], targa[10];
-    int giorno, mese, anno, oraInizio, oraFine;
+    int giornoInizio, giornoFine, oraInizio, oraFine;
 
     strcpy(CF, getCF(u));
     printf("Inserisci la targa dell'auto: ");
     scanf("%s", targa);
-    printf("Inserisci la data di prenotazione (giorno mese anno): ");
-    scanf("%d %d %d", &giorno, &mese, &anno);
-    printf("Inserisci l'ora di inizio e fine (oraInizio oraFine): ");
+
+    printf("Quale giorno di inizio/fine della settimana vuoi prenotare l'auto: ");
+    scanf("%d %d", &giornoInizio, &giornoFine);
+    printf("Inserisci l'ora di inizio e fine: ");
     scanf("%d %d", &oraInizio, &oraFine);
 
     Prenotazione nuovaPrenotazione = creaPrenotazione(1, CF, targa, giorno, mese, anno, oraInizio, oraFine);

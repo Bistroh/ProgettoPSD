@@ -23,13 +23,14 @@ struct s_prenotazione {
     data dataPrenotazione;
 };
 
-Prenotazione creaPrenotazione(int id, char *CF, char *targa, int giorno, int mese, int anno, int oraInizio, int oraFine) {
+Prenotazione creaPrenotazione(char *CF, char *targa, int giorno, int mese, int anno, int oraInizio, int oraFine) {
+    static int id_contatore = 0;
     Prenotazione nuovaPrenotazione = malloc(sizeof(struct s_prenotazione));
     if (nuovaPrenotazione == NULL) {
         fprintf(stderr, "Errore di allocazione memoria\n");
         exit(EXIT_FAILURE);
     }
-    nuovaPrenotazione->ID_prenotazione = id; // Inizializza l'ID della prenotazione
+    nuovaPrenotazione->ID_prenotazione = id_contatore++; // Inizializza l'ID della prenotazione
     strncpy(nuovaPrenotazione->CF, CF, sizeof(nuovaPrenotazione->CF) - 1);
     nuovaPrenotazione->CF[sizeof(nuovaPrenotazione->CF) - 1] = '\0'; // Assicurati che la stringa sia terminata
     strncpy(nuovaPrenotazione->targa, targa, sizeof(nuovaPrenotazione->targa) - 1);
