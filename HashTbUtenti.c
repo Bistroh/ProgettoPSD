@@ -16,6 +16,61 @@ HashTable newHashtableUtenti() {
     return NULL; // Uthash usa una variabile inizializzata a NULL
 }
 
+int insertUtente(HashTable *h, Utente u) {
+    const char *cf = getCF(u);
+    if (!cf || !u) return 0;
+
+    HashEntry *entry = NULL;
+    HASH_FIND_STR(*h, cf, entry);
+    if (entry) {
+        return 0; // già presente
+    }
+
+    entry = malloc(sizeof(HashEntry));
+    entry->cf = strdup(cf);  // duplica la chiave
+    entry->utente = u;
+    HASH_ADD_KEYPTR(hh, *h, entry->cf, strlen(entry->cf), entry);
+    return 1;
+}
+
+Utente cercaUtente(HashTable h, const char *CF) {
+    HashEntry *entry = NULL;
+    HASH_FIND_STR(h, CF, entry);
+    return entry ? entry->utente : NULL;
+}
+
+Utente eliminaUtente(HashTable *h, const char *CF) {
+    HashEntry *entry = NULL;
+    HASH_FIND_STR(*h, CF, entry);
+    if (entry) {
+        Utente u = entry->utente;
+        HASH_DEL(*h, entry);
+        free(entry->cf);
+        free(entry);
+        return u; // Utente non distrutto qui, restituito al chiamante
+    }
+    return NULL;
+}
+
+void distruggiHashTableUtenti(HashTable *h) {
+    HashEntry *current, *tmp;
+    HASH_ITER(hh, *h, current, tmp) {
+        HASH_DEL(*h, current);
+        distruggiUtente(current->utente); // distrugge Utente
+        free(current->cf);                // libera chiave
+        free(current);                    // libera nodo
+    }
+    *h = NULL;
+}
+//funzione per stampare la tabella
+void stampaHashTableUtenti(HashTable h) {
+    HashEntry *current;
+    for (current = h; current != NULL; current = current->hh.next) {
+        printf("CF: %s\n", current->cf);
+        stampaUtente(current->utente); // Assicurati di avere una funzione per stampare Utente
+    }
+}
+
 Utente loginRegisterUtente(HashTable *h) {
     char CF[17];
     char nome[20];
@@ -73,57 +128,3 @@ Utente loginRegisterUtente(HashTable *h) {
     }
 }
 
-int insertUtente(HashTable *h, Utente u) {
-    const char *cf = getCF(u);
-    if (!cf || !u) return 0;
-
-    HashEntry *entry = NULL;
-    HASH_FIND_STR(*h, cf, entry);
-    if (entry) {
-        return 0; // già presente
-    }
-
-    entry = malloc(sizeof(HashEntry));
-    entry->cf = strdup(cf);  // duplica la chiave
-    entry->utente = u;
-    HASH_ADD_KEYPTR(hh, *h, entry->cf, strlen(entry->cf), entry);
-    return 1;
-}
-
-Utente cercaUtente(HashTable h, const char *CF) {
-    HashEntry *entry = NULL;
-    HASH_FIND_STR(h, CF, entry);
-    return entry ? entry->utente : NULL;
-}
-
-Utente eliminaUtente(HashTable *h, const char *CF) {
-    HashEntry *entry = NULL;
-    HASH_FIND_STR(*h, CF, entry);
-    if (entry) {
-        Utente u = entry->utente;
-        HASH_DEL(*h, entry);
-        free(entry->cf);
-        free(entry);
-        return u; // Utente non distrutto qui, restituito al chiamante
-    }
-    return NULL;
-}
-
-void distruggiHashTableUtenti(HashTable *h) {
-    HashEntry *current, *tmp;
-    HASH_ITER(hh, *h, current, tmp) {
-        HASH_DEL(*h, current);
-        distruggiUtente(current->utente); // distrugge Utente
-        free(current->cf);                // libera chiave
-        free(current);                    // libera nodo
-    }
-    *h = NULL;
-}
-//funzione per stampare la tabella
-void stampaHashTableUtenti(HashTable h) {
-    HashEntry *current;
-    for (current = h; current != NULL; current = current->hh.next) {
-        printf("CF: %s\n", current->cf);
-        stampaUtente(current->utente); // Assicurati di avere una funzione per stampare Utente
-    }
-}

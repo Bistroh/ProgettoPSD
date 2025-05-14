@@ -10,5 +10,6 @@ char *getModello(Auto a);
 int getAnno(Auto a);
 float getPrezzo(Auto a);
 void stampaAuto(Auto a);
+void distruggiAuto(Auto a);
 
 #endif

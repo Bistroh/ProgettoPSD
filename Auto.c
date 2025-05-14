@@ -52,6 +52,12 @@ float getPrezzo(Auto a) {
     return a->prezzoXOra;
 }
 
+void distruggiAuto(Auto a) {
+    if (a != NULL) {
+        free(a);
+    }
+}
+
 void stampaAuto(Auto a) {
     printf("Targa: %s\n", a->targa);
     printf("Marca: %s\n", a->marca);

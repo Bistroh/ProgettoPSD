@@ -1,34 +1,17 @@
-//
-// Created by extra on 14/05/2025.
-//
-
-#ifndef HASHTBAUTO_H
-#define HASHTBAUTO_H
+#ifndef HASHTABLEAUTO_H
+#define HASHTABLEAUTO_H
 
 #include "Auto.h"
+#include "uthash.h"
 
-typedef struct HashEntry HashEntry;
-typedef HashEntry* HashTable;
+typedef struct AutoEntry AutoEntry;
+typedef AutoEntry* AutoHashTable;
 
-/**
- * Crea una nuova hash table (inizialmente vuota).
- * Per UTHash, è sufficiente inizializzare a NULL.
- */
-HashTable newHashtableAuto();
-/**
- * Inserisce un'auto nella tabella.
- * Restituisce 1 se l'inserimento è avvenuto con successo, 0 se la targa era già presente.
- */
-int insertAuto(HashTable *h, Auto a);
-/**
- * Cerca un'auto tramite targa.
- * Restituisce il puntatore all'auto, o NULL se non trovata.
- */
-Auto cercaAuto(HashTable h, const char *targa);
-/**
- * Elimina un'auto dalla tabella e la restituisce senza deallocarla.
- * Il chiamante è responsabile di liberarla con distruggiAuto().
- */
-void distruggiHashTableAuto(HashTable *h);
-void stampaHashTableAuto(HashTable h);
-#endif //HASHTBAUTO_H
+AutoHashTable creaHashTableAuto();
+int inserisciAuto(AutoHashTable *ht, Auto a);
+Auto cercaAuto(AutoHashTable ht, const char *targa);
+Auto rimuoviAuto(AutoHashTable *ht, const char *targa);
+void distruggiHashTableAuto(AutoHashTable *ht);
+void stampaHashTableAuto(AutoHashTable ht);
+
+#endif // HASHTABLEAUTO_H

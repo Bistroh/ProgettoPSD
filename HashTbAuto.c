@@ -1,72 +1,93 @@
-//
-// Created by extra on 14/05/2025.
-//
-
-#include "HashTbAuto.h"
-#include "Auto.h"
-#include "uthash.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include "Auto.h"
+#include "HashTbAuto.h"
+#include "uthash.h"
 
-typedef struct {
-    char *targa;       // Chiave (targa)
-    Auto a;  // Valore
-    UT_hash_handle hh;
-} HashEntry;
+// Definizione della struttura di hash entry
+typedef struct AutoEntry {
+    char *targa;         // Chiave: targa dell'auto
+    Auto autoPtr;        // Valore: puntatore all'oggetto Auto
+    UT_hash_handle hh;   // Handler per uthash
+} AutoEntry;
 
-typedef HashEntry* HashTable;
-HashTable newHashtableAuto() {
-    return NULL; // Uthash usa una variabile inizializzata a NULL
-}
+typedef AutoEntry* AutoHashTable;  // Tipo alias
 
-int insertAuto(HashTable *h, Auto a) {
-    const char *targa = getTarga(a);
-    if (!targa || !a) return 0;
-
-    HashEntry *entry = NULL;
-    HASH_FIND_STR(*h, targa, entry);
-    if (entry) {
-        return 0; // già presente
-    }
-
-    entry = malloc(sizeof(HashEntry));
-    entry->targa = strdup(targa);  // duplica la chiave
-    entry->auto = a;
-    HASH_ADD_KEYPTR(hh, *h, entry->targa, strlen(entry->targa), entry);
-    return 1;
-}
-Auto cercaAuto(HashTable h, const char *targa) {
-    HashEntry *entry = NULL;
-    HASH_FIND_STR(h, targa, entry);
-    return entry ? entry->auto : NULL;
-}
-
-Auto eliminaAuto(HashTable *h, const char *targa) {
-    HashEntry *entry = NULL;
-    HASH_FIND_STR(*h, targa, entry);
-    if (entry) {
-        Auto a = entry->auto;
-        HASH_DEL(*h, entry);
-        free(entry->targa);
-        free(entry);
-        return a; // Auto non distrutta qui, restituita al chiamante
-    }
+// Crea una nuova hash table (inizializzata a NULL)
+AutoHashTable creaHashTableAuto() {
     return NULL;
 }
-void distruggiHashTableAuto(HashTable *h) {
-    HashEntry *current, *tmp;
-    HASH_ITER(hh, *h, current, tmp) {
-        HASH_DEL(*h, current);
-        distruggiAuto(current->auto); // distrugge Auto
-        free(current->targa);         // libera chiave
-        free(current);                // libera nodo
+
+// Inserisce una nuova auto nella tabella
+int inserisciAuto(AutoHashTable *ht, Auto a) {
+    if (!a || !ht) return 0;
+
+    const char *targa = getTarga(a);
+    if (!targa) return 0;
+
+    AutoEntry *entry = NULL;
+    HASH_FIND_STR(*ht, targa, entry);
+    if (entry) return 0;  // Auto già presente
+
+    entry = malloc(sizeof(AutoEntry));
+    if (!entry) {
+        fprintf(stderr, "Errore allocazione memoria AutoEntry\n");
+        exit(EXIT_FAILURE);
     }
-    *h = NULL;
+
+    entry->targa = strdup(targa);
+    entry->autoPtr = a;
+    HASH_ADD_KEYPTR(hh, *ht, entry->targa, strlen(entry->targa), entry);
+
+    return 1;
 }
-void stampaHashTableAuto(HashTable h) {
-    HashEntry *current;
-    for (current = h; current != NULL; current = current->hh.next) {
-        printf("Targa: %s\n", current->targa);
-        stampaAuto(current->auto); // Assicurati di avere una funzione per stampare Auto
+
+// Cerca un'auto tramite targa
+Auto cercaAuto(AutoHashTable ht, const char *targa) {
+    if (!targa) return NULL;
+
+    AutoEntry *entry = NULL;
+    HASH_FIND_STR(ht, targa, entry);
+    return entry ? entry->autoPtr : NULL;
+}
+
+// Elimina un'auto e restituisce il puntatore
+Auto rimuoviAuto(AutoHashTable *ht, const char *targa) {
+    if (!ht || !targa) return NULL;
+
+    AutoEntry *entry = NULL;
+    HASH_FIND_STR(*ht, targa, entry);
+    if (!entry) return NULL;
+
+    Auto a = entry->autoPtr;
+    HASH_DEL(*ht, entry);
+    free(entry->targa);
+    free(entry);
+    return a;
+}
+
+// Distrugge tutta la tabella e le auto contenute
+void distruggiHashTableAuto(AutoHashTable *ht) {
+    if (!ht) return;
+
+    AutoEntry *curr, *tmp;
+    HASH_ITER(hh, *ht, curr, tmp) {
+        HASH_DEL(*ht, curr);
+        distruggiAuto(curr->autoPtr);  // libera anche Auto
+        free(curr->targa);
+        free(curr);
+    }
+
+    *ht = NULL;
+}
+
+// Stampa tutte le auto nella tabella
+void stampaHashTableAuto(AutoHashTable ht) {
+    AutoEntry *entry;
+    for (entry = ht; entry != NULL; entry = entry->hh.next) {
+        printf("Targa: %s\n", entry->targa);
+        stampaAuto(entry->autoPtr);
+        printf("------------------------\n");
     }
 }
