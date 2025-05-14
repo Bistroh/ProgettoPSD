@@ -1,7 +1,3 @@
-//
-// Created by extra on 30/04/2025.
-//
-
 #include "prenotazione.h"
 #include "Auto.h"
 #include <stdio.h>
@@ -9,37 +5,39 @@
 #include <string.h>
 
 typedef struct {
-    int giorno;
-    int mese;
-    int anno;
+    int giornoInizio;
+    int giornoFine;
     int oraInizio;
     int oraFine;
-} data;
+} Periodo;
 
 struct s_prenotazione {
     int ID_prenotazione;
     char CF[17];
     char targa[10];
-    data dataPrenotazione;
+    Periodo periodo;
 };
 
-Prenotazione creaPrenotazione(char *CF, char *targa, int giorno, int mese, int anno, int oraInizio, int oraFine) {
+Prenotazione creaPrenotazione(char *CF, char *targa, int giornoInizio, int giornoFine, int oraInizio, int oraFine) {
     static int id_contatore = 0;
     Prenotazione nuovaPrenotazione = malloc(sizeof(struct s_prenotazione));
     if (nuovaPrenotazione == NULL) {
         fprintf(stderr, "Errore di allocazione memoria\n");
         exit(EXIT_FAILURE);
     }
-    nuovaPrenotazione->ID_prenotazione = id_contatore++; // Inizializza l'ID della prenotazione
+
+    nuovaPrenotazione->ID_prenotazione = id_contatore++;
     strncpy(nuovaPrenotazione->CF, CF, sizeof(nuovaPrenotazione->CF) - 1);
-    nuovaPrenotazione->CF[sizeof(nuovaPrenotazione->CF) - 1] = '\0'; // Assicurati che la stringa sia terminata
+    nuovaPrenotazione->CF[sizeof(nuovaPrenotazione->CF) - 1] = '\0';
+
     strncpy(nuovaPrenotazione->targa, targa, sizeof(nuovaPrenotazione->targa) - 1);
     nuovaPrenotazione->targa[sizeof(nuovaPrenotazione->targa) - 1] = '\0';
-    nuovaPrenotazione->dataPrenotazione.giorno = giorno;
-    nuovaPrenotazione->dataPrenotazione.mese = mese;
-    nuovaPrenotazione->dataPrenotazione.anno = anno;
-    nuovaPrenotazione->dataPrenotazione.oraInizio = oraInizio;
-    nuovaPrenotazione->dataPrenotazione.oraFine = oraFine;
+
+    nuovaPrenotazione->periodo.giornoInizio = giornoInizio;
+    nuovaPrenotazione->periodo.giornoFine = giornoFine;
+    nuovaPrenotazione->periodo.oraInizio = oraInizio;
+    nuovaPrenotazione->periodo.oraFine = oraFine;
+
     return nuovaPrenotazione;
 }
 
@@ -55,17 +53,22 @@ char *getTargaPrenotazione(Prenotazione prenotazione) {
     return prenotazione->targa;
 }
 
-char *getDataPrenotazione(Prenotazione prenotazione) {
-    static char dataStr[20];
-    snprintf(dataStr, sizeof(dataStr), "%02d/%02d/%04d %02d-%02d", prenotazione->dataPrenotazione.giorno,
-             prenotazione->dataPrenotazione.mese, prenotazione->dataPrenotazione.anno,
-             prenotazione->dataPrenotazione.oraInizio, prenotazione->dataPrenotazione.oraFine);
-    return dataStr;
+void getPeriodoPrenotazione(Prenotazione p, int *giornoInizio, int *giornoFine, int *oraInizio, int *oraFine) {
+    if (p) {
+        *giornoInizio = p->periodo.giornoInizio;
+        *giornoFine = p->periodo.giornoFine;
+        *oraInizio = p->periodo.oraInizio;
+        *oraFine = p->periodo.oraFine;
+    }
 }
 
 void stampaPrenotazione(Prenotazione prenotazione) {
     printf("ID Prenotazione: %d\n", prenotazione->ID_prenotazione);
     printf("CF: %s\n", prenotazione->CF);
     printf("Targa: %s\n", prenotazione->targa);
-    printf("Data Prenotazione: %s\n", getDataPrenotazione(prenotazione));
+    printf("Periodo: dal giorno %d ore %d al giorno %d ore %d\n",
+           prenotazione->periodo.giornoInizio,
+           prenotazione->periodo.oraInizio,
+           prenotazione->periodo.giornoFine,
+           prenotazione->periodo.oraFine);
 }
