@@ -64,7 +64,7 @@ void prenotazioneAuto(list l, Utente u) {
     printf("Inserisci l'ora di inizio e fine: ");
     scanf("%d %d", &oraInizio, &oraFine);
 
-    Prenotazione nuovaPrenotazione = creaPrenotazione(1, CF, targa, giorno, mese, anno, oraInizio, oraFine);
+    Prenotazione nuovaPrenotazione = creaPrenotazione(CF, targa, giornoInizio, giornoFine, oraInizio, oraFine);
     l = consList(nuovaPrenotazione, l);
 }
 void visualizzaAutoDisponibili() {
