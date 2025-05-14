@@ -68,3 +68,11 @@ void distruggiUtente(Utente u) {
     free(u);
 }
 
+void stampaUtente(Utente u) {
+    printf("CF: %s\n", u->CF);
+    printf("Nome: %s\n", u->nome);
+    printf("Cognome: %s\n", u->cognome);
+    printf("Email: %s\n", u->email);
+    printf("Telefono: %s\n", u->telefono);
+}
+

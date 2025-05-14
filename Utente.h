@@ -10,6 +10,7 @@ char *getCognome(Utente utente);
 char *getEmail(Utente utente);
 char *getTelefono(Utente utente);
 char *getPassword(Utente utente);
+void stampaUtente(Utente u);
 void distruggiUtente(Utente u);
 
 #endif //UTENTE_H
