@@ -13,5 +13,6 @@ Auto cercaAuto(AutoHashTable ht, const char *targa);
 Auto rimuoviAuto(AutoHashTable *ht, const char *targa);
 void distruggiHashTableAuto(AutoHashTable *ht);
 void stampaHashTableAuto(AutoHashTable ht);
+void stampaHashTablePerDisp(AutoHashTable ht, int giornoInizio, int giornoFine, int oraInizio, int oraFine);
 
 #endif // HASHTABLEAUTO_H

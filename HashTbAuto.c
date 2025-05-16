@@ -85,9 +85,30 @@ void distruggiHashTableAuto(AutoHashTable *ht) {
 // Stampa tutte le auto nella tabella
 void stampaHashTableAuto(AutoHashTable ht) {
     AutoEntry *entry;
+    printf("\nAuto presenti nel CarSharing:\n");
     for (entry = ht; entry != NULL; entry = entry->hh.next) {
-        printf("Targa: %s\n", entry->targa);
+        printf("------------------------\n");
         stampaAuto(entry->autoPtr);
         printf("------------------------\n");
+    }
+}
+
+void stampaHashTablePerDisp(AutoHashTable ht, int giornoInizio, int giornoFine, int oraInizio, int oraFine) {
+    int almenoUna = 0;
+
+    printf("\nAuto disponibili nella fascia selezionata:\n");
+
+    AutoEntry *entry;
+    for (entry = ht; entry != NULL; entry = entry->hh.next) {
+        Auto a = entry->autoPtr;
+        if (verificaDisponibilita(a, giornoInizio, giornoFine, oraInizio, oraFine)) {
+            printf("------------------------\n");
+            stampaAuto(a);
+            printf("------------------------\n");
+            almenoUna = 1;
+        }
+    }
+    if (!almenoUna) {
+        printf("Nessuna auto disponibile per questa fascia.\n");
     }
 }
