@@ -1,6 +1,8 @@
 #ifndef AUTO_H
 #define AUTO_H
 
+#include <stdbool.h>
+
 typedef struct s_auto *Auto;
 
 Auto creaAuto(char *targa, char *marca, char *modello, int anno, float prezzoXOra);
@@ -10,6 +12,8 @@ char *getModello(Auto a);
 int getAnno(Auto a);
 float getPrezzo(Auto a);
 void stampaAuto(Auto a);
+int verificaDisponibilita(Auto a, int giornoInizio, int giornoFine, int oraInizio, int oraFine);
+void setDisponibile(Auto a, int giornoInizio, int giornoFine, int oraInizio, int oraFine, bool stato);
 void distruggiAuto(Auto a);
 
 #endif
