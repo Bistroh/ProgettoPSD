@@ -37,6 +37,8 @@ Utente creaUtente(char *CF, char *nome, char *cognome, char *email, char *passwo
 
     strncpy(nuovoUtente->telefono, telefono, sizeof(nuovoUtente->telefono) - 1);
     nuovoUtente->telefono[sizeof(nuovoUtente->telefono) - 1] = '\0';
+
+    return nuovoUtente;
 }
 
 
