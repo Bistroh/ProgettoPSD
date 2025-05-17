@@ -1,13 +1,14 @@
 #ifndef UTILE_UTENTEMENU_H
 #define UTILE_UTENTEMENU_H
-#include "utente.h"
-#include "list_prenotazione.h"
+#include "Utente.h"
+#include "List_Prenotazione.h"
+#include "HashTbAuto.h"
 int codiceFiscaleValido(const char *CF);
-void prenotazioneAuto(list l, Utente u);
-void visualizzaAutoDisponibili();
-void visualizzaPrenotazioni(list l);
+List prenotazioneAuto(List l, Utente u, AutoHashTable tabAuto) ;
+void visualizzaAutoDisponibili(AutoHashTable ht) ;
+void visualizzaPrenotazioniPerUtente(List l, const char *CF) ;
 void visualizzaStorico();
-void switchUtente(int scelta);
+List switchUtente(int scelta, Utente u, List l, AutoHashTable tabAuto);
 int menuUtente();
 
 #endif //UTILE_UTENTEMENU_H
