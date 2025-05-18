@@ -1,6 +1,15 @@
-Car_sharing: main.o Utile_UtenteMenu.o Utile_DevMenu.o HashTbAuto.o HashTbUtenti.o List_Prenotazione.o Auto.o prenotazione.o Utente.o
-	gcc -o Car_sharing main.o Utile_UtenteMenu.o Utile_DevMenu.o HashTbAuto.o HashTbUtenti.o List_Prenotazione.o Auto.o prenotazione.o Utente.o
-	rm -f *.o
+# Rileva Windows o Unix
+ifeq ($(OS),Windows_NT)
+    RM = del /Q
+    EXE = .exe
+else
+    RM = rm -f
+    EXE =
+endif
+
+Car_sharing$(EXE): main.o Utile_UtenteMenu.o Utile_DevMenu.o HashTbAuto.o HashTbUtenti.o List_Prenotazione.o Auto.o prenotazione.o Utente.o
+	gcc -o Car_sharing$(EXE) main.o Utile_UtenteMenu.o Utile_DevMenu.o HashTbAuto.o HashTbUtenti.o List_Prenotazione.o Auto.o prenotazione.o Utente.o
+	$(RM) *.o
 
 main.o: main.c Utile_DevMenu.h Utile_UtenteMenu.h HashTbUtenti.h HashTbAuto.h List_Prenotazione.h Auto.h prenotazione.h
 	gcc -c main.c
@@ -30,4 +39,4 @@ Utile_DevMenu.o: Utile_DevMenu.c Utile_DevMenu.h HashTbAuto.h
 	gcc -c Utile_DevMenu.c
 
 clean:
-	del *.o Car_sharing.exe
+	$(RM) *.o Car_sharing$(EXE)
