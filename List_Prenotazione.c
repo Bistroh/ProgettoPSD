@@ -11,19 +11,19 @@ struct node {
 };
 
 // Definizione della funzione newList per creare una nuova lista vuota
-list newList(void)
+List newList(void)
 {
     return NULL; // Restituisce NULL, indicando una lista vuota
 }
 
 // Funzione per verificare se la lista è vuota
-int emptyList(list l)
+int emptyList(List l)
 {
     return l == NULL; // Restituisce 1 se la lista è vuota (NULL), altrimenti restituisce 0
 }
 
 // Funzione per aggiungere un nuovo elemento in testa alla lista
-list consList(Prenotazione val, list l)
+List consList(Prenotazione val, List l)
 {
     struct node *nuovo; // Dichiarazione di un puntatore a un nuovo nodo
     nuovo = malloc(sizeof(struct node)); // Allocazione della memoria per il nuovo nodo
@@ -38,9 +38,9 @@ list consList(Prenotazione val, list l)
     return l; // Restituisce il puntatore alla lista aggiornata
 }
 
-list tailList(list l)
+List tailList(List l)
 {
-    list temp; // Dichiarazione di un puntatore temporaneo a lista
+    List temp; // Dichiarazione di un puntatore temporaneo a lista
 
     if (l != NULL) // Verifica se la lista non è vuota
         temp = l->next; // Se l'elemento corrente non è l'ultimo, assegna il puntatore al prossimo elemento alla variabile temporanea
@@ -50,7 +50,7 @@ list tailList(list l)
     return temp; // Restituisce la coda della lista (una nuova lista)
 }
 
-Prenotazione getFirst(list l)
+Prenotazione getFirst(List l)
 {
     Prenotazione e; // Dichiarazione di una variabile temporanea per memorizzare il primo elemento della lista
 
@@ -62,32 +62,75 @@ Prenotazione getFirst(list l)
     return e; // Restituisce il primo elemento della lista
 }
 
-Prenotazione getPrenotazioneByCF(list l, char *CF)
+List copiaProfondaLista(List l)
 {
-    while (l != NULL) {    //verifica se la lista non è vuota
-        if (strcmp(getCFPrenotazione(l->value), CF) == 0) {    //cerca  l'elemento con CF uguale a quello passato come parametro
-            return l->value; //restituisce l'elemento trovato tramite CF
-        }
+    List nuova = newList();  // inizializza nuova lista vuota
+    List temp = l;
+    List inOrdine = newList();  // lista temporanea per mantenere ordine originale
 
-        l = l->next; //passa al nodo successivo
+    while (temp != NULL) {
+        Prenotazione p = copiaPrenotazione(temp->value); // <-- serve funzione copiaPrenotazione()
+        inOrdine = consList(p, inOrdine); // costruiamo al contrario
+        temp = temp->next;
     }
 
-    return NULL; // oppure NULL
+    // invertiamo per mantenere l'ordine originale
+    while (!emptyList(inOrdine)) {
+        Prenotazione p = getFirst(inOrdine);
+        nuova = consList(p, nuova);
+        inOrdine = tailList(inOrdine);
+    }
+
+    return nuova;
 }
 
-void stampaListaPrenotazioni(list l)
+void distruggiLista(List l)
 {
-    if (l == NULL) {
-        printf("La lista è vuota.\n");
+    while (l != NULL) {
+        List temp = l;
+        l = l->next;
+        distruggiPrenotazione(temp->value); // <-- serve funzione destroyPrenotazione()
+        free(temp);
+    }
+}
+
+void visPrenotazioniPerUtente(List l, const char *CF)
+{
+    int trovate = 0;
+    List copia = copiaProfondaLista(l);  // crea una copia profonda della lista
+
+    while (!emptyList(copia)) {
+        Prenotazione p = getFirst(copia);
+        if (strcmp(getCFPrenotazione(p), CF) == 0) {
+            stampaPrenotazione(p);
+            trovate++;
+        }
+        copia = tailList(copia);  // NON modifica l originale
+    }
+
+    if (trovate == 0) {
+        printf("Nessuna prenotazione trovata per l'utente con CF: %s\n", CF);
+    }
+
+    distruggiLista(copiaProfondaLista(l));  // distruggi la copia profonda
+}
+
+void stampaListaPrenotazioni(List l)
+{
+    if (emptyList(l)) {
+        printf("Non è presente nessuna prenotazione.\n");
         return;
     }
 
     printf("Elenco prenotazioni:\n");
 
-    list corrente = l;  // copia del puntatore, NON modifica la lista originale
+    List copia = l;
 
-    while (corrente != NULL) {
-        stampaPrenotazione(corrente->value);  // stampa l'elemento corrente
-        corrente = corrente->next;            // passa al nodo successivo
+    while (!emptyList(copia)) {
+        Prenotazione p = getFirst(copia);
+        stampaPrenotazione(p);
+        copia = tailList(copia);
     }
 }
+
+

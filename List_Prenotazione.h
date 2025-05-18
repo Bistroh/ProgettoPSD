@@ -1,15 +1,18 @@
-#include "prenotazione.h"
-
 #ifndef LIST_PRENOTAZIONE_H
 #define LIST_PRENOTAZIONE_H
+#include "prenotazione.h"
+#include "List_Prenotazione.h"
 
-typedef struct node *list;
-list newList(void);
-int emptyList(list l);
-list consList(Prenotazione val, list l);
-list tailList(list l);
-Prenotazione getFirst(list l);
-Prenotazione getPrenotazioneByID(list l, int id);
+typedef struct node *List;
+List newList(void);
+int emptyList(List l);
+List consList(Prenotazione val, List l);
+List tailList(List l);
+Prenotazione getFirst(List l);
+void distruggiLista(List l);
+List copiaProfondaLista(List l);
+void visPrenotazioniPerUtente(List l, const char *CF);
+void stampaListaPrenotazioni(List l);
 
 
 #endif //LIST_PRENOTAZIONE_H
