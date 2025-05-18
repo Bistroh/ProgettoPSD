@@ -72,3 +72,36 @@ void stampaPrenotazione(Prenotazione prenotazione) {
            prenotazione->periodo.giornoFine,
            prenotazione->periodo.oraFine);
 }
+
+Prenotazione copiaPrenotazione(Prenotazione originale)
+{
+    if (originale == NULL) return NULL;
+
+    Prenotazione copia = malloc(sizeof(struct s_prenotazione));
+    if (copia == NULL) {
+        fprintf(stderr, "Errore di allocazione memoria nella copia.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // Copia dei dati
+    copia->ID_prenotazione = originale->ID_prenotazione;
+    strncpy(copia->CF, originale->CF, sizeof(copia->CF));
+    copia->CF[sizeof(copia->CF) - 1] = '\0';
+
+    strncpy(copia->targa, originale->targa, sizeof(copia->targa));
+    copia->targa[sizeof(copia->targa) - 1] = '\0';
+
+    copia->periodo.giornoInizio = originale->periodo.giornoInizio;
+    copia->periodo.giornoFine = originale->periodo.giornoFine;
+    copia->periodo.oraInizio = originale->periodo.oraInizio;
+    copia->periodo.oraFine = originale->periodo.oraFine;
+
+    return copia;
+}
+
+void distruggiPrenotazione(Prenotazione p)
+{
+    if (p != NULL) {
+        free(p);
+    }
+}

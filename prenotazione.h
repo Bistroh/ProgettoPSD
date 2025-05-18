@@ -31,4 +31,8 @@ void getPeriodoPrenotazione(Prenotazione p, int *giornoInizio, int *giornoFine, 
  */
 void stampaPrenotazione(Prenotazione prenotazione);
 
+Prenotazione copiaPrenotazione(Prenotazione originale);
+
+void distruggiPrenotazione(Prenotazione p);
+
 #endif // PRENOTAZIONE_H
