@@ -1,6 +1,6 @@
 Car_sharing: main.o Utile_UtenteMenu.o Utile_DevMenu.o HashTbAuto.o HashTbUtenti.o List_Prenotazione.o Auto.o prenotazione.o Utente.o
 	gcc -o Car_sharing main.o Utile_UtenteMenu.o Utile_DevMenu.o HashTbAuto.o HashTbUtenti.o List_Prenotazione.o Auto.o prenotazione.o Utente.o
-	del *.o
+	rm -f *.o
 
 main.o: main.c Utile_DevMenu.h Utile_UtenteMenu.h HashTbUtenti.h HashTbAuto.h List_Prenotazione.h Auto.h prenotazione.h
 	gcc -c main.c
