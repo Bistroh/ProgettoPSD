@@ -7,6 +7,11 @@
 #include "HashTbUtenti.h"
 #include "HashTbAuto.h"
 #include "List_Prenotazione.h"
+/*Aggiungo delle costanti per rendere più facile la colorazione
+delle parole stampate su schermo. In modo da colorare i menù
+di scelta. */
+#define RESET   "\x1b[0m"
+#define CYAN    "\x1b[36m"
 
 
 
@@ -43,10 +48,13 @@ int main() {
         }
     } while (scelta != 0);
 
-    printf("Grazie per aver  Car Sharing.\n");
+    printf(CYAN "*------------------------------------------------------*\n");
+    printf("|Grazie per aver usufruito del servizio di Car Sharing.|\n");
+    printf("*------------------------------------------------------*\n" RESET);
 
     // Alla fine distruggiamo la tabella
     distruggiHashTableUtenti(&tabUtenti);
     distruggiHashTableAuto(&tabAuto);
+    distruggiLista(listaPrenotazioni);
     return 0;
 }
