@@ -100,6 +100,9 @@ Utente loginRegisterUtente(HashTable *h) {
     } else {
         printf("Utente non trovato. Procedi con la registrazione.\n");
 
+        printf("Inserisci il codice fiscale: ");
+        scanf("%16s", CF);
+
         printf("Inserisci il tuo nome: ");
         scanf("%19s", nome);
 
