@@ -3,9 +3,129 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdbool.h>
+#include "Auto.h"
 #include "Utile_DevMenu.h"
-#include "HashTbAuto.h" // Nome corretto del file hash auto
-#include "HashTbUtenti.h"  // Gestione utenti se necessario
+#include "HashTbAuto.h"
+#include "HashTbUtenti.h"
+/*Aggiungo delle costanti per rendere più facile la colorazione
+delle parole stampate su schermo. In modo da colorare i menù
+di scelta. */
+#define RED    "\x1b[31m"
+#define GREEN  "\x1b[32m"
+#define YELLOW "\x1b[33m"
+#define BLUE   "\x1b[34m"
+#define CYAN   "\x1b[36m"
+#define RESET  "\x1b[0m"
+
+#define MAX_MODELLI 5
+#define MAX_AUTO 5
+#define NUM_MARCHE 5
+#define MAX_LUNGHEZZA 20
+
+
+typedef struct {
+    const char *marca;
+    const char *modelli[MAX_MODELLI];
+    int numeroModelli;
+} MarcaModelli;
+
+MarcaModelli databaseMarche[NUM_MARCHE] = {
+    {"Fiat", {"Panda", "500", "Tipo", "Punto", "Bravo"}, 5},
+    {"BMW", {"Serie 1", "Serie 3", "Serie 5", "X1", "X3"}, 5},
+    {"Toyota", {"Yaris", "Corolla", "C-HR", "RAV4", "Auris"}, 5},
+    {"Ford", {"Fiesta", "Focus", "Kuga", "Puma", "Mondeo"}, 5},
+    {"Alfa Romeo", {"Giulia", "Stelvio", "Tonale", "147", "156"}, 5}
+};
+
+void rimuoviNewline(char *str) {
+    size_t len = strlen(str);
+    if (len > 0 && str[len - 1] == '\n') str[len - 1] = '\0';
+}
+
+int stringaValida(const char *str) {
+    while (*str) {
+        if (!isalpha(*str) && !isdigit(*str) && !isspace(*str)) {
+            return 0;
+        }
+        str++;
+    }
+    return 1;
+}
+
+int confrontaCaseInsensitive(const char *a, const char *b) {
+    while (*a && *b) {
+        if (tolower(*a) != tolower(*b)) return 0;
+        a++; b++;
+    }
+    return *a == '\0' && *b == '\0';
+}
+
+int trovaMarca(const char *marca) {
+    for (int i = 0; i < NUM_MARCHE; i++) {
+        if (confrontaCaseInsensitive(marca, databaseMarche[i].marca)) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int modelloPresente(const char *modello, const MarcaModelli *marca) {
+    for (int i = 0; i < marca->numeroModelli; i++) {
+        if (confrontaCaseInsensitive(modello, marca->modelli[i])) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+void inserisciMarcaModello(char *marca, char *modello) {
+    int indiceMarca;
+
+    while(getchar() != '\n');
+
+    // Input marca
+    do {
+        do {
+            printf(YELLOW "Le marche disponibili del nostro CarSharing sono:\n" RESET);
+            for (int i = 0; i < NUM_MARCHE; i++) {
+                printf(CYAN " - " RESET "%s\n", databaseMarche[i].marca);
+            }
+            printf(BLUE "\nInserisci la marca dell'auto: " RESET);
+            fgets(marca, MAX_LUNGHEZZA, stdin);
+            rimuoviNewline(marca);
+            if (!stringaValida(marca)) {
+                printf(RED "Marca non valida. Usa solo lettere, numeri e spazi.\n" RESET);
+            }
+        } while (!stringaValida(marca));
+
+        indiceMarca = trovaMarca(marca);
+        if (indiceMarca == -1) {
+            printf(RED "Marca non riconosciuta. Riprova.\n" RESET);
+        }
+    } while (!stringaValida(marca) || indiceMarca == -1);
+
+    // Input modello
+    MarcaModelli *marcaSelezionata = &databaseMarche[indiceMarca];
+    do {
+        printf(YELLOW "\nModelli disponibili per %s:\n" RESET, marcaSelezionata->marca);
+        for (int i = 0; i < marcaSelezionata->numeroModelli; i++) {
+            printf(YELLOW " - " RESET "%s\n", marcaSelezionata->modelli[i]);
+        }
+
+        printf(BLUE "\nInserisci il modello dell'auto: " RESET);
+        fgets(modello, MAX_LUNGHEZZA, stdin);
+        rimuoviNewline(modello);
+
+        if (!stringaValida(modello)) {
+            printf(RED "Modello non valido. Usa solo lettere, numeri e spazi.\n" RESET);
+        } else if (!modelloPresente(modello, marcaSelezionata)) {
+            printf(RED "Modello non riconosciuto per la marca %s.\n" RESET, marcaSelezionata->marca);
+        }
+    } while (!stringaValida(modello) || !modelloPresente(modello, marcaSelezionata));
+}
+
+
+
 
 int validaTarga(const char *targa) {
     if (strlen(targa) != 7) {
@@ -31,52 +151,47 @@ void aggiungiAutoInterattivo(AutoHashTable *ht) {
     float prezzo;
 
     do {
-        printf("Inserisci la targa dell'auto (formato: 2 lettere + 3 cifre + 2 lettere, es: AB123CD): ");
+        printf(BLUE "Inserisci la targa dell'auto (formato: 2 lettere + 3 cifre + 2 lettere, es: AB123CD): " RESET);
         scanf("%7s", targa);
 
         if (!validaTarga(targa)) {
-            printf("Errore: formato targa non valido. Riprova.\n");
+            printf(RED "Errore: formato targa non valido. Riprova.\n" RESET);
         }
     } while (!validaTarga(targa));
 
-
-    printf("Inserisci la marca dell'auto: ");
-    scanf("%19s", marca);
-
-    printf("Inserisci il modello dell'auto: ");
-    scanf("%19s", modello);
+    inserisciMarcaModello(marca, modello);
 
     do {
-        printf("Inserisci l'anno di immatricolazione (es. 2000 - 2025): ");
+        printf(BLUE "Inserisci l'anno di immatricolazione (es. 2000 - 2025): " RESET);
         scanf("%d", &anno);
         if (anno < 1900 || anno > 2025) {
-            printf("Errore: anno non valido. Deve essere compreso tra 1900 e 2025.\n");
+            printf(RED "Errore: anno non valido. Deve essere compreso tra 1900 e 2025.\n" RESET);
         }
     } while (anno < 1900 || anno > 2025);
 
     do {
-        printf("Inserisci il prezzo orario del noleggio (minimo 20.00): ");
+        printf(BLUE "Inserisci il prezzo orario del noleggio (minimo 20.00): " RESET);
         scanf("%f", &prezzo);
         if (prezzo < 20.0) {
-            printf("Errore: il prezzo orario non può essere inferiore a 20.00.\n");
+            printf(RED "Errore: il prezzo orario non può essere inferiore a 20.00.\n" RESET);
         }
     } while (prezzo < 20.0);
 
     Auto a = creaAuto(targa, marca, modello, anno, prezzo);
     if (!a) {
-        printf("Errore nella creazione dell'auto.\n");
+        printf(RED "Errore nella creazione dell'auto.\n" RESET);
         return;
     }
 
     if (inserisciAuto(ht, a)) {
-        printf("Auto inserita correttamente.\n");
+        printf(GREEN "Auto inserita correttamente!\n" RESET);
     } else {
-        printf("Auto già presente nella tabella.\n");
+        printf(RED "Auto già presente nella tabella.\n" RESET);
     }
 }
 
 // Gestione del menu sviluppatore
-void gestisciMenuDeveloper(int scelta, AutoHashTable *ht, List l){
+void gestisciMenuDeveloper(int scelta, AutoHashTable *ht, List l) {
     switch (scelta) {
         case 1:
             aggiungiAutoInterattivo(ht);
@@ -86,20 +201,20 @@ void gestisciMenuDeveloper(int scelta, AutoHashTable *ht, List l){
         case 2: {
             char targa[8];
             do {
-                printf("Inserisci la targa dell'auto (formato: 2 lettere + 3 cifre + 2 lettere, es: AB123CD): ");
+                printf(BLUE "Inserisci la targa dell'auto (formato: 2 lettere + 3 cifre + 2 lettere, es: AB123CD): " RESET);
                 scanf("%7s", targa);
 
                 if (!validaTarga(targa)) {
-                    printf("Errore: formato targa non valido. Riprova.\n");
+                    printf(RED "Errore: formato targa non valido. Riprova.\n" RESET);
                 }
             } while (!validaTarga(targa));
 
             Auto a = rimuoviAuto(ht, targa);
             if (a) {
                 distruggiAuto(a);
-                printf("Auto eliminata con successo.\n");
+                printf(GREEN "Auto eliminata con successo.\n" RESET);
             } else {
-                printf("Auto non trovata.\n");
+                printf(RED "Auto non trovata.\n" RESET);
             }
             break;
         }
@@ -112,42 +227,52 @@ void gestisciMenuDeveloper(int scelta, AutoHashTable *ht, List l){
         case 4:
             printf("Visualizzazione storico prenotazioni...\n");
             // TODO: Aggiungere implementazione
+            printf(YELLOW "Visualizzazione storico prenotazioni... (funzione da implementare)\n" RESET);
             break;
 
         case 5:
-            printf("Chiusura applicazione...\n");
+            printf("Uscita dal menu sviluppatore...\n");
             break;
 
         default:
-            printf("Opzione non valida. Riprova.\n");
+            printf(RED "Opzione non valida. Riprova.\n" RESET);
             break;
     }
 }
 
+
 // Mostra il menu sviluppatore e restituisce la scelta
 int mostraMenuDeveloper() {
     int scelta;
-    printf("\n========== Car Sharing - Menu Sviluppatore ==========\n");
-    printf("1. Aggiungi nuova auto\n");
-    printf("2. Rimuovi auto esistente\n");
-    printf("3. Visualizza tutte le prenotazioni\n");
-    printf("4. Visualizza storico prenotazioni\n");
-    printf("5. Esci dal programma\n");
-    printf("=====================================================\n");
-    printf("Scelta: ");
+    printf("\n" CYAN "*----------------------------------------------------*\n");
+    printf(        "|             Car Sharing - Sviluppatore             |\n");
+    printf(        "*----------------------------------------------------*\n");
+
+    printf(        "| " RESET YELLOW "1." RESET " Aggiungi nuova auto                             " CYAN "|\n");
+    printf(        "| " RESET YELLOW "2." RESET " Rimuovi auto esistente                          " CYAN "|\n");
+    printf(        "| " RESET YELLOW "3." RESET " Visualizza tutte le prenotazioni                " CYAN "|\n");
+    printf(        "| " RESET YELLOW "4." RESET " Visualizza storico prenotazioni                 " CYAN "|\n");
+    printf(        "| " RESET RED "5." RESET " Esci dal programma                              " CYAN "|\n");
+
+    printf(        "*----------------------------------------------------*\n");
+    printf(BLUE "Scelta: " RESET);
+
     scanf("%d", &scelta);
     return scelta;
 }
 
-// Chiede se si è utente o sviluppatore
 int selezionaRuolo() {
     int scelta;
     do {
-        printf("Seleziona il tuo ruolo:\n");
-        printf("1. Utente\n");
-        printf("2. Sviluppatore\n");
-        printf("0. Esci\n");
-        printf("Scelta: ");
+        printf("\n" CYAN "*--------------------------------------*\n");
+        printf(        "|       Seleziona il tuo ruolo         |\n");
+        printf(        "*--------------------------------------*\n");
+        printf(        "| " RESET YELLOW "1." RESET " Utente                            " CYAN "|\n");
+        printf(        "| " RESET YELLOW "2." RESET " Sviluppatore                      " CYAN "|\n");
+        printf(        "| " RESET RED "0." RESET " Esci                              " CYAN "|\n");
+        printf(        "*--------------------------------------*\n");
+        printf(BLUE "Scelta: " RESET);
+
         scanf("%d", &scelta);
     } while (scelta != 1 && scelta != 2 && scelta != 0);
 
