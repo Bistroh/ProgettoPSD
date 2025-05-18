@@ -2,6 +2,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+/*Aggiungo delle costanti per rendere più facile la colorazione
+delle parole stampate su schermo. In modo da colorare i menù
+di scelta. */
+#define RESET   "\x1b[0m"
+#define RED     "\x1b[31m"
+#define BLUE    "\x1b[34m"
+#define CYAN    "\x1b[36m"
 
 struct s_utente {
     char CF[17];
@@ -15,7 +22,7 @@ struct s_utente {
 Utente creaUtente(char *CF, char *nome, char *cognome, char *email, char *password, char *telefono) {
     Utente nuovoUtente = malloc(sizeof(struct s_utente));
     if (nuovoUtente == NULL) {
-        fprintf(stderr, "Errore di allocazione memoria\n");
+        fprintf(stderr, RED "Errore di allocazione memoria\n" RESET);
         exit(EXIT_FAILURE);
     }
 
@@ -71,10 +78,10 @@ void distruggiUtente(Utente u) {
 }
 
 void stampaUtente(Utente u) {
-    printf("CF: %s\n", u->CF);
-    printf("Nome: %s\n", u->nome);
-    printf("Cognome: %s\n", u->cognome);
-    printf("Email: %s\n", u->email);
-    printf("Telefono: %s\n", u->telefono);
+    printf(CYAN "CF: " RESET "%s\n", u->CF);
+    printf(CYAN "Nome: " RESET "%s\n", u->nome);
+    printf(CYAN "Cognome: " RESET "%s\n", u->cognome);
+    printf(CYAN "Email: " RESET "%s\n", u->email);
+    printf(CYAN "Telefono: " RESET "%s\n", u->telefono);
 }
 
