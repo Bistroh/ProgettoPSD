@@ -3,6 +3,12 @@
 #include <string.h>
 #include "prenotazione.h" // Includi il file di intestazione per l'elemento (item)
 #include "List_Prenotazione.h"// Includi il file di intestazione per la lista (list)
+/*Aggiungo delle costanti per rendere più facile la colorazione
+delle parole stampate su schermo. In modo da colorare i menù
+di scelta. */
+#define RESET   "\x1b[0m"
+#define RED     "\x1b[31m"
+#define YELLOW  "\x1b[33m"
 
 // Definizione della struttura node
 struct node {
@@ -94,6 +100,7 @@ void distruggiLista(List l)
     }
 }
 
+// Funzione per visualizzare le prenotazioni per utente
 void visPrenotazioniPerUtente(List l, const char *CF)
 {
     int trovate = 0;
@@ -105,24 +112,25 @@ void visPrenotazioniPerUtente(List l, const char *CF)
             stampaPrenotazione(p);
             trovate++;
         }
-        copia = tailList(copia);  // NON modifica l originale
+        copia = tailList(copia);  // NON modifica l'originale
     }
 
     if (trovate == 0) {
-        printf("Nessuna prenotazione trovata per l'utente con CF: %s\n", CF);
+        printf(RED "Nessuna prenotazione trovata per l'utente con CF: %s\n" RESET, CF);
     }
 
     distruggiLista(copiaProfondaLista(l));  // distruggi la copia profonda
 }
 
+// Funzione per stampare tutte le prenotazioni
 void stampaListaPrenotazioni(List l)
 {
     if (emptyList(l)) {
-        printf("Non è presente nessuna prenotazione.\n");
+        printf(RED "Non è presente nessuna prenotazione.\n" RESET);
         return;
     }
 
-    printf("Elenco prenotazioni:\n");
+    printf(YELLOW "Elenco prenotazioni:\n" RESET);
 
     List copia = l;
 
@@ -132,5 +140,6 @@ void stampaListaPrenotazioni(List l)
         copia = tailList(copia);
     }
 }
+
 
 
