@@ -4,6 +4,14 @@
 #include "Auto.h"
 #include "HashTbAuto.h"
 #include "uthash.h"
+/*Aggiungo delle costanti per rendere più facile la colorazione
+delle parole stampate su schermo. In modo da colorare i menù
+di scelta. */
+#define RESET   "\x1b[0m"
+#define RED     "\x1b[31m"
+#define CYAN    "\x1b[36m"
+#define WHITE   "\x1b[37m"
+
 
 // Definizione della struttura di hash entry
 typedef struct AutoEntry {
@@ -32,7 +40,7 @@ int inserisciAuto(AutoHashTable *ht, Auto a) {
 
     entry = malloc(sizeof(AutoEntry));
     if (!entry) {
-        fprintf(stderr, "Errore allocazione memoria AutoEntry\n");
+        fprintf(stderr, RED "Errore allocazione memoria AutoEntry\n" RESET);
         exit(EXIT_FAILURE);
     }
 
@@ -42,6 +50,7 @@ int inserisciAuto(AutoHashTable *ht, Auto a) {
 
     return 1;
 }
+
 
 // Cerca un'auto tramite targa
 Auto cercaAuto(AutoHashTable ht, const char *targa) {
@@ -85,30 +94,34 @@ void distruggiHashTableAuto(AutoHashTable *ht) {
 // Stampa tutte le auto nella tabella
 void stampaHashTableAuto(AutoHashTable ht) {
     AutoEntry *entry;
-    printf("\nAuto presenti nel CarSharing:\n");
+
+    printf("\n" CYAN "Auto presenti nel CarSharing:\n" RESET);
     for (entry = ht; entry != NULL; entry = entry->hh.next) {
-        printf("------------------------\n");
+        printf(WHITE "------------------------\n" RESET);
         stampaAuto(entry->autoPtr);
-        printf("------------------------\n");
+        printf(WHITE "------------------------\n" RESET);
     }
 }
+
 
 void stampaHashTablePerDisp(AutoHashTable ht, int giornoInizio, int giornoFine, int oraInizio, int oraFine) {
     int almenoUna = 0;
 
-    printf("\nAuto disponibili nella fascia selezionata:\n");
+    printf("\n" CYAN "Auto disponibili nella fascia selezionata:\n" RESET);
 
     AutoEntry *entry;
     for (entry = ht; entry != NULL; entry = entry->hh.next) {
         Auto a = entry->autoPtr;
         if (verificaDisponibilita(a, giornoInizio, giornoFine, oraInizio, oraFine)) {
-            printf("------------------------\n");
+            printf(WHITE "------------------------\n" RESET);
             stampaAuto(a);
-            printf("------------------------\n");
+            printf(WHITE "------------------------\n" RESET);
             almenoUna = 1;
         }
     }
+
     if (!almenoUna) {
-        printf("Nessuna auto disponibile per questa fascia.\n");
+        printf(RED "Nessuna auto disponibile per questa fascia.\n" RESET);
     }
 }
+
