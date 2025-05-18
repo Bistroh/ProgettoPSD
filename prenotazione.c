@@ -3,6 +3,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+/*Aggiungo delle costanti per rendere più facile la colorazione
+delle parole stampate su schermo. In modo da colorare i menù
+di scelta. */
+#define RESET   "\x1b[0m"
+#define RED     "\x1b[31m"
+#define BLUE    "\x1b[34m"
+#define YELLOW  "\x1b[33m"
+#define CYAN    "\x1b[36m"
 
 typedef struct {
     int giornoInizio;
@@ -23,6 +31,7 @@ Prenotazione creaPrenotazione(char *CF, char *targa, int giornoInizio, int giorn
     Prenotazione nuovaPrenotazione = malloc(sizeof(struct s_prenotazione));
     if (nuovaPrenotazione == NULL) {
         fprintf(stderr, "Errore di allocazione memoria\n");
+        fprintf(stderr, RED "Errore di allocazione memoria\n" RESET);
         exit(EXIT_FAILURE);
     }
 
@@ -40,6 +49,7 @@ Prenotazione creaPrenotazione(char *CF, char *targa, int giornoInizio, int giorn
 
     return nuovaPrenotazione;
 }
+
 
 int getIDPrenotazione(Prenotazione prenotazione) {
     return prenotazione->ID_prenotazione;
@@ -63,10 +73,10 @@ void getPeriodoPrenotazione(Prenotazione p, int *giornoInizio, int *giornoFine, 
 }
 
 void stampaPrenotazione(Prenotazione prenotazione) {
-    printf("ID Prenotazione: %d\n", prenotazione->ID_prenotazione);
-    printf("CF: %s\n", prenotazione->CF);
-    printf("Targa: %s\n", prenotazione->targa);
-    printf("Periodo: dal giorno %d ore %d al giorno %d ore %d\n",
+    printf(CYAN "ID Prenotazione: " RESET "%d" "\n", prenotazione->ID_prenotazione);
+    printf(CYAN "CF: " RESET "%s\n", prenotazione->CF);
+    printf(CYAN "Targa: " RESET "%s\n", prenotazione->targa);
+    printf(CYAN "Periodo: dal giorno %d ore %d al giorno %d ore %d\n" RESET,
            prenotazione->periodo.giornoInizio,
            prenotazione->periodo.oraInizio,
            prenotazione->periodo.giornoFine,
@@ -79,7 +89,7 @@ Prenotazione copiaPrenotazione(Prenotazione originale)
 
     Prenotazione copia = malloc(sizeof(struct s_prenotazione));
     if (copia == NULL) {
-        fprintf(stderr, "Errore di allocazione memoria nella copia.\n");
+        fprintf(stderr, RED "Errore di allocazione memoria nella copia.\n" RESET);
         exit(EXIT_FAILURE);
     }
 
