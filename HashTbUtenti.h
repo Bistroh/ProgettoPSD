@@ -2,6 +2,8 @@
 #define HASHTBUTENTI_H
 
 #include "Utente.h"
+#include "Coda_StoricoUtente.h"
+#include "List_Prenotazione.h"
 
 // Struttura opaca per la tabella hash
 typedef struct HashEntry HashEntry;
@@ -39,4 +41,7 @@ Utente eliminaUtente(HashTable *h, const char *CF);
 void distruggiHashTableUtenti(HashTable *h);
 
 void stampaHashTableUtenti(HashTable h);
+void aggiungiPrenotazioniAStoricoUtenti(HashTable h, List listaPrenotazioni);
+void stampaStoricoTuttiUtenti(HashTable h);
+
 #endif // HASHTBUTENTI_H
