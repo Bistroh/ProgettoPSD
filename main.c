@@ -11,7 +11,7 @@
 delle parole stampate su schermo. In modo da colorare i menù
 di scelta. */
 #define RESET   "\x1b[0m"
-#define CYAN    "\x1b[36m"
+#define CIANO    "\x1b[36m"
 
 
 
@@ -41,14 +41,14 @@ int main() {
         } else if (scelta == 2) {
           do {
                 sceltaMenu = mostraMenuDeveloper();
-                gestisciMenuDeveloper(sceltaMenu, &tabAuto, listaPrenotazioni);
+                listaPrenotazioni = gestisciMenuDeveloper(sceltaMenu, &tabAuto, listaPrenotazioni, tabUtenti);
                 system("pause");
                 system("cls");
-            } while (sceltaMenu != 5);
+            } while (sceltaMenu != 7);
         }
     } while (scelta != 0);
 
-    printf(CYAN "*------------------------------------------------------*\n");
+    printf(CIANO "*------------------------------------------------------*\n");
     printf("|Grazie per aver usufruito del servizio di Car Sharing.|\n");
     printf("*------------------------------------------------------*\n" RESET);
 
