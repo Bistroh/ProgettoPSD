@@ -8,9 +8,9 @@
 delle parole stampate su schermo. In modo da colorare i menù
 di scelta. */
 #define RESET   "\x1b[0m"
-#define RED     "\x1b[31m"
-#define CYAN    "\x1b[36m"
-#define WHITE   "\x1b[37m"
+#define ROSSO     "\x1b[31m"
+#define CIANO    "\x1b[36m"
+#define BIANCO   "\x1b[37m"
 
 
 // Definizione della struttura di hash entry
@@ -40,7 +40,7 @@ int inserisciAuto(AutoHashTable *ht, Auto a) {
 
     entry = malloc(sizeof(AutoEntry));
     if (!entry) {
-        fprintf(stderr, RED "Errore allocazione memoria AutoEntry\n" RESET);
+        fprintf(stderr, ROSSO "Errore allocazione memoria AutoEntry\n" RESET);
         exit(EXIT_FAILURE);
     }
 
@@ -95,11 +95,11 @@ void distruggiHashTableAuto(AutoHashTable *ht) {
 void stampaHashTableAuto(AutoHashTable ht) {
     AutoEntry *entry;
 
-    printf("\n" CYAN "Auto presenti nel CarSharing:\n" RESET);
+    printf("\n" CIANO "Auto presenti nel CarSharing:\n" RESET);
     for (entry = ht; entry != NULL; entry = entry->hh.next) {
-        printf(WHITE "------------------------\n" RESET);
+        printf(BIANCO "------------------------\n" RESET);
         stampaAuto(entry->autoPtr);
-        printf(WHITE "------------------------\n" RESET);
+        printf(BIANCO "------------------------\n" RESET);
     }
 }
 
@@ -107,21 +107,31 @@ void stampaHashTableAuto(AutoHashTable ht) {
 void stampaHashTablePerDisp(AutoHashTable ht, int giornoInizio, int giornoFine, int oraInizio, int oraFine) {
     int almenoUna = 0;
 
-    printf("\n" CYAN "Auto disponibili nella fascia selezionata:\n" RESET);
+    printf("\n" CIANO "Auto disponibili nella fascia selezionata:\n" RESET);
 
     AutoEntry *entry;
     for (entry = ht; entry != NULL; entry = entry->hh.next) {
         Auto a = entry->autoPtr;
         if (verificaDisponibilita(a, giornoInizio, giornoFine, oraInizio, oraFine)) {
-            printf(WHITE "------------------------\n" RESET);
+            printf(BIANCO "------------------------\n" RESET);
             stampaAuto(a);
-            printf(WHITE "------------------------\n" RESET);
+            printf(BIANCO "------------------------\n" RESET);
             almenoUna = 1;
         }
     }
 
     if (!almenoUna) {
-        printf(RED "Nessuna auto disponibile per questa fascia.\n" RESET);
+        printf(ROSSO "Nessuna auto disponibile per questa fascia.\n" RESET);
     }
+}
+
+void resetDisponibilitaTutteLeAuto(AutoHashTable ht) {
+    AutoEntry *entry;
+
+    for (entry = ht; entry != NULL; entry = entry->hh.next) {
+        resetDisponibilitaAuto(entry->autoPtr);
+    }
+
+    printf(CIANO "Tutte le disponibilità sono state reinizializzate.\n" RESET);
 }
 

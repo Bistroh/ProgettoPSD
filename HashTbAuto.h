@@ -14,5 +14,6 @@ Auto rimuoviAuto(AutoHashTable *ht, const char *targa);
 void distruggiHashTableAuto(AutoHashTable *ht);
 void stampaHashTableAuto(AutoHashTable ht);
 void stampaHashTablePerDisp(AutoHashTable ht, int giornoInizio, int giornoFine, int oraInizio, int oraFine);
+void resetDisponibilitaTutteLeAuto(AutoHashTable ht);
 
 #endif // HASHTABLEAUTO_H
