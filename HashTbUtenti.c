@@ -4,14 +4,17 @@
 #include <ctype.h>
 #include "Utente.h"
 #include "uthash.h"
+#include "controlli.h"
+#include "Coda_StoricoUtente.h"
+#include "List_Prenotazione.h"
 /*Aggiungo delle costanti per rendere più facile la colorazione
 delle parole stampate su schermo. In modo da colorare i menù
 di scelta. */
 #define RESET   "\x1b[0m"
-#define RED     "\x1b[31m"
-#define GREEN   "\x1b[32m"
-#define YELLOW  "\x1b[33m"
-#define CYAN    "\x1b[36m"
+#define ROSSO     "\x1b[31m"
+#define VERDE   "\x1b[32m"
+#define GIALLO  "\x1b[33m"
+#define CIANO    "\x1b[36m"
 
 typedef struct {
     char *cf;       // Chiave (codice fiscale)
@@ -75,60 +78,10 @@ void distruggiHashTableUtenti(HashTable *h) {
 void stampaHashTableUtenti(HashTable h) {
     HashEntry *current;
     for (current = h; current != NULL; current = current->hh.next) {
-        printf(CYAN "CF: %s\n" RESET, current->cf);
+        printf(CIANO "CF: %s\n" RESET, current->cf);
         stampaUtente(current->utente); // Assicurati di avere una funzione per stampare Utente
     }
 }
-
-
-int validaEmail(const char *email) {
-    const char *at = strchr(email, '@');
-    const char *dot = strrchr(email, '.');
-
-    return (at && dot && at < dot && dot - at > 1 && dot[1] != '\0');
-}
-
-int validaCodiceFiscale(const char *cf) {
-    if (strlen(cf) != 16)
-        return 0;
-
-    for (int i = 0; i < 16; i++) {
-        char c = toupper(cf[i]);
-        if (i < 6 || (i == 8 || i == 11 || i == 15)) {
-            if (!isalpha(c)) return 0;
-        } else {
-            if (!isdigit(c)) return 0;
-        }
-    }
-    return 1;
-}
-
-int validaTelefono(const char *numero) {
-    int len = strlen(numero);
-    if (len != 10) return 0;
-    if (numero[0] != '3') return 0;
-
-    for (int i = 0; i < len; i++) {
-        if (!isdigit(numero[i])) return 0;
-    }
-    return 1;
-}
-
-int validaPassword(const char *pwd) {
-    int len = strlen(pwd);
-    int hasUpper = 0, hasLower = 0, hasDigit = 0, hasSpecial = 0;
-
-    if (len < 8) return 0;
-
-    for (int i = 0; i < len; i++) {
-        if (isupper(pwd[i])) hasUpper = 1;
-        else if (islower(pwd[i])) hasLower = 1;
-        else if (isdigit(pwd[i])) hasDigit = 1;
-        else hasSpecial = 1;
-    }
-    return hasUpper && hasLower && hasDigit && hasSpecial;
-}
-
 
 Utente loginRegisterUtente(HashTable *h) {
     int scelta;
@@ -137,22 +90,27 @@ Utente loginRegisterUtente(HashTable *h) {
     char cognome[20];
     char email[30];
     char telefono[15];
-    char password[20];
     char passwordInserita[20];
+    int c;
 
-    printf(GREEN "Benvenuto!\n" RESET);
-    printf(YELLOW "1. Login\n");
+    printf(VERDE "Benvenuto!\n" RESET);
+    printf(GIALLO "1. Login\n");
     printf("2. Registrazione\n");
-    printf("Seleziona un'opzione (1 o 2): " RESET);
-    scanf("%d", &scelta);
+    do {
+        printf(GIALLO "Seleziona un'opzione (1 o 2): " RESET);
+        scanf("%d", &scelta);
+        if (scelta != 1 && scelta != 2) {
+            printf(ROSSO "Opzione non valida. Riprova.\n" RESET);
+        }
+    } while (scelta != 1 && scelta != 2);
 
-    while(getchar() != '\n');
+    while(getchar() != '\n'); // pulizia buffer dopo scanf scelta
 
     do {
-        printf(YELLOW "Inserisci codice fiscale (16 caratteri): " RESET);
+        printf(GIALLO "Inserisci codice fiscale (16 caratteri): " RESET);
         fgets(CF, 17, stdin);
         CF[strcspn(CF, "\n")] = '\0';
-        if (!validaCodiceFiscale(CF)) printf(RED "Codice fiscale non valido.\n" RESET);
+        if (!validaCodiceFiscale(CF)) printf(ROSSO "Codice fiscale non valido.\n" RESET);
     } while (!validaCodiceFiscale(CF));
 
     Utente u = cercaUtente(*h, CF);
@@ -160,119 +118,185 @@ Utente loginRegisterUtente(HashTable *h) {
     if (scelta == 1) {
         // LOGIN
         if (u != NULL) {
-            printf(YELLOW "Inserisci la tua password: " RESET);
-            fgets(passwordInserita, 15, stdin);
-            passwordInserita[strcspn(passwordInserita, "\n")] = '\0';
+            printf(GIALLO "Inserisci la tua password: " RESET);
+            while (getchar() != '\n');  // pulizia buffer
+            if (fgets(passwordInserita, sizeof(passwordInserita), stdin) != NULL) {
+                passwordInserita[strcspn(passwordInserita, "\n")] = '\0';  // rimuovo newline
+            } else {
+                printf(ROSSO "Errore nella lettura della password.\n" RESET);
+                return NULL;
+            }
+
             if (strcmp(getPassword(u), passwordInserita) == 0) {
-                printf(GREEN "Login riuscito! Benvenuto, %s %s!\n" RESET, getNome(u), getCognome(u));
+                printf(VERDE "Login riuscito! Benvenuto, %s %s!\n" RESET, getNome(u), getCognome(u));
                 return u;
             } else {
-                printf(RED "Password errata. Riprova.\n" RESET);
+                printf(ROSSO "Password errata. Riprova.\n" RESET);
                 return NULL;
             }
         } else {
-            printf(RED "Utente non trovato. Procedo con la registrazione.\n" RESET);
+            printf(ROSSO "Utente non trovato. Procedo con la registrazione.\n" RESET);
 
             // REGISTRAZIONE AUTOMATICA
-            printf(YELLOW "Inserisci il tuo nome: " RESET);
+            printf(GIALLO "Inserisci il tuo nome: " RESET);
             scanf("%19s", nome);
+            while ((c = getchar()) != '\n' && c != EOF);  // pulizia buffer
 
-            printf(YELLOW "Inserisci il tuo cognome: " RESET);
+            printf(GIALLO "Inserisci il tuo cognome: " RESET);
             scanf("%19s", cognome);
-
-
-        do {
-            printf(YELLOW "Inserisci la tua email: " RESET);
-            fgets(email, 30, stdin);
-            email[strcspn(email, "\n")] = '\0';
-            if (!validaEmail(email)) printf(RED "Email non valida.\n" RESET);
-        } while (!validaEmail(email));
-
-
-do {
-        printf(YELLOW "Inserisci numero di telefono (10 cifre, inizia per 3): " RESET);
-        fgets(telefono, 14, stdin);
-        telefono[strcspn(telefono, "\n")] = '\0';
-        if (!validaTelefono(telefono)) printf(RED "Numero non valido.\n" RESET);
-    } while (!validaTelefono(telefono));
-
-
-
-    do {
-        printf(YELLOW "Inserisci password (almeno 8 caratteri, 1 maiuscola, 1 minuscola, 1 numero, 1 simbolo): " RESET);
-        fgets(password, 19, stdin);
-        password[strcspn(password, "\n")] = '\0';
-        if (!validaPassword(password)) printf(RED "Password non valida.\n" RESET);
-    } while (!validaPassword(password));
-
-
-        Utente nuovoUtente = creaUtente(CF, nome, cognome, email, password, telefono);
-
-            if (insertUtente(h, nuovoUtente)) {
-                printf(GREEN "Registrazione completata con successo! Benvenuto, %s %s!\n" RESET,
-                getNome(nuovoUtente), getCognome(nuovoUtente));
-            return nuovoUtente;
-            } else {
-                printf(RED "Errore nella registrazione, riprova.\n" RESET);
-                return NULL;
-            }
-    }
-    } else if (scelta == 2) {
-        // REGISTRAZIONE
-        if (u != NULL) {
-            printf(RED "Utente già registrato. Procedo con il login.\n" RESET);
-
-            printf(YELLOW "Inserisci la tua password: " RESET);
-            fgets(passwordInserita, 19, stdin);
-            passwordInserita[strcspn(passwordInserita, "\n")] = '\0';
-            if (strcmp(getPassword(u), passwordInserita) == 0) {
-                printf(GREEN "Login riuscito! Benvenuto, %s %s!\n" RESET, getNome(u), getCognome(u));
-                return u;
-            } else {
-                printf(RED "Password errata. Riprova.\n" RESET);
-                return NULL;
-            }
-        } else {
-            printf(YELLOW "Inserisci il tuo nome: " RESET);
-            scanf("%19s", nome);
-
-            printf(YELLOW "Inserisci il tuo cognome: " RESET);
-            scanf("%19s", cognome);
+            while ((c = getchar()) != '\n' && c != EOF);  // pulizia buffer
 
             do {
-            printf(YELLOW "Inserisci la tua email: " RESET);
-            fgets(email, 30, stdin);
-            email[strcspn(email, "\n")] = '\0';
-            if (!validaEmail(email)) printf(RED "Email non valida.\n" RESET);
-        } while (!validaEmail(email));
-
-           do {
-        printf(YELLOW "Inserisci numero di telefono (10 cifre, inizia per 3): " RESET);
-        fgets(telefono, 14, stdin);
-        telefono[strcspn(telefono, "\n")] = '\0';
-        if (!validaTelefono(telefono)) printf(RED "Numero non valido.\n" RESET);
-    } while (!validaTelefono(telefono));
+                printf(GIALLO "Inserisci la tua email: " RESET);
+                fgets(email, sizeof(email), stdin);
+                email[strcspn(email, "\n")] = '\0';
+                if (!validaEmail(email)) printf(ROSSO "Email non valida.\n" RESET);
+            } while (!validaEmail(email));
 
             do {
-        printf(YELLOW "Inserisci password (almeno 8 caratteri, 1 maiuscola, 1 minuscola, 1 numero, 1 simbolo): " RESET);
-        fgets(password, 19, stdin);
-        password[strcspn(password, "\n")] = '\0';
-        if (!validaPassword(password)) printf(RED "Password non valida.\n" RESET);
-    } while (!validaPassword(password));
+                printf(GIALLO "Inserisci numero di telefono (10 cifre, inizia per 3): " RESET);
+                fgets(telefono, sizeof(telefono), stdin);
+                telefono[strcspn(telefono, "\n")] = '\0';
+                if (!validaTelefono(telefono)) printf(ROSSO "Numero non valido.\n" RESET);
+            } while (!validaTelefono(telefono));
 
-            Utente nuovoUtente = creaUtente(CF, nome, cognome, email, password, telefono);
+            do {
+                printf(GIALLO "Inserisci password (almeno 8 caratteri, 1 maiuscola, 1 minuscola, 1 numero, 1 simbolo): " RESET);
+                fgets(passwordInserita, sizeof(passwordInserita), stdin);
+                passwordInserita[strcspn(passwordInserita, "\n")] = '\0';
+                if (!validaPassword(passwordInserita)) printf(ROSSO "Password non valida.\n" RESET);
+            } while (!validaPassword(passwordInserita));
+
+            Utente nuovoUtente = creaUtente(CF, nome, cognome, email, passwordInserita, telefono);
 
             if (insertUtente(h, nuovoUtente)) {
-                printf(GREEN "Registrazione completata con successo! Benvenuto, %s %s!\n" RESET,
+                printf(VERDE "Registrazione completata con successo! Benvenuto, %s %s!\n" RESET,
                        getNome(nuovoUtente), getCognome(nuovoUtente));
                 return nuovoUtente;
             } else {
-                printf(RED "Errore nella registrazione, riprova.\n" RESET);
+                printf(ROSSO "Errore nella registrazione, riprova.\n" RESET);
+                return NULL;
+            }
+        }
+    } else if (scelta == 2) {
+        // REGISTRAZIONE
+        if (u != NULL) {
+            printf(ROSSO "Utente già registrato. Procedo con il login.\n" RESET);
+
+            printf(GIALLO "Inserisci la tua password: " RESET);
+            while (getchar() != '\n');  // pulizia buffer
+            if (fgets(passwordInserita, sizeof(passwordInserita), stdin) != NULL) {
+                passwordInserita[strcspn(passwordInserita, "\n")] = '\0';  // rimuovo newline
+            } else {
+                printf(ROSSO "Errore nella lettura della password.\n" RESET);
+                return NULL;
+            }
+
+            if (strcmp(getPassword(u), passwordInserita) == 0) {
+                printf(VERDE "Login riuscito! Benvenuto, %s %s!\n" RESET, getNome(u), getCognome(u));
+                return u;
+            } else {
+                printf(ROSSO "Password errata. Riprova.\n" RESET);
+                return NULL;
+            }
+        } else {
+            printf(GIALLO "Inserisci il tuo nome: " RESET);
+            scanf("%19s", nome);
+            while ((c = getchar()) != '\n' && c != EOF);  // pulizia buffer
+
+            printf(GIALLO "Inserisci il tuo cognome: " RESET);
+            scanf("%19s", cognome);
+            while ((c = getchar()) != '\n' && c != EOF);  // pulizia buffer
+
+            do {
+                printf(GIALLO "Inserisci la tua email: " RESET);
+                fgets(email, sizeof(email), stdin);
+                email[strcspn(email, "\n")] = '\0';
+                if (!validaEmail(email)) printf(ROSSO "Email non valida.\n" RESET);
+            } while (!validaEmail(email));
+
+            do {
+                printf(GIALLO "Inserisci numero di telefono (10 cifre, inizia per 3): " RESET);
+                fgets(telefono, sizeof(telefono), stdin);
+                telefono[strcspn(telefono, "\n")] = '\0';
+                if (!validaTelefono(telefono)) printf(ROSSO "Numero non valido.\n" RESET);
+            } while (!validaTelefono(telefono));
+
+            do {
+                printf(GIALLO "Inserisci password (almeno 8 caratteri, 1 maiuscola, 1 minuscola, 1 numero, 1 simbolo): " RESET);
+                fgets(passwordInserita, sizeof(passwordInserita), stdin);
+                passwordInserita[strcspn(passwordInserita, "\n")] = '\0';
+                if (!validaPassword(passwordInserita)) printf(ROSSO "Password non valida.\n" RESET);
+            } while (!validaPassword(passwordInserita));
+
+            Utente nuovoUtente = creaUtente(CF, nome, cognome, email, passwordInserita, telefono);
+
+            if (insertUtente(h, nuovoUtente)) {
+                printf(VERDE "Registrazione completata con successo! Benvenuto, %s %s!\n" RESET,
+                       getNome(nuovoUtente), getCognome(nuovoUtente));
+                return nuovoUtente;
+            } else {
+                printf(ROSSO "Errore nella registrazione, riprova.\n" RESET);
                 return NULL;
             }
         }
     } else {
-        printf(RED "Scelta non valida.\n" RESET);
+        printf(ROSSO "Scelta non valida.\n" RESET);
         return NULL;
     }
 }
+
+
+
+void aggiungiPrenotazioniAStoricoUtenti(HashTable h, List listaPrenotazioni) {
+    List current = listaPrenotazioni;
+
+    while (!emptyList(current)) {
+        Prenotazione p = getFirst(current);
+        const char *cf = getCFPrenotazione(p);
+        Utente u = cercaUtente(h, cf);
+
+        if (u != NULL) {
+            Queue storico = getStorico(u);
+            Prenotazione copia = copiaPrenotazione(p); // crea una copia della prenotazione
+            enqueue(copia, storico);
+        } else {
+            printf(ROSSO "Utente con CF %s non trovato. Prenotazione ignorata.\n" RESET, cf);
+        }
+
+        current = tailList(current);
+    }
+}
+
+void stampaStoricoTuttiUtenti(HashTable h) {
+    HashEntry *current;
+
+    for (current = h; current != NULL; current = current->hh.next) {
+        Utente u = current->utente;
+        printf(CIANO "Utente: %s %s (CF: %s)\n" RESET, getNome(u), getCognome(u), current->cf);
+
+        Queue storico = getStorico(u);
+
+        if (emptyQueue(storico)) {
+            printf(GIALLO "  Nessuna prenotazione nello storico.\n\n" RESET);
+            continue;
+        }
+
+        Queue copia = copiaQueue(storico); // funzione da implementare se non c'è
+        if (copia == NULL) {
+            printf(ROSSO "  Errore nella copia dello storico.\n\n" RESET);
+            continue;
+        }
+
+        int i = 1;
+        while (!emptyQueue(copia)) {
+            Prenotazione p = dequeue(copia);
+            printf(GIALLO "  Prenotazione #%d:\n" RESET, i++);
+            stampaPrenotazione(p);
+        }
+
+        free(copia); // libera solo la struttura coda, non le prenotazioni (se sono condivise)
+        printf("\n");
+    }
+}
+

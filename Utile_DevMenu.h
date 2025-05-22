@@ -2,7 +2,8 @@
 #define UTILE_DEVMENU_H
 #include "HashTbAuto.h"
 #include "List_Prenotazione.h"
-void gestisciMenuDeveloper(int scelta, AutoHashTable *ht, List l);
+#include "HashTbUtenti.h"
+List gestisciMenuDeveloper(int scelta, AutoHashTable *ht, List l, HashTable tabUtenti);
 int mostraMenuDeveloper();
 int selezionaRuolo();
 

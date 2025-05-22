@@ -9,8 +9,8 @@
 delle parole stampate su schermo. In modo da colorare i menù
 di scelta. */
 #define RESET   "\x1b[0m"
-#define RED     "\x1b[31m"
-#define CYAN    "\x1b[36m"
+#define ROSSO     "\x1b[31m"
+#define CIANO    "\x1b[36m"
 
 struct s_auto {
     char targa[10];
@@ -21,10 +21,11 @@ struct s_auto {
 	bool disponibile[MAX_GIORNI_LAVORATIVI][MAX_ORA_LAVORATIVI]; // Matrice per la disponibilità
 };
 
+//Crea un’auto che successivamente può essere aggiunta al catalogo
 Auto creaAuto(char *targa, char *marca, char *modello, int anno, float prezzoXOra) {
     Auto a = malloc(sizeof(struct s_auto));
     if (a == NULL) {
-        fprintf(stderr, RED "Errore di allocazione memoria\n" RESET);
+        fprintf(stderr, ROSSO "Errore di allocazione memoria\n" RESET);
         exit(EXIT_FAILURE);
     }
     strncpy(a->targa, targa, sizeof(a->targa) - 1);
@@ -73,15 +74,9 @@ void distruggiAuto(Auto a) {
 void setDisponibile(Auto a, int giornoInizio, int giornoFine, int oraInizio, int oraFine, bool stato) {
     if (!a || !a->disponibile) return;
 
-    if (giornoInizio < 0 || giornoFine >= MAX_GIORNI_LAVORATIVI ||
-        oraInizio < 0 || oraFine >= MAX_ORA_LAVORATIVI ||
-        giornoInizio > giornoFine) {
-        fprintf(stderr, RED "Intervallo giorno/ora non valido\n" RESET);
-        return;
-    }
-
-    if (giornoInizio == giornoFine && oraInizio > oraFine) {
-        fprintf(stderr, RED "Intervallo orario non valido per lo stesso giorno\n" RESET);
+    // Verifica che l'intervallo sia valido e disponibile (per prenotazioni true = libero, false = occupato)
+    if (!verificaDisponibilita(a, giornoInizio, giornoFine, oraInizio, oraFine)) {
+        fprintf(stderr, ROSSO "Intervallo giorno/ora non valido o non disponibile\n" RESET);
         return;
     }
 
@@ -95,35 +90,65 @@ void setDisponibile(Auto a, int giornoInizio, int giornoFine, int oraInizio, int
     }
 }
 
+
 int verificaDisponibilita(Auto a, int giornoInizio, int giornoFine, int oraInizio, int oraFine) {
     if (!a) return 0;
 
+    // Controllo di validità degli intervalli
     if (giornoInizio < 0 || giornoFine >= MAX_GIORNI_LAVORATIVI ||
         oraInizio < 0 || oraFine >= MAX_ORA_LAVORATIVI ||
-        giornoInizio > giornoFine || oraInizio > oraFine) {
-        fprintf(stderr, RED "Intervallo giorno/ora non valido nella verifica disponibilità\n" RESET);
+        giornoInizio > giornoFine ||
+        (giornoInizio == giornoFine && oraInizio > oraFine)) {
+        fprintf(stderr, ROSSO "Intervallo giorno/ora non valido nella verifica disponibilità\n" RESET);
         return 0;
-    }
+        }
 
     for (int g = giornoInizio; g <= giornoFine; g++) {
-        int oraStart = (g == giornoInizio) ? oraInizio : 0;
-        int oraEnd   = (g == giornoFine)  ? oraFine    : MAX_ORA_LAVORATIVI - 1;
+        int oraStart, oraEnd;
+
+        if (giornoInizio == giornoFine) {
+            // Prenotazione nello stesso giorno
+            oraStart = oraInizio;
+            oraEnd = oraFine;
+        } else {
+            // Prenotazione su più giorni
+            if (g == giornoInizio) {
+                oraStart = oraInizio;
+                oraEnd = MAX_ORA_LAVORATIVI - 1;
+            } else if (g == giornoFine) {
+                oraStart = 0;
+                oraEnd = oraFine;
+            } else {
+                oraStart = 0;
+                oraEnd = MAX_ORA_LAVORATIVI - 1;
+            }
+        }
 
         for (int o = oraStart; o <= oraEnd; o++) {
-        if (a->disponibile[g][o]) {
-            return 0;
+            if (a->disponibile[g][o]) {
+                return 0; // occupato
+            }
         }
     }
+    return 1; // disponibile
 }
 
-    return 1;
-}
 
 void stampaAuto(Auto a) {
-    printf(CYAN "Targa:           " RESET "%s\n", a->targa);
-    printf(CYAN "Marca:           " RESET "%s\n", a->marca);
-    printf(CYAN "Modello:         " RESET "%s\n", a->modello);
-    printf(CYAN "Anno:            " RESET "%d\n", a->anno);
-    printf(CYAN "Prezzo per ora:  " RESET "%.2f\n", a->prezzoXOra);
+    printf(CIANO "Targa:           " RESET "%s\n", a->targa);
+    printf(CIANO "Marca:           " RESET "%s\n", a->marca);
+    printf(CIANO "Modello:         " RESET "%s\n", a->modello);
+    printf(CIANO "Anno:            " RESET "%d\n", a->anno);
+    printf(CIANO "Prezzo per ora:  " RESET "%.2f\n", a->prezzoXOra);
+}
+
+void resetDisponibilitaAuto(Auto a) {
+    if (!a) return;
+
+    for (int g = 0; g < MAX_GIORNI_LAVORATIVI; g++) {
+        for (int o = 0; o < MAX_ORA_LAVORATIVI; o++) {
+            a->disponibile[g][o] = false;
+        }
+    }
 }
 

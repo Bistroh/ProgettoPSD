@@ -10,5 +10,6 @@ void visualizzaPrenotazioniPerUtente(List l, const char *CF) ;
 void visualizzaStorico();
 List switchUtente(int scelta, Utente u, List l, AutoHashTable tabAuto);
 int menuUtente();
+void calcolaPrezziPrenotazioni(List prenotazioni, Utente u, AutoHashTable ht);
 
 #endif //UTILE_UTENTEMENU_H

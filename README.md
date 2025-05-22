@@ -19,7 +19,7 @@ Link di riferimento per la [Documentazione](https://example.com)
 
 ## Roadmap
 
-- [X] Creare e codificare i vari source file con header file collegato
+- [ ] Creare e codificare i vari source file con header file collegato
   - [X] Auto.c/h
   - [X] prenotazione.c/h
   - [X] Utente.c/h
@@ -29,27 +29,28 @@ Link di riferimento per la [Documentazione](https://example.com)
   - [X] List_Prenotazione.c/h
   - [X] Utile_Utente_Menu.c/h
   - [X] Utile_DevMenu.c/h
-  - [ ] Storico_Noleggi.c/h
-  - [ ] Calcolo_Tariffa.c/h
+  - [ ] Storico_Noleggi.c/h //parzialmente finito
+  - [ ] Calcolo_Tariffa.c/h 
         
 - [ ] Funzioni menù utente
-  - [ ] Prenotazione
+  - [X] Prenotazione
   - [ ] Calcolo tariffa
-  - [ ] Visualizza auto disponibili
-  - [ ] Visualizza prenotazioni attuali
+  - [X] Visualizza auto disponibili
+  - [X] Visualizza prenotazioni attuali
   - [ ] Visualizza storico
      
 - [ ] Funzioni menù developer
   - [X] Aggiungi auto
   - [X] Rimuovi auto
-  - [ ] Visualizza tutte le prenotazioni
+  - [X] Visualizza tutte le prenotazioni
   - [ ] Visualizza storico utente
+  - [X] Avanza settimana (gestione storico)
         
         
 - [X] Scelta dei vari ADT
 - [ ] Implementazione ADTs
-  - [ ] Lista prenotazione 
-  - [ ] Lista storico
+  - [X] Lista prenotazione 
+  - [ ] Coda storico
   - [X] Hash table utenti
   - [X] Hash table auto
         
@@ -66,10 +67,7 @@ Link di riferimento per la [Documentazione](https://example.com)
   - [ ] Calcolo_Tariffa
      
 - [ ] Ottimizzazioni
-  - [ ] Interfacce
-    - [ ] Login
-    - [ ] Menù utente
-    - [ ] Menù developer
+  - [X] Colore sui messaggi a schermo
   - [ ] Migliorare la leggibilità codice generale
      
 - [ ] Calcolo costo totale del progetto //rivedere lezione su elearning

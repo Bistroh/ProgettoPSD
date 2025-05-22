@@ -1,4 +1,5 @@
 #include "Utente.h"
+#include "Coda_StoricoUtente.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,9 +7,9 @@
 delle parole stampate su schermo. In modo da colorare i menù
 di scelta. */
 #define RESET   "\x1b[0m"
-#define RED     "\x1b[31m"
-#define BLUE    "\x1b[34m"
-#define CYAN    "\x1b[36m"
+#define ROSSO     "\x1b[31m"
+#define BLU    "\x1b[34m"
+#define CIANO    "\x1b[36m"
 
 struct s_utente {
     char CF[17];
@@ -17,12 +18,13 @@ struct s_utente {
     char email[30];
     char telefono[15];
     char password[20];
+    Queue storico;
 };
 
 Utente creaUtente(char *CF, char *nome, char *cognome, char *email, char *password, char *telefono) {
     Utente nuovoUtente = malloc(sizeof(struct s_utente));
     if (nuovoUtente == NULL) {
-        fprintf(stderr, RED "Errore di allocazione memoria\n" RESET);
+        fprintf(stderr, ROSSO "Errore di allocazione memoria\n" RESET);
         exit(EXIT_FAILURE);
     }
 
@@ -44,6 +46,8 @@ Utente creaUtente(char *CF, char *nome, char *cognome, char *email, char *passwo
 
     strncpy(nuovoUtente->telefono, telefono, sizeof(nuovoUtente->telefono) - 1);
     nuovoUtente->telefono[sizeof(nuovoUtente->telefono) - 1] = '\0';
+
+    nuovoUtente->storico = newQueue();
 
     return nuovoUtente;
 }
@@ -73,15 +77,19 @@ char *getPassword(Utente utente) {
     return utente->password;
 }
 
+Queue getStorico(Utente u) {
+    return u->storico;
+}
+
 void distruggiUtente(Utente u) {
     free(u);
 }
 
 void stampaUtente(Utente u) {
-    printf(CYAN "CF: " RESET "%s\n", u->CF);
-    printf(CYAN "Nome: " RESET "%s\n", u->nome);
-    printf(CYAN "Cognome: " RESET "%s\n", u->cognome);
-    printf(CYAN "Email: " RESET "%s\n", u->email);
-    printf(CYAN "Telefono: " RESET "%s\n", u->telefono);
+    printf(CIANO "CF: " RESET "%s\n", u->CF);
+    printf(CIANO "Nome: " RESET "%s\n", u->nome);
+    printf(CIANO "Cognome: " RESET "%s\n", u->cognome);
+    printf(CIANO "Email: " RESET "%s\n", u->email);
+    printf(CIANO "Telefono: " RESET "%s\n", u->telefono);
 }
 
