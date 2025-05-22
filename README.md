@@ -19,7 +19,7 @@ Link di riferimento per la [Documentazione](https://example.com)
 
 ## Roadmap
 
-- [ ] Creare e codificare i vari source file con header file collegato
+- [X] Creare e codificare i vari source file con header file collegato
   - [X] Auto.c/h
   - [X] prenotazione.c/h
   - [X] Utente.c/h
@@ -29,28 +29,30 @@ Link di riferimento per la [Documentazione](https://example.com)
   - [X] List_Prenotazione.c/h
   - [X] Utile_Utente_Menu.c/h
   - [X] Utile_DevMenu.c/h
-  - [ ] Storico_Noleggi.c/h //parzialmente finito
-  - [ ] Calcolo_Tariffa.c/h 
+  - [X] Coda_StoricoUtente.c/h //parzialmente finito
+  - [X] Calcolo_Tariffa (incluso in Utile_UtenteMenù)
+  - [X] Controlli.c/h
         
-- [ ] Funzioni menù utente
+- [X] Funzioni menù utente
   - [X] Prenotazione
-  - [ ] Calcolo tariffa
+  - [X] Calcolo tariffa
   - [X] Visualizza auto disponibili
   - [X] Visualizza prenotazioni attuali
-  - [ ] Visualizza storico
+  - [X] Visualizza storico
      
-- [ ] Funzioni menù developer
+- [X] Funzioni menù developer
   - [X] Aggiungi auto
   - [X] Rimuovi auto
+  - [X] Visualizza tutte le auto
   - [X] Visualizza tutte le prenotazioni
-  - [ ] Visualizza storico utente
+  - [X] Visualizza storico utente
   - [X] Avanza settimana (gestione storico)
         
         
 - [X] Scelta dei vari ADT
-- [ ] Implementazione ADTs
+- [X] Implementazione ADTs
   - [X] Lista prenotazione 
-  - [ ] Coda storico
+  - [X] Coda storico
   - [X] Hash table utenti
   - [X] Hash table auto
         
@@ -63,12 +65,13 @@ Link di riferimento per la [Documentazione](https://example.com)
   - [ ] Hash_Tb_Utenti
   - [ ] List_Prenotazione
   - [ ] Utile_Utente_Menu
-  - [ ] Storico_Noleggi
-  - [ ] Calcolo_Tariffa
+  - [ ] Coda_StoricoUtente
+  - [ ] Controlli
      
 - [ ] Ottimizzazioni
   - [X] Colore sui messaggi a schermo
   - [ ] Migliorare la leggibilità codice generale
+  - [ ] "Italianizzare" il programma (da chiedere alla prof)
      
 - [ ] Calcolo costo totale del progetto //rivedere lezione su elearning
      
