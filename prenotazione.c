@@ -7,10 +7,10 @@
 delle parole stampate su schermo. In modo da colorare i menù
 di scelta. */
 #define RESET   "\x1b[0m"
-#define RED     "\x1b[31m"
-#define BLUE    "\x1b[34m"
-#define YELLOW  "\x1b[33m"
-#define CYAN    "\x1b[36m"
+#define ROSSO     "\x1b[31m"
+#define BLU    "\x1b[34m"
+#define GIALLO  "\x1b[33m"
+#define CIANO    "\x1b[36m"
 
 typedef struct {
     int giornoInizio;
@@ -30,8 +30,7 @@ Prenotazione creaPrenotazione(char *CF, char *targa, int giornoInizio, int giorn
     static int id_contatore = 0;
     Prenotazione nuovaPrenotazione = malloc(sizeof(struct s_prenotazione));
     if (nuovaPrenotazione == NULL) {
-        fprintf(stderr, "Errore di allocazione memoria\n");
-        fprintf(stderr, RED "Errore di allocazione memoria\n" RESET);
+        fprintf(stderr, ROSSO "Errore di allocazione memoria\n" RESET);
         exit(EXIT_FAILURE);
     }
 
@@ -72,15 +71,34 @@ void getPeriodoPrenotazione(Prenotazione p, int *giornoInizio, int *giornoFine, 
     }
 }
 
+const char* giornoToString(int giorno) {
+    switch (giorno) {
+        case 0: return "Lunedì";
+        case 1: return "Martedì";
+        case 2: return "Mercoledì";
+        case 3: return "Giovedì";
+        case 4: return "Venerdì";
+        case 5: return "Sabato";
+        case 6: return "Domenica";
+        default: return "Giorno sconosciuto";
+    }
+}
+
 void stampaPrenotazione(Prenotazione prenotazione) {
-    printf(CYAN "ID Prenotazione: " RESET "%d" "\n", prenotazione->ID_prenotazione);
-    printf(CYAN "CF: " RESET "%s\n", prenotazione->CF);
-    printf(CYAN "Targa: " RESET "%s\n", prenotazione->targa);
-    printf(CYAN "Periodo: dal giorno %d ore %d al giorno %d ore %d\n" RESET,
-           prenotazione->periodo.giornoInizio,
-           prenotazione->periodo.oraInizio,
-           prenotazione->periodo.giornoFine,
-           prenotazione->periodo.oraFine);
+    printf(CIANO "ID Prenotazione: " RESET "%d\n", prenotazione->ID_prenotazione);
+    printf(CIANO "CF: " RESET "%s\n", prenotazione->CF);
+    printf(CIANO "Targa: " RESET "%s\n", prenotazione->targa);
+    if (prenotazione->periodo.giornoInizio == 6 || prenotazione->periodo.giornoFine == 6) {
+        printf(CIANO "Periodo: dal %s a %s\n" RESET,
+               giornoToString(prenotazione->periodo.giornoInizio),
+               giornoToString(prenotazione->periodo.giornoFine));
+    } else {
+        printf(CIANO "Periodo: dal %s ore %d al %s ore %d\n" RESET,
+               giornoToString(prenotazione->periodo.giornoInizio),
+               prenotazione->periodo.oraInizio,
+               giornoToString(prenotazione->periodo.giornoFine),
+               prenotazione->periodo.oraFine);
+    }
 }
 
 Prenotazione copiaPrenotazione(Prenotazione originale)
@@ -89,7 +107,7 @@ Prenotazione copiaPrenotazione(Prenotazione originale)
 
     Prenotazione copia = malloc(sizeof(struct s_prenotazione));
     if (copia == NULL) {
-        fprintf(stderr, RED "Errore di allocazione memoria nella copia.\n" RESET);
+        fprintf(stderr, ROSSO "Errore di allocazione memoria nella copia.\n" RESET);
         exit(EXIT_FAILURE);
     }
 
