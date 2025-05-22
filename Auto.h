@@ -15,5 +15,7 @@ void stampaAuto(Auto a);
 int verificaDisponibilita(Auto a, int giornoInizio, int giornoFine, int oraInizio, int oraFine);
 void setDisponibile(Auto a, int giornoInizio, int giornoFine, int oraInizio, int oraFine, bool stato);
 void distruggiAuto(Auto a);
+void resetDisponibilitaAuto(Auto a);
+
 
 #endif
