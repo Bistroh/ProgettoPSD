@@ -1,5 +1,6 @@
 #ifndef UTENTE_H
 #define UTENTE_H
+#include "Coda_StoricoUtente.h"
 
 typedef struct s_utente *Utente;
 
@@ -11,6 +12,7 @@ char *getEmail(Utente utente);
 char *getTelefono(Utente utente);
 char *getPassword(Utente utente);
 void stampaUtente(Utente u);
+Queue getStorico(Utente u);
 void distruggiUtente(Utente u);
 
 #endif //UTENTE_H
