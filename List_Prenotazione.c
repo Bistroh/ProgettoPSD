@@ -7,8 +7,8 @@
 delle parole stampate su schermo. In modo da colorare i menù
 di scelta. */
 #define RESET   "\x1b[0m"
-#define RED     "\x1b[31m"
-#define YELLOW  "\x1b[33m"
+#define ROSSO     "\x1b[31m"
+#define GIALLO  "\x1b[33m"
 
 // Definizione della struttura node
 struct node {
@@ -116,7 +116,7 @@ void visPrenotazioniPerUtente(List l, const char *CF)
     }
 
     if (trovate == 0) {
-        printf(RED "Nessuna prenotazione trovata per l'utente con CF: %s\n" RESET, CF);
+        printf(ROSSO "Nessuna prenotazione trovata per l'utente con CF: %s\n" RESET, CF);
     }
 
     distruggiLista(copiaProfondaLista(l));  // distruggi la copia profonda
@@ -126,11 +126,11 @@ void visPrenotazioniPerUtente(List l, const char *CF)
 void stampaListaPrenotazioni(List l)
 {
     if (emptyList(l)) {
-        printf(RED "Non è presente nessuna prenotazione.\n" RESET);
+        printf(ROSSO "Non è presente nessuna prenotazione.\n" RESET);
         return;
     }
 
-    printf(YELLOW "Elenco prenotazioni:\n" RESET);
+    printf(GIALLO "Elenco prenotazioni:\n" RESET);
 
     List copia = l;
 
@@ -139,6 +139,22 @@ void stampaListaPrenotazioni(List l)
         stampaPrenotazione(p);
         copia = tailList(copia);
     }
+}
+
+List filtraPrenotazioniPerCF(List l, const char *CF) {
+    List risultato = newList();  // lista da restituire
+    List temp = l;
+
+    while (!emptyList(temp)) {
+        Prenotazione p = getFirst(temp);
+        if (strcmp(getCFPrenotazione(p), CF) == 0) {
+            Prenotazione copia = copiaPrenotazione(p); // <-- serve funzione di copia profonda
+            risultato = consList(copia, risultato);
+        }
+        temp = tailList(temp);
+    }
+
+    return risultato;  // contiene solo prenotazioni dell'utente con CF
 }
 
 

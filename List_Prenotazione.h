@@ -13,6 +13,7 @@ void distruggiLista(List l);
 List copiaProfondaLista(List l);
 void visPrenotazioniPerUtente(List l, const char *CF);
 void stampaListaPrenotazioni(List l);
+List filtraPrenotazioniPerCF(List l, const char *CF);
 
 
 #endif //LIST_PRENOTAZIONE_H
