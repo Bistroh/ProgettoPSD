@@ -15,30 +15,36 @@ di scelta.*/
 #define ROSSO    "\x1b[31m"
 #define VERDE  "\x1b[32m"
 #define GIALLO "\x1b[33m"
-#define BLUE   "\x1b[34m"
+#define BLU   "\x1b[34m"
 #define CIANO   "\x1b[36m"
 
 List switchUtente(int scelta, Utente u, List l, AutoHashTable tabAuto) {
     // Funzione per gestire le scelte dell'utente
     switch (scelta) {
         case 1:
-            printf(BLUE "Prenotazione auto...\n" RESET);
-            l = prenotazioneAuto(l, u, tabAuto);
+            printf(BLU "Prenotazione auto...\n" RESET);
+            if(tabAuto == NULL) {
+                printf(ROSSO "ERRORE! Non sono presenti auto disponibili per prenotare.\n" RESET);
+                break;
+            }
+            else{
+            	l = prenotazioneAuto(l, u, tabAuto);
+            }
             break;
         case 2:
-            printf(BLUE "Calcolo tariffa per auto prenotata...\n" RESET);
+            printf(BLU "Calcolo tariffa per auto prenotata...\n" RESET);
             calcolaPrezziPrenotazioni(l, u, tabAuto);
             break;
         case 3:
-            printf(BLUE "Visualizzazione auto disponibili...\n" RESET);
+            printf(BLU "Visualizzazione auto disponibili...\n" RESET);
             visualizzaAutoDisponibili(tabAuto);
             break;
         case 4:
-            printf(BLUE "Visualizzazione prenotazioni...\n" RESET);
+            printf(BLU "Visualizzazione prenotazioni...\n" RESET);
             visPrenotazioniPerUtente(l, getCF(u));
             break;
         case 5:
-            printf(BLUE "Visualizzazione prenotazioni precedenti...\n" RESET);
+            printf(BLU "Visualizzazione prenotazioni precedenti...\n" RESET);
             stampaStorico(getStorico(u));
             break;
         case 6:
@@ -52,30 +58,43 @@ List switchUtente(int scelta, Utente u, List l, AutoHashTable tabAuto) {
 }
 
 int menuUtente() {
+    char buffer[100];
     int scelta;
+    int valido = 0;
 
-    printf("\n" CIANO "*----------------------------------------------------*\n");
-    printf(        "|                Car Sharing - Utente                |\n");
-    printf(        "*----------------------------------------------------*\n");
+    do {
+        printf("\n" CIANO "*----------------------------------------------------*\n");
+        printf(        "|                Car Sharing - Utente                |\n");
+        printf(        "*----------------------------------------------------*\n");
 
-    printf(        "| " RESET GIALLO "1." RESET " Prenotazione auto                               " CIANO "|\n");
-    printf(        "| " RESET GIALLO "2." RESET " Calcolo tariffa per auto prenotata              " CIANO "|\n");
-    printf(        "| " RESET GIALLO "3." RESET " Visualizza auto disponibili                     " CIANO "|\n");
-    printf(        "| " RESET GIALLO "4." RESET " Visualizza prenotazioni                         " CIANO "|\n");
-    printf(        "| " RESET GIALLO "5." RESET " Visualizza prenotazioni precedenti              " CIANO "|\n");
+        printf(        "| " RESET GIALLO "1." RESET " Prenotazione auto                               " CIANO "|\n");
+        printf(        "| " RESET GIALLO "2." RESET " Calcolo tariffa per auto prenotata              " CIANO "|\n");
+        printf(        "| " RESET GIALLO "3." RESET " Visualizza auto disponibili                     " CIANO "|\n");
+        printf(        "| " RESET GIALLO "4." RESET " Visualizza prenotazioni                         " CIANO "|\n");
+        printf(        "| " RESET GIALLO "5." RESET " Visualizza prenotazioni precedenti              " CIANO "|\n");
+        printf(        "| " RESET ROSSO  "6." RESET " Esci                                            " CIANO "|\n");
 
-    printf(        "| " RESET ROSSO "6." RESET " Esci                                            " CIANO "|\n");
+        printf(        "*----------------------------------------------------*\n");
+        printf(BLU"Scelta: " RESET);
 
-    printf(        "*----------------------------------------------------*\n");
-    printf(BLUE "Scelta: " RESET);
+        if (fgets(buffer, sizeof(buffer), stdin) != NULL) {
+            buffer[strcspn(buffer, "\n")] = '\0';  // Rimuove newline
 
-    scanf("%d", &scelta);\
+            // Verifica se input è un intero valido tra 1 e 6
+            if (sscanf(buffer, "%d", &scelta) == 1 && scelta >= 1 && scelta <= 6) {
+                valido = 1;
+            } else {
+                printf(ROSSO "Errore: inserisci un numero valido tra 1 e 6.\n" RESET);
+            }
+        }
+    } while (!valido);
+
     return scelta;
 }
 
 
 List prenotazioneAuto(List l, Utente u, AutoHashTable tabAuto) {
-    char CF[17], targa[10];
+    char CF[17], targa[10], buffer[100];
     Auto a;
     int giornoInizio, giornoFine, oraInizio, oraFine;
     bool flag = true;
@@ -83,65 +102,88 @@ List prenotazioneAuto(List l, Utente u, AutoHashTable tabAuto) {
     strcpy(CF, getCF(u));
 
     do {
-        printf(GIALLO "Inserisci la targa dell'auto: " RESET);
-        scanf("%s", targa);
-        a = cercaAuto(tabAuto, targa);
-        if (a == NULL) {
-            printf(ROSSO "Targa non trovata. Riprova.\n" RESET);
+        printf(BLU "Inserisci la targa dell'auto (formato: 2 lettere + 3 cifre + 2 lettere, es: AB123CD): " RESET);
+        scanf("%7s", targa);
+
+        if (!validaTarga(targa)) {
+            printf(ROSSO "Errore: formato targa non valido. Riprova.\n" RESET);
         }
-    } while (a == NULL);
+    } while (!validaTarga(targa));
+    while ((getchar()) != '\n');  // Pulisce il buffer
 
-    do {
-        printf(GIALLO "Inserisci il giorno di inizio della prenotazione (1=lun, ..., 7=dom): " RESET);
-        scanf("%d", &giornoInizio);
-        if (giornoInizio < 1 || giornoInizio > 7) {
-            printf(ROSSO "Errore: il giorno deve essere un numero da 1 a 7.\n" RESET);
-        }
-    } while (giornoInizio < 1 || giornoInizio > 7);
-
-    do {
-        printf(GIALLO "Inserisci il giorno di fine della prenotazione (>= giorno inizio, max 7): " RESET);
-        scanf("%d", &giornoFine);
-        if (giornoFine < giornoInizio || giornoFine > 7) {
-            printf(ROSSO "Errore: il giorno di fine deve essere compreso tra %d e 7.\n" RESET, giornoInizio);
-        }
-    } while (giornoFine < giornoInizio || giornoFine > 7);
-
-    do {
-        printf(GIALLO "Inserisci l'ora di inizio (1-24): " RESET);
-        scanf("%d", &oraInizio);
-        if (oraInizio < 1 || oraInizio > 24) {
-            printf(ROSSO "Errore: l'ora di inizio deve essere compresa tra 1 e 24 (1 = 01:00, 24 = mezzanotte).\n" RESET);
-        }
-    } while (oraInizio < 1 || oraInizio > 24);
-
-    do {
-        printf(GIALLO "Inserisci l'ora di fine (max 24): " RESET);
-        scanf("%d", &oraFine);
-        if (oraFine < 1 || oraFine > 24) {
-            printf(ROSSO "Errore: l'ora di fine deve essere compresa tra 1 e 24.\n" RESET);
-        } else if (giornoInizio == giornoFine && oraFine < oraInizio) {
-            printf(ROSSO "Errore: per prenotazioni nello stesso giorno, l'ora di fine deve essere >= ora di inizio.\n" RESET);
-        } else {
-            break;  // orario valido
-        }
-    } while (1);
-
-
-    giornoInizio--; giornoFine--;
-    oraInizio--; oraFine--;
-
-    if (verificaDisponibilita(a, giornoInizio, giornoFine, oraInizio, oraFine)) {
-        setDisponibile(a, giornoInizio, giornoFine, oraInizio, oraFine, true);
-        printf(VERDE "Prenotazione registrata con successo!\n" RESET);
-    } else {
-        printf(ROSSO "Auto non disponibile nel periodo selezionato.\n" RESET);
-        flag = false;
+    a = cercaAuto(tabAuto, targa);
+    if (a == NULL) {
+      printf(ROSSO "Errore: auto con targa %s non trovata.\n" RESET, targa);
+      flag = false;
     }
-
     if(flag){
-    Prenotazione nuovaPrenotazione = creaPrenotazione(CF, targa, giornoInizio, giornoFine, oraInizio, oraFine);
-    l = consList(nuovaPrenotazione, l);
+
+        // Giorno inizio
+    	while (1) {
+        	printf(GIALLO "Inserisci il giorno di inizio della prenotazione (1=lun, ..., 7=dom): " RESET);
+        	fgets(buffer, sizeof(buffer), stdin);
+
+        	if (sscanf(buffer, "%d", &giornoInizio) != 1 || giornoInizio < 1 || giornoInizio > 7) {
+         	   printf(ROSSO "Errore: il giorno deve essere un numero da 1 a 7.\n" RESET);
+        	} else {
+         	   break;
+        	}
+    	}
+
+    	// Giorno fine
+    	while (1) {
+        	printf(GIALLO "Inserisci il giorno di fine della prenotazione (>= giorno inizio, max 7): " RESET);
+        	fgets(buffer, sizeof(buffer), stdin);
+
+        	if (sscanf(buffer, "%d", &giornoFine) != 1 || giornoFine < giornoInizio || giornoFine > 7) {
+         	   printf(ROSSO "Errore: il giorno di fine deve essere compreso tra %d e 7.\n" RESET, giornoInizio);
+        	} else {
+            	break;
+        	}
+    	}
+
+    	// Ora inizio
+    	while (1) {
+        	printf(GIALLO "Inserisci l'ora di inizio (1-24): " RESET);
+        	fgets(buffer, sizeof(buffer), stdin);
+
+        	if (sscanf(buffer, "%d", &oraInizio) != 1 || oraInizio < 1 || oraInizio > 24) {
+            	printf(ROSSO "Errore: l'ora di inizio deve essere compresa tra 1 e 24 (1 = 01:00, 24 = mezzanotte).\n" RESET);
+        	} else {
+            	break;
+        	}
+    	}
+
+    	// Ora fine
+    	while (1) {
+        	printf(GIALLO "Inserisci l'ora di fine (max 24): " RESET);
+        	fgets(buffer, sizeof(buffer), stdin);
+
+        	if (sscanf(buffer, "%d", &oraFine) != 1 || oraFine < 1 || oraFine > 24) {
+            	printf(ROSSO "Errore: l'ora di fine deve essere compresa tra 1 e 24.\n" RESET);
+        	} else if (giornoInizio == giornoFine && oraFine < oraInizio) {
+            	printf(ROSSO "Errore: per prenotazioni nello stesso giorno, l'ora di fine deve essere >= ora di inizio.\n" RESET);
+        	} else {
+            	break;
+        	}
+   		}
+
+
+    	giornoInizio--; giornoFine--;
+    	oraInizio--; oraFine--;
+
+    	if (verificaDisponibilita(a, giornoInizio, giornoFine, oraInizio, oraFine)) {
+        	setDisponibile(a, giornoInizio, giornoFine, oraInizio, oraFine, true);
+        	printf(VERDE "Prenotazione registrata con successo!\n" RESET);
+    	} else {
+        	printf(ROSSO "Auto non disponibile nel periodo selezionato.\n" RESET);
+        	flag = false;
+    	}
+
+    	if(flag){
+    		Prenotazione nuovaPrenotazione = creaPrenotazione(CF, targa, giornoInizio, giornoFine, oraInizio, oraFine);
+    		l = consList(nuovaPrenotazione, l);
+    	}
     }
     return l;
 }
@@ -153,42 +195,57 @@ void visualizzaAutoDisponibili(AutoHashTable ht) {
     }
 
     int giornoInizio, giornoFine, oraInizio, oraFine;
+    char buffer[100];
 
-    do {
-    printf(GIALLO "Inserisci il giorno di inizio della prenotazione (1=lun, ..., 7=dom): " RESET);
-    scanf("%d", &giornoInizio);
-    if (giornoInizio < 1 || giornoInizio > 7) {
-        printf(ROSSO "Errore: il giorno deve essere un numero da 1 a 7.\n" RESET);
+    // Giorno inizio
+    while (1) {
+        printf(GIALLO "Inserisci il giorno di inizio della prenotazione (1=lun, ..., 7=dom): " RESET);
+        fgets(buffer, sizeof(buffer), stdin);
+
+        if (sscanf(buffer, "%d", &giornoInizio) != 1 || giornoInizio < 1 || giornoInizio > 7) {
+            printf(ROSSO "Errore: il giorno deve essere un numero da 1 a 7.\n" RESET);
+        } else {
+            break;
+        }
     }
-} while (giornoInizio < 1 || giornoInizio > 7);
 
-    do {
+    // Giorno fine
+    while (1) {
         printf(GIALLO "Inserisci il giorno di fine della prenotazione (>= giorno inizio, max 7): " RESET);
-        scanf("%d", &giornoFine);
-        if (giornoFine < giornoInizio || giornoFine > 7) {
+        fgets(buffer, sizeof(buffer), stdin);
+
+        if (sscanf(buffer, "%d", &giornoFine) != 1 || giornoFine < giornoInizio || giornoFine > 7) {
             printf(ROSSO "Errore: il giorno di fine deve essere compreso tra %d e 7.\n" RESET, giornoInizio);
+        } else {
+            break;
         }
-    } while (giornoFine < giornoInizio || giornoFine > 7);
+    }
 
-    do {
+    // Ora inizio
+    while (1) {
         printf(GIALLO "Inserisci l'ora di inizio (1-24): " RESET);
-        scanf("%d", &oraInizio);
-        if (oraInizio < 1 || oraInizio > 24) {
-            printf(ROSSO "Errore: l'ora di inizio deve essere compresa tra 1 e 24 (1 = 01:00, 24 = mezzanotte).\n" RESET);
-        }
-    } while (oraInizio < 1 || oraInizio > 24);
+        fgets(buffer, sizeof(buffer), stdin);
 
-    do {
+        if (sscanf(buffer, "%d", &oraInizio) != 1 || oraInizio < 1 || oraInizio > 24) {
+            printf(ROSSO "Errore: l'ora di inizio deve essere compresa tra 1 e 24 (1 = 01:00, 24 = mezzanotte).\n" RESET);
+        } else {
+            break;
+        }
+    }
+
+    // Ora fine
+    while (1) {
         printf(GIALLO "Inserisci l'ora di fine (max 24): " RESET);
-        scanf("%d", &oraFine);
-        if (oraFine < 1 || oraFine > 24) {
+        fgets(buffer, sizeof(buffer), stdin);
+
+        if (sscanf(buffer, "%d", &oraFine) != 1 || oraFine < 1 || oraFine > 24) {
             printf(ROSSO "Errore: l'ora di fine deve essere compresa tra 1 e 24.\n" RESET);
         } else if (giornoInizio == giornoFine && oraFine < oraInizio) {
             printf(ROSSO "Errore: per prenotazioni nello stesso giorno, l'ora di fine deve essere >= ora di inizio.\n" RESET);
         } else {
-            break;  // orario valido
+            break;
         }
-    } while (1);
+    }
 
 
     giornoInizio--; giornoFine--;
