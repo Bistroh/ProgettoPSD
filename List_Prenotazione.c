@@ -126,7 +126,7 @@ void visPrenotazioniPerUtente(List l, const char *CF)
 void stampaListaPrenotazioni(List l)
 {
     if (emptyList(l)) {
-        printf(ROSSO "Non è presente nessuna prenotazione.\n" RESET);
+        printf(ROSSO "Non e' presente nessuna prenotazione.\n" RESET);
         return;
     }
 

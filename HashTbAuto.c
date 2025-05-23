@@ -94,7 +94,10 @@ void distruggiHashTableAuto(AutoHashTable *ht) {
 // Stampa tutte le auto nella tabella
 void stampaHashTableAuto(AutoHashTable ht) {
     AutoEntry *entry;
-
+	if (!ht) {
+        printf(ROSSO "Non sono presenti auto da stampare.\n" RESET);
+        return;
+    }
     printf("\n" CIANO "Auto presenti nel CarSharing:\n" RESET);
     for (entry = ht; entry != NULL; entry = entry->hh.next) {
         printf(BIANCO "------------------------\n" RESET);
@@ -132,6 +135,6 @@ void resetDisponibilitaTutteLeAuto(AutoHashTable ht) {
         resetDisponibilitaAuto(entry->autoPtr);
     }
 
-    printf(CIANO "Tutte le disponibilità sono state reinizializzate.\n" RESET);
+    printf(CIANO "Tutte le disponibilita' sono state reinizializzate.\n" RESET);
 }
 

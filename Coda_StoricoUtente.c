@@ -87,7 +87,7 @@ Prenotazione dequeue(Queue q)
 
 void stampaStorico(Queue q) {
      if (q == NULL || emptyQueue(q)) {
-          printf(GIALLO "Lo storico è vuoto.\n" RESET);
+          printf(GIALLO "Lo storico e' vuoto.\n" RESET);
           return;
      }
 
