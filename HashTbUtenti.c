@@ -91,25 +91,29 @@ Utente loginRegisterUtente(HashTable *h) {
     char email[30];
     char telefono[15];
     char passwordInserita[20];
+    char buffer[100];
     int c;
 
     printf(VERDE "Benvenuto!\n" RESET);
     printf(GIALLO "1. Login\n");
     printf("2. Registrazione\n");
-    do {
+    while (1) {
         printf(GIALLO "Seleziona un'opzione (1 o 2): " RESET);
-        scanf("%d", &scelta);
-        if (scelta != 1 && scelta != 2) {
-            printf(ROSSO "Opzione non valida. Riprova.\n" RESET);
-        }
-    } while (scelta != 1 && scelta != 2);
+        fgets(buffer, sizeof(buffer), stdin);
 
-    while(getchar() != '\n'); // pulizia buffer dopo scanf scelta
+        // Controlla che sia un numero e che sia 1 o 2
+        if (sscanf(buffer, "%d", &scelta) != 1 || (scelta != 1 && scelta != 2)) {
+            printf(ROSSO "Errore: inserisci 1 per Login o 2 per Registrazione.\n" RESET);
+        } else {
+            break;
+        }
+    }
 
     do {
         printf(GIALLO "Inserisci codice fiscale (16 caratteri): " RESET);
         fgets(CF, 17, stdin);
-        CF[strcspn(CF, "\n")] = '\0';
+        CF[strcspn(CF, "\n")] = '\0';  // rimuovo newline
+        strupr(CF);
         if (!validaCodiceFiscale(CF)) printf(ROSSO "Codice fiscale non valido.\n" RESET);
     } while (!validaCodiceFiscale(CF));
 
@@ -136,15 +140,27 @@ Utente loginRegisterUtente(HashTable *h) {
             }
         } else {
             printf(ROSSO "Utente non trovato. Procedo con la registrazione.\n" RESET);
-
+			while ((c = getchar()) != '\n' && c != EOF);  // pulizia buffer
             // REGISTRAZIONE AUTOMATICA
+            do{
             printf(GIALLO "Inserisci il tuo nome: " RESET);
-            scanf("%19s", nome);
-            while ((c = getchar()) != '\n' && c != EOF);  // pulizia buffer
+            fgets(nome, sizeof(nome), stdin);
+            nome[strcspn(nome, "\n")] = '\0';  // rimuovo newline
+            if(!validaNome(nome)) {
+                printf(ROSSO "Nome non valido. Utilizza solo lettere e spazi\n" RESET);
+            }
+            } while (!validaNome(nome));
+			capitalizza(nome);  // prima lettera maiuscola
 
+			do{
             printf(GIALLO "Inserisci il tuo cognome: " RESET);
-            scanf("%19s", cognome);
-            while ((c = getchar()) != '\n' && c != EOF);  // pulizia buffer
+            fgets(cognome, sizeof(cognome), stdin);
+            cognome[strcspn(cognome, "\n")] = '\0';  // rimuovo newline
+            if(!validaCognome(cognome)) {
+                printf(ROSSO "Cognome non valido. Utilizza solo lettere e spazi\n" RESET);
+            }
+            } while (!validaCognome(cognome));
+            capitalizza(cognome);  // prima lettera maiuscola
 
             do {
                 printf(GIALLO "Inserisci la tua email: " RESET);
@@ -200,13 +216,26 @@ Utente loginRegisterUtente(HashTable *h) {
                 return NULL;
             }
         } else {
-            printf(GIALLO "Inserisci il tuo nome: " RESET);
-            scanf("%19s", nome);
-            while ((c = getchar()) != '\n' && c != EOF);  // pulizia buffer
+          	while ((c = getchar()) != '\n' && c != EOF);  // pulizia buffer
+            do{
+            	printf(GIALLO "Inserisci il tuo nome: " RESET);
+            	fgets(nome, sizeof(nome), stdin);
+            	nome[strcspn(nome, "\n")] = '\0';  // rimuovo newline
+            	if(!validaNome(nome)) {
+                	printf(ROSSO "Nome non valido. Utilizza solo lettere e spazi\n" RESET);
+            	}
+            } while (!validaNome(nome));
+			capitalizza(nome);  // prima lettera maiuscola
 
-            printf(GIALLO "Inserisci il tuo cognome: " RESET);
-            scanf("%19s", cognome);
-            while ((c = getchar()) != '\n' && c != EOF);  // pulizia buffer
+			do{
+            	printf(GIALLO "Inserisci il tuo cognome: " RESET);
+            	fgets(cognome, sizeof(cognome), stdin);
+            	cognome[strcspn(cognome, "\n")] = '\0';  // rimuovo newline
+            	if(!validaCognome(cognome)) {
+                	printf(ROSSO "Cognome non valido. Utilizza solo lettere e spazi\n" RESET);
+            	}
+            } while (!validaCognome(cognome));
+            capitalizza(cognome);  // prima lettera maiuscola
 
             do {
                 printf(GIALLO "Inserisci la tua email: " RESET);
