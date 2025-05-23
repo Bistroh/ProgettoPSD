@@ -7,6 +7,7 @@
 #include "HashTbUtenti.h"
 #include "HashTbAuto.h"
 #include "List_Prenotazione.h"
+#include "Controlli.h"
 /*Aggiungo delle costanti per rendere più facile la colorazione
 delle parole stampate su schermo. In modo da colorare i menù
 di scelta. */
@@ -30,20 +31,24 @@ int main() {
 
         if (scelta == 1) {
             u = loginRegisterUtente(&tabUtenti);
+            pulisciConsole();
             if (u != NULL) {
                 do {
                     sceltaMenu = menuUtente();
                     listaPrenotazioni = switchUtente(sceltaMenu, u, listaPrenotazioni, tabAuto);
-                    system("pause");
-                    system("cls");
+                    pausaConsole();
+                    pulisciConsole();
                 } while (sceltaMenu != 6);
+            }
+            else {
+                printf(ROSSO "Login o registrazione fallita.\n" RESET);
             }
         } else if (scelta == 2) {
           do {
                 sceltaMenu = mostraMenuDeveloper();
                 listaPrenotazioni = gestisciMenuDeveloper(sceltaMenu, &tabAuto, listaPrenotazioni, tabUtenti);
-                system("pause");
-                system("cls");
+                pausaConsole();
+                pulisciConsole();
             } while (sceltaMenu != 7);
         }
     } while (scelta != 0);
