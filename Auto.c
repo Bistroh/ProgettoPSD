@@ -16,13 +16,14 @@ struct s_auto {
     char targa[10];
     char marca[20];
     char modello[20];
+    char posizione[35];
     int anno;
     float prezzoXOra;
 	bool disponibile[MAX_GIORNI_LAVORATIVI][MAX_ORA_LAVORATIVI]; // Matrice per la disponibilità
 };
 
 //Crea un’auto che successivamente può essere aggiunta al catalogo
-Auto creaAuto(char *targa, char *marca, char *modello, int anno, float prezzoXOra) {
+Auto creaAuto(char *targa, char *marca, char *modello, char*posizione, int anno, float prezzoXOra) {
     Auto a = malloc(sizeof(struct s_auto));
     if (a == NULL) {
         fprintf(stderr, ROSSO "Errore di allocazione memoria\n" RESET);
@@ -34,6 +35,8 @@ Auto creaAuto(char *targa, char *marca, char *modello, int anno, float prezzoXOr
     a->marca[sizeof(a->marca) - 1] = '\0';
     strncpy(a->modello, modello, sizeof(a->modello) - 1);
     a->modello[sizeof(a->modello) - 1] = '\0';
+    strncpy(a->posizione, posizione, sizeof(a->posizione) - 1);
+    a->posizione[sizeof(a->posizione) - 1] = '\0';
     // Inizializza la matrice di disponibilità a false
     for (int g = 0; g < MAX_GIORNI_LAVORATIVI; g++) {
         for (int o = 0; o < MAX_ORA_LAVORATIVI; o++) {
@@ -55,6 +58,10 @@ char *getMarca(Auto a) {
 
 char *getModello(Auto a) {
     return a->modello;
+}
+
+char *getPosizione(Auto a) {
+    return a->posizione;
 }
 
 int getAnno(Auto a) {
@@ -99,7 +106,7 @@ int verificaDisponibilita(Auto a, int giornoInizio, int giornoFine, int oraInizi
         oraInizio < 0 || oraFine >= MAX_ORA_LAVORATIVI ||
         giornoInizio > giornoFine ||
         (giornoInizio == giornoFine && oraInizio > oraFine)) {
-        fprintf(stderr, ROSSO "Intervallo giorno/ora non valido nella verifica disponibilità\n" RESET);
+        fprintf(stderr, ROSSO "Intervallo giorno/ora non valido nella verifica disponibilita'\n" RESET);
         return 0;
         }
 
@@ -138,6 +145,7 @@ void stampaAuto(Auto a) {
     printf(CIANO "Targa:           " RESET "%s\n", a->targa);
     printf(CIANO "Marca:           " RESET "%s\n", a->marca);
     printf(CIANO "Modello:         " RESET "%s\n", a->modello);
+    printf(CIANO "Posizione:       " RESET "%s\n", a->posizione);
     printf(CIANO "Anno:            " RESET "%d\n", a->anno);
     printf(CIANO "Prezzo per ora:  " RESET "%.2f\n", a->prezzoXOra);
 }

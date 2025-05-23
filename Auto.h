@@ -5,10 +5,11 @@
 
 typedef struct s_auto *Auto;
 
-Auto creaAuto(char *targa, char *marca, char *modello, int anno, float prezzoXOra);
+Auto creaAuto(char *targa, char *marca, char *modello, char* posizione, int anno, float prezzoXOra);
 char *getTarga(Auto a);
 char *getMarca(Auto a);
 char *getModello(Auto a);
+char *getPosizione(Auto a);
 int getAnno(Auto a);
 float getPrezzo(Auto a);
 void stampaAuto(Auto a);
