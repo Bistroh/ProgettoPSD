@@ -73,11 +73,11 @@ void getPeriodoPrenotazione(Prenotazione p, int *giornoInizio, int *giornoFine, 
 
 const char* giornoToString(int giorno) {
     switch (giorno) {
-        case 0: return "Lunedì";
-        case 1: return "Martedì";
-        case 2: return "Mercoledì";
-        case 3: return "Giovedì";
-        case 4: return "Venerdì";
+        case 0: return "Lunedi'";
+        case 1: return "Martedi'";
+        case 2: return "Mercoledi'";
+        case 3: return "Giovedi'";
+        case 4: return "Venerdi'";
         case 5: return "Sabato";
         case 6: return "Domenica";
         default: return "Giorno sconosciuto";
@@ -93,7 +93,7 @@ void stampaPrenotazione(Prenotazione prenotazione) {
                giornoToString(prenotazione->periodo.giornoInizio),
                giornoToString(prenotazione->periodo.giornoFine));
     } else {
-        printf(CIANO "Periodo: dal %s ore %d al %s ore %d\n" RESET,
+        printf(CIANO "Periodo: dal %s ore %d:00 al %s ore %d:00\n" RESET,
                giornoToString(prenotazione->periodo.giornoInizio),
                prenotazione->periodo.oraInizio,
                giornoToString(prenotazione->periodo.giornoFine),
