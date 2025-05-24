@@ -108,7 +108,8 @@ void inserisciMarcaModello(char *marca, char *modello) {
 
 // Funzione per inserire una nuova auto nella hash table
 void aggiungiAutoInterattivo(AutoHashTable *ht) {
-    char targa[8], marca[20], modello[20],buffer[100];
+    char targa[8], marca[20], modello[20], posizione[35], buffer[100];
+    char *endptr;
     int anno;
     float prezzo;
     int valid;
@@ -121,6 +122,11 @@ void aggiungiAutoInterattivo(AutoHashTable *ht) {
             printf(ROSSO "Errore: formato targa non valido. Riprova.\n" RESET);
         }
     } while (!validaTarga(targa));
+
+    if(cercaAuto(*ht, targa)) {
+        printf(ROSSO "Errore: auto con targa %s gia' presente.\n" RESET, targa);
+        return;
+    }
 
     inserisciMarcaModello(marca, modello);
 
@@ -141,25 +147,40 @@ void aggiungiAutoInterattivo(AutoHashTable *ht) {
     }
     } while (valid != 1 || anno < 1900 || anno > 2025);
 
-    do {
-        printf(BLU "Inserisci il prezzo orario del noleggio (minimo 20.00): " RESET);
-        scanf("%f", &prezzo);
-        if (prezzo < 20.0) {
-            printf(ROSSO "Errore: il prezzo orario non può essere inferiore a 20.00.\n" RESET);
-        }
-    } while (prezzo < 20.0);
+    do{
+		printf(BLU "Inserisci la posizione dell'auto (es. Via Roma 123): " RESET);
+		fgets(posizione, sizeof(posizione), stdin);
+        toupper(posizione[0]);
+        posizione[strcspn(posizione, "\n")] = '\0';
+    }while(!validaViaStradale(posizione));	//si suppone che l'utente riporta l'auto nella stessa via
 
-    Auto a = creaAuto(targa, marca, modello, anno, prezzo);
+    do {
+        printf(BLU "Inserisci il prezzo orario del noleggio (minimo 10.00|massimo 45.00): " RESET);
+        if (fgets(buffer, sizeof(buffer), stdin) != NULL) {
+            // Rimuovi newline finale se presente
+            buffer[strcspn(buffer, "\n")] = '\0';
+
+            prezzo = strtof(buffer, &endptr);
+
+            // Controlla se c'erano caratteri non numerici
+            if (endptr == buffer || *endptr != '\0') {
+                printf(ROSSO "Errore: inserisci un numero valido (es. 15.99).\n" RESET);
+                prezzo = 0.0; // Imposta a valore sotto soglia per ripetere
+            } else if (prezzo < 10.0 || prezzo > 45.0) {
+                printf(ROSSO "Errore: il prezzo orario non puo' essere inferiore a 10.00 o maggiore di 45.00\n" RESET);
+            }
+        }
+    } while (prezzo < 10.0 || prezzo > 45.00);
+
+    Auto a = creaAuto(targa, marca, modello, posizione, anno, prezzo);
     if (!a) {
         printf(ROSSO "Errore nella creazione dell'auto.\n" RESET);
+        distruggiAuto(a);
         return;
     }
 
-    if (inserisciAuto(ht, a)) {
-        printf(VERDE "Auto inserita correttamente!\n" RESET);
-    } else {
-        printf(ROSSO "Auto già presente nella tabella.\n" RESET);
-    }
+    inserisciAuto(ht, a);
+    printf(VERDE "Auto inserita correttamente!\n" RESET);
 }
 
 // Gestione del menu sviluppatore
@@ -170,7 +191,11 @@ List gestisciMenuDeveloper(int scelta, AutoHashTable *ht, List l, HashTable tabU
             stampaHashTableAuto(*ht);
             break;
 
-        case 2: {
+        case 2:
+          	if(!*ht) {
+                printf(ROSSO "Non sono presenti auto da eliminare.\n" RESET);
+                break;
+            }
             char targa[8];
             do {
                 printf(BLU "Inserisci la targa dell'auto (formato: 2 lettere + 3 cifre + 2 lettere, es: AB123CD): " RESET);
@@ -180,6 +205,7 @@ List gestisciMenuDeveloper(int scelta, AutoHashTable *ht, List l, HashTable tabU
                     printf(ROSSO "Errore: formato targa non valido. Riprova.\n" RESET);
                 }
             } while (!validaTarga(targa));
+            while(getchar() != '\n'); // pulizia buffer
 
             Auto a = rimuoviAuto(ht, targa);
             if (a) {
@@ -188,7 +214,6 @@ List gestisciMenuDeveloper(int scelta, AutoHashTable *ht, List l, HashTable tabU
             } else {
                 printf(ROSSO "Auto non trovata.\n" RESET);
             }
-        }
             break;
 
         case 3:
@@ -223,30 +248,48 @@ List gestisciMenuDeveloper(int scelta, AutoHashTable *ht, List l, HashTable tabU
 }
 
 
-// Mostra il menu sviluppatore e restituisce la scelta
 int mostraMenuDeveloper() {
+    char buffer[100];
     int scelta;
-    printf("\n" CIANO "*----------------------------------------------------*\n");
-    printf(        "|             Car Sharing - Sviluppatore             |\n");
-    printf(        "*----------------------------------------------------*\n");
+    int valido = 0;
 
-    printf(        "| " RESET GIALLO "1." RESET " Aggiungi nuova auto                             " CIANO "|\n");
-    printf(        "| " RESET GIALLO "2." RESET " Rimuovi auto esistente                          " CIANO "|\n");
-    printf(        "| " RESET GIALLO "3." RESET " Visualizza tutte le auto                        " CIANO "|\n");
-    printf(        "| " RESET GIALLO "4." RESET " Visualizza tutte le prenotazioni                " CIANO "|\n");
-    printf(        "| " RESET GIALLO "5." RESET " Visualizza storico prenotazioni                 " CIANO "|\n");
-    printf(        "| " RESET GIALLO "6." RESET " Avanza di una settimana                         " CIANO "|\n");
-    printf(        "| " RESET ROSSO "7." RESET " Esci                                            " CIANO "|\n");
+    do {
+        printf("\n" CIANO "*----------------------------------------------------*\n");
+        printf(        "|             Car Sharing - Sviluppatore             |\n");
+        printf(        "*----------------------------------------------------*\n");
 
-    printf(        "*----------------------------------------------------*\n");
-    printf(BLU "Scelta: " RESET);
+        printf(        "| " RESET GIALLO "1." RESET " Aggiungi nuova auto                             " CIANO "|\n");
+        printf(        "| " RESET GIALLO "2." RESET " Rimuovi auto esistente                          " CIANO "|\n");
+        printf(        "| " RESET GIALLO "3." RESET " Visualizza tutte le auto                        " CIANO "|\n");
+        printf(        "| " RESET GIALLO "4." RESET " Visualizza tutte le prenotazioni                " CIANO "|\n");
+        printf(        "| " RESET GIALLO "5." RESET " Visualizza storico prenotazioni                 " CIANO "|\n");
+        printf(        "| " RESET GIALLO "6." RESET " Avanza di una settimana                         " CIANO "|\n");
+        printf(        "| " RESET ROSSO "7." RESET " Esci                                            " CIANO "|\n");
 
-    scanf("%d", &scelta);
+        printf(        "*----------------------------------------------------*\n");
+        printf(BLU "Scelta: " RESET);
+
+        if (fgets(buffer, sizeof(buffer), stdin) != NULL) {
+            // rimuovi newline
+            buffer[strcspn(buffer, "\n")] = '\0';
+
+            // prova a leggere un intero
+            if (sscanf(buffer, "%d", &scelta) == 1 && scelta >= 1 && scelta <= 7) {
+                valido = 1;
+            } else {
+                printf(ROSSO "Errore: inserisci un numero valido tra 1 e 7.\n" RESET);
+            }
+        }
+    } while (!valido);
+
     return scelta;
 }
 
 int selezionaRuolo() {
+    char buffer[100];
     int scelta;
+    int valido = 0;
+
     do {
         printf("\n" CIANO "*--------------------------------------*\n");
         printf(        "|       Seleziona il tuo ruolo         |\n");
@@ -257,8 +300,20 @@ int selezionaRuolo() {
         printf(        "*--------------------------------------*\n");
         printf(BLU "Scelta: " RESET);
 
-        scanf("%d", &scelta);
-    } while (scelta != 1 && scelta != 2 && scelta != 0);
+        if (fgets(buffer, sizeof(buffer), stdin) != NULL) {
+            // Rimuove newline
+            buffer[strcspn(buffer, "\n")] = '\0';
+
+            // Verifica che sia un numero valido
+            if (sscanf(buffer, "%d", &scelta) == 1 && (scelta == 0 || scelta == 1 || scelta == 2)) {
+                valido = 1;
+            } else {
+                printf(ROSSO "Errore: inserisci 0, 1 o 2.\n" RESET);
+            }
+        }
+    } while (!valido);
+
+	pulisciConsole();
 
     return scelta;
 }
