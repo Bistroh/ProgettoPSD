@@ -50,19 +50,19 @@ Prenotazione creaPrenotazione(char *CF, char *targa, int giornoInizio, int giorn
 }
 
 
-int getIDPrenotazione(Prenotazione prenotazione) {
+int ottieniIDPrenotazione(Prenotazione prenotazione) {
     return prenotazione->ID_prenotazione;
 }
 
-char *getCFPrenotazione(Prenotazione prenotazione) {
+char *ottieniCFPrenotazione(Prenotazione prenotazione) {
     return prenotazione->CF;
 }
 
-char *getTargaPrenotazione(Prenotazione prenotazione) {
+char *ottieniTargaPrenotazione(Prenotazione prenotazione) {
     return prenotazione->targa;
 }
 
-void getPeriodoPrenotazione(Prenotazione p, int *giornoInizio, int *giornoFine, int *oraInizio, int *oraFine) {
+void ottieniPeriodoPrenotazione(Prenotazione p, int *giornoInizio, int *giornoFine, int *oraInizio, int *oraFine) {
     if (p) {
         *giornoInizio = p->periodo.giornoInizio;
         *giornoFine = p->periodo.giornoFine;
