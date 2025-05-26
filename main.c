@@ -13,6 +13,7 @@ delle parole stampate su schermo. In modo da colorare i menù
 di scelta. */
 #define RESET   "\x1b[0m"
 #define CIANO    "\x1b[36m"
+#define ROSSO     "\x1b[31m"
 
 
 
