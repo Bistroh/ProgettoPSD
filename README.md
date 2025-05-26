@@ -1,7 +1,7 @@
 
 ## Informazioni sul Progetto
 
-Il sistema di Car Sharing gestisce il noleggio di auto da parte di vari clienti impone all'utente di fare un login per differenziarsi da un possibile developer e accedere come cliente, subito dopo viene visualizzato un menù che permette di scegliere tra varie opzioni per creare, gestire e visualizzare: prenotazioni, auto e le tariffe. Nel caso in cui si accede come developer viene visualizzato un menù diverso che permette di gestire la lista delle auto e delle prenotazioni, ha accesso allo storico dei vari utenti e può modificare i valori delle varie tariffe.
+Il sistema di Car Sharing gestisce il noleggio di auto da parte di vari clienti impone all'utente di fare un login per differenziarsi da un possibile Sviluppatore e accedere come cliente, subito dopo viene visualizzato un menù che permette di scegliere tra varie opzioni per creare, gestire e visualizzare: prenotazioni, auto e le tariffe. Nel caso in cui si accede come Sviluppatore viene visualizzato un menù diverso che permette di gestire la Listaa delle auto e delle prenotazioni, ha accesso allo storico dei vari utenti e può modificare i valori delle varie tariffe.
 
 ## Prodotto usando
 
@@ -40,7 +40,7 @@ Link di riferimento per la [Documentazione](https://example.com)
   - [X] Visualizza prenotazioni attuali
   - [X] Visualizza storico
      
-- [X] Funzioni menù developer
+- [X] Funzioni menù Sviluppatore
   - [X] Aggiungi auto
   - [X] Rimuovi auto
   - [X] Visualizza tutte le auto

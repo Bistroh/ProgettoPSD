@@ -18,7 +18,7 @@ di scelta.*/
 #define BLU   "\x1b[34m"
 #define CIANO   "\x1b[36m"
 
-List switchUtente(int scelta, Utente u, List l, AutoHashTable tabAuto) {
+Lista switchUtente(int scelta, Utente u, Lista l, AutoHashTB tabAuto) {
     // Funzione per gestire le scelte dell'utente
     switch (scelta) {
         case 1:
@@ -41,11 +41,11 @@ List switchUtente(int scelta, Utente u, List l, AutoHashTable tabAuto) {
             break;
         case 4:
             printf(BLU "Visualizzazione prenotazioni...\n" RESET);
-            visPrenotazioniPerUtente(l, getCF(u));
+            visPrenotazioniPerUtente(l, ottieniCF(u));
             break;
         case 5:
             printf(BLU "Visualizzazione prenotazioni precedenti...\n" RESET);
-            stampaStorico(getStorico(u));
+            stampaStorico(ottieniStorico(u));
             break;
         case 6:
             printf(VERDE "Uscita menu utente...\n" RESET);
@@ -78,7 +78,7 @@ int menuUtente() {
         printf(BLU"Scelta: " RESET);
 
         if (fgets(buffer, sizeof(buffer), stdin) != NULL) {
-            buffer[strcspn(buffer, "\n")] = '\0';  // Rimuove newline
+            buffer[strcspn(buffer, "\n")] = '\0';  // Rimuove nuova linea
 
             // Verifica se input è un intero valido tra 1 e 6
             if (sscanf(buffer, "%d", &scelta) == 1 && scelta >= 1 && scelta <= 6) {
@@ -93,13 +93,13 @@ int menuUtente() {
 }
 
 
-List prenotazioneAuto(List l, Utente u, AutoHashTable tabAuto) {
+Lista prenotazioneAuto(Lista l, Utente u, AutoHashTB tabAuto) {
     char CF[17], targa[10], buffer[100];
     Auto a;
     int giornoInizio, giornoFine, oraInizio, oraFine;
     bool flag = true;
 
-    strcpy(CF, getCF(u));
+    strcpy(CF, ottieniCF(u));
 
     do {
         printf(BLU "Inserisci la targa dell'auto (formato: 2 lettere + 3 cifre + 2 lettere, es: AB123CD): " RESET);
@@ -171,7 +171,7 @@ List prenotazioneAuto(List l, Utente u, AutoHashTable tabAuto) {
 	giornoInizio--, giornoFine--;
 
     if (verificaDisponibilita(a, giornoInizio, giornoFine, oraInizio, oraFine)) {
-        setDisponibile(a, giornoInizio, giornoFine, oraInizio, oraFine, true);
+        impostaDisponibile(a, giornoInizio, giornoFine, oraInizio, oraFine, true);
         printf(VERDE "Prenotazione registrata con successo!\n" RESET);
     } else {
         printf(ROSSO "Auto non disponibile nel periodo selezionato.\n" RESET);
@@ -180,13 +180,13 @@ List prenotazioneAuto(List l, Utente u, AutoHashTable tabAuto) {
 
     if(flag){
     	Prenotazione nuovaPrenotazione = creaPrenotazione(CF, targa, giornoInizio, giornoFine, oraInizio, oraFine);
-    	l = consList(nuovaPrenotazione, l);
+    	l = consLista(nuovaPrenotazione, l);
     }
 
     return l;
 }
 
-void visualizzaAutoDisponibili(AutoHashTable ht) {
+void visualizzaAutoDisponibili(AutoHashTB ht) {
     if (!ht) {
         printf(ROSSO "Nessuna auto registrata.\n" RESET);
         return;
@@ -248,7 +248,7 @@ void visualizzaAutoDisponibili(AutoHashTable ht) {
 
 	giornoInizio--, giornoFine--;
 
-    stampaHashTablePerDisp(ht, giornoInizio, giornoFine, oraInizio, oraFine);
+    stampaTabellaDiHashPerDisp(ht, giornoInizio, giornoFine, oraInizio, oraFine);
 }
 
 // Calcolo ore effettive
@@ -262,7 +262,7 @@ int calcolaOreTotali(int giornoInizio, int giornoFine, int oraInizio, int oraFin
 
 // Funzione per calcolare il prezzo base della prenotazione
 float calcolaPrezzo(Auto a, int giornoInizio, int giornoFine, int oraInizio, int oraFine) {
-    float prezzoOrario = getPrezzo(a);
+    float prezzoOrario = ottieniPrezzo(a);
     int oreTotali = calcolaOreTotali(giornoInizio, giornoFine, oraInizio, oraFine);
     return prezzoOrario * oreTotali;
 }
@@ -302,7 +302,7 @@ float calcolaPrezzoFinale(Auto a, int giornoInizio, int giornoFine, int oraInizi
 }
 
 // Calcolo per tutte le prenotazioni di un utente
-void calcolaPrezziPrenotazioni(List prenotazioni, Utente u, AutoHashTable ht) {
+void calcolaPrezziPrenotazioni(Lista prenotazioni, Utente u, AutoHashTB ht) {
     int giornoInizio, giornoFine, oraInizio, oraFine;
 
     if (!u) {
@@ -310,10 +310,10 @@ void calcolaPrezziPrenotazioni(List prenotazioni, Utente u, AutoHashTable ht) {
         return;
     }
 
-    const char *cf = getCF(u);
-    List listaUtente = filtraPrenotazioniPerCF(prenotazioni, cf);
+    const char *cf = ottieniCF(u);
+    Lista listaUtente = filtraPrenotazioniPerCF(prenotazioni, cf);
 
-    if (emptyList(listaUtente)) {
+    if (ListaVuota(listaUtente)) {
         printf(ROSSO "Nessuna prenotazione trovata per l'utente con CF: %s\n" RESET, cf);
         return;
     }
@@ -321,17 +321,17 @@ void calcolaPrezziPrenotazioni(List prenotazioni, Utente u, AutoHashTable ht) {
     printf(GIALLO "Prezzi delle prenotazioni per l'utente con CF: %s\n" RESET, cf);
 
     float totale = 0.0f;
-    List temp = listaUtente;
+    Lista temp = listaUtente;
 
-    while (!emptyList(temp)) {
-        Prenotazione p = getFirst(temp);
-        const char *targa = getTargaPrenotazione(p);
+    while (!ListaVuota(temp)) {
+        Prenotazione p = ottieniPrimo(temp);
+        const char *targa = ottieniTargaPrenotazione(p);
         Auto a = cercaAuto(ht, targa);
 
         if (!a) {
             printf(ROSSO "Auto con targa %s non trovata.\n" RESET, targa);
         } else {
-            getPeriodoPrenotazione(p, &giornoInizio, &giornoFine, &oraInizio, &oraFine);
+            ottieniPeriodoPrenotazione(p, &giornoInizio, &giornoFine, &oraInizio, &oraFine);
 
             int oreTotali = calcolaOreTotali(giornoInizio, giornoFine, oraInizio, oraFine);
             float prezzoFinale = calcolaPrezzoFinale(a, giornoInizio, giornoFine, oraInizio, oraFine);
@@ -353,7 +353,7 @@ void calcolaPrezziPrenotazioni(List prenotazioni, Utente u, AutoHashTable ht) {
             printf(GIALLO "Prezzo finale per questa prenotazione: %.2f\n" RESET, prezzoFinale);
         }
 
-        temp = tailList(temp);
+        temp = codaLista(temp);
     }
 
     printf("\n" GIALLO "Totale complessivo per tutte le prenotazioni dell'utente: %.2f\n" RESET, totale);
