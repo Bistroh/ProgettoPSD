@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "prenotazione.h" // Includi il file di intestazione per l'elemento (item)
-#include "List_Prenotazione.h"// Includi il file di intestazione per la lista (list)
+#include "List_Prenotazione.h"// Includi il file di intestazione per la Lista (Lista)
 /*Aggiungo delle costanti per rendere più facile la colorazione
 delle parole stampate su schermo. In modo da colorare i menù
 di scelta. */
@@ -10,109 +10,109 @@ di scelta. */
 #define ROSSO     "\x1b[31m"
 #define GIALLO  "\x1b[33m"
 
-// Definizione della struttura node
-struct node {
+// Definizione della struttura nodo
+struct nodo {
     Prenotazione value;
-    struct node *next;
+    struct nodo *prossimo;
 };
 
-// Definizione della funzione newList per creare una nuova lista vuota
-List newList(void)
+// Definizione della funzione nuovaLista per creare una nuova Lista vuota
+Lista nuovaLista(void)
 {
-    return NULL; // Restituisce NULL, indicando una lista vuota
+    return NULL; // Restituisce NULL, indicando una Lista vuota
 }
 
-// Funzione per verificare se la lista è vuota
-int emptyList(List l)
+// Funzione per verificare se la Lista è vuota
+int ListaVuota(Lista l)
 {
-    return l == NULL; // Restituisce 1 se la lista è vuota (NULL), altrimenti restituisce 0
+    return l == NULL; // Restituisce 1 se la Lista è vuota (NULL), altrimenti restituisce 0
 }
 
-// Funzione per aggiungere un nuovo elemento in testa alla lista
-List consList(Prenotazione val, List l)
+// Funzione per aggiungere un nuovo elemento in testa alla Lista
+Lista consLista(Prenotazione val, Lista l)
 {
-    struct node *nuovo; // Dichiarazione di un puntatore a un nuovo nodo
-    nuovo = malloc(sizeof(struct node)); // Allocazione della memoria per il nuovo nodo
+    struct nodo *nuovo; // Dichiarazione di un puntatore a un nuovo nodo
+    nuovo = malloc(sizeof(struct nodo)); // Allocazione della memoria per il nuovo nodo
 
     if (nuovo != NULL) { // Verifica se l'allocazione della memoria è riuscita
         nuovo->value = val; // Assegna il valore val al campo value del nuovo nodo
-        nuovo->next = l; // Collega il nuovo nodo al nodo successivo, che è la lista l
+        nuovo->prossimo = l; // Collega il nuovo nodo al nodo successivo, che è la Lista l
 
-        l = nuovo; // Aggiorna il puntatore alla testa della lista in modo che punti al nuovo nodo
+        l = nuovo; // Aggiorna il puntatore alla testa della Lista in modo che punti al nuovo nodo
     }
 
-    return l; // Restituisce il puntatore alla lista aggiornata
+    return l; // Restituisce il puntatore alla Lista aggiornata
 }
 
-List tailList(List l)
+Lista codaLista(Lista l)
 {
-    List temp; // Dichiarazione di un puntatore temporaneo a lista
+    Lista temp; // Dichiarazione di un puntatore temporaneo a Lista
 
-    if (l != NULL) // Verifica se la lista non è vuota
-        temp = l->next; // Se l'elemento corrente non è l'ultimo, assegna il puntatore al prossimo elemento alla variabile temporanea
+    if (l != NULL) // Verifica se la Lista non è vuota
+        temp = l->prossimo; // Se l'elemento corrente non è l'ultimo, assegna il puntatore al prossimo elemento alla variabile temporanea
     else
-        temp = NULL; // Se la lista è vuota, la coda sarà anche vuota
+        temp = NULL; // Se la Lista è vuota, la coda sarà anche vuota
 
-    return temp; // Restituisce la coda della lista (una nuova lista)
+    return temp; // Restituisce la coda della Lista (una nuova Lista)
 }
 
-Prenotazione getFirst(List l)
+Prenotazione ottieniPrimo(Lista l)
 {
-    Prenotazione e; // Dichiarazione di una variabile temporanea per memorizzare il primo elemento della lista
+    Prenotazione e; // Dichiarazione di una variabile temporanea per memorizzare il primo elemento della Lista
 
-    if (l != NULL) // Verifica se la lista non è vuota
-        e = l->value; // Se la lista non è vuota, assegna il valore del primo elemento alla variabile temporanea
+    if (l != NULL) // Verifica se la Lista non è vuota
+        e = l->value; // Se la Lista non è vuota, assegna il valore del primo elemento alla variabile temporanea
     else
-        e = NULL; // Se la lista è vuota, assegna un valore speciale NULLITEM alla variabile temporanea
+        e = NULL; // Se la Lista è vuota, assegna un valore speciale NULLITEM alla variabile temporanea
 
-    return e; // Restituisce il primo elemento della lista
+    return e; // Restituisce il primo elemento della Lista
 }
 
-List copiaProfondaLista(List l)
+Lista copiaProfondaLista(Lista l)
 {
-    List nuova = newList();  // inizializza nuova lista vuota
-    List temp = l;
-    List inOrdine = newList();  // lista temporanea per mantenere ordine originale
+    Lista nuova = nuovaLista();  // inizializza nuova Lista vuota
+    Lista temp = l;
+    Lista inOrdine = nuovaLista();  // Lista temporanea per mantenere ordine originale
 
     while (temp != NULL) {
         Prenotazione p = copiaPrenotazione(temp->value); // <-- serve funzione copiaPrenotazione()
-        inOrdine = consList(p, inOrdine); // costruiamo al contrario
-        temp = temp->next;
+        inOrdine = consLista(p, inOrdine); // costruiamo al contrario
+        temp = temp->prossimo;
     }
 
     // invertiamo per mantenere l'ordine originale
-    while (!emptyList(inOrdine)) {
-        Prenotazione p = getFirst(inOrdine);
-        nuova = consList(p, nuova);
-        inOrdine = tailList(inOrdine);
+    while (!ListaVuota(inOrdine)) {
+        Prenotazione p = ottieniPrimo(inOrdine);
+        nuova = consLista(p, nuova);
+        inOrdine = codaLista(inOrdine);
     }
 
     return nuova;
 }
 
-void distruggiLista(List l)
+void distruggiLista(Lista l)
 {
     while (l != NULL) {
-        List temp = l;
-        l = l->next;
+        Lista temp = l;
+        l = l->prossimo;
         distruggiPrenotazione(temp->value); // <-- serve funzione destroyPrenotazione()
         free(temp);
     }
 }
 
 // Funzione per visualizzare le prenotazioni per utente
-void visPrenotazioniPerUtente(List l, const char *CF)
+void visPrenotazioniPerUtente(Lista l, const char *CF)
 {
     int trovate = 0;
-    List copia = copiaProfondaLista(l);  // crea una copia profonda della lista
+    Lista copia = copiaProfondaLista(l);  // crea una copia profonda della Lista
 
-    while (!emptyList(copia)) {
-        Prenotazione p = getFirst(copia);
-        if (strcmp(getCFPrenotazione(p), CF) == 0) {
+    while (!ListaVuota(copia)) {
+        Prenotazione p = ottieniPrimo(copia);
+        if (strcmp(ottieniCFPrenotazione(p), CF) == 0) {
             stampaPrenotazione(p);
             trovate++;
         }
-        copia = tailList(copia);  // NON modifica l'originale
+        copia = codaLista(copia);  // NON modifica l'originale
     }
 
     if (trovate == 0) {
@@ -123,35 +123,35 @@ void visPrenotazioniPerUtente(List l, const char *CF)
 }
 
 // Funzione per stampare tutte le prenotazioni
-void stampaListaPrenotazioni(List l)
+void stampaListaPrenotazioni(Lista l)
 {
-    if (emptyList(l)) {
+    if (ListaVuota(l)) {
         printf(ROSSO "Non e' presente nessuna prenotazione.\n" RESET);
         return;
     }
 
     printf(GIALLO "Elenco prenotazioni:\n" RESET);
 
-    List copia = l;
+    Lista copia = l;
 
-    while (!emptyList(copia)) {
-        Prenotazione p = getFirst(copia);
+    while (!ListaVuota(copia)) {
+        Prenotazione p = ottieniPrimo(copia);
         stampaPrenotazione(p);
-        copia = tailList(copia);
+        copia = codaLista(copia);
     }
 }
 
-List filtraPrenotazioniPerCF(List l, const char *CF) {
-    List risultato = newList();  // lista da restituire
-    List temp = l;
+Lista filtraPrenotazioniPerCF(Lista l, const char *CF) {
+    Lista risultato = nuovaLista();  // Lista da restituire
+    Lista temp = l;
 
-    while (!emptyList(temp)) {
-        Prenotazione p = getFirst(temp);
-        if (strcmp(getCFPrenotazione(p), CF) == 0) {
+    while (!ListaVuota(temp)) {
+        Prenotazione p = ottieniPrimo(temp);
+        if (strcmp(ottieniCFPrenotazione(p), CF) == 0) {
             Prenotazione copia = copiaPrenotazione(p); // <-- serve funzione di copia profonda
-            risultato = consList(copia, risultato);
+            risultato = consLista(copia, risultato);
         }
-        temp = tailList(temp);
+        temp = codaLista(temp);
     }
 
     return risultato;  // contiene solo prenotazioni dell'utente con CF

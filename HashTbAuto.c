@@ -13,74 +13,74 @@ di scelta. */
 #define BIANCO   "\x1b[37m"
 
 
-// Definizione della struttura di hash entry
-typedef struct AutoEntry {
+// Definizione della struttura di hash record
+typedef struct AutoRecord {
     char *targa;         // Chiave: targa dell'auto
     Auto autoPtr;        // Valore: puntatore all'oggetto Auto
     UT_hash_handle hh;   // Handler per uthash
-} AutoEntry;
+} AutoRecord;
 
-typedef AutoEntry* AutoHashTable;  // Tipo alias
+typedef AutoRecord* AutoHashTB;  // Tipo alias
 
 // Crea una nuova hash table (inizializzata a NULL)
-AutoHashTable creaHashTableAuto() {
+AutoHashTB creaAutoHashTB() {
     return NULL;
 }
 
 // Inserisce una nuova auto nella tabella
-int inserisciAuto(AutoHashTable *ht, Auto a) {
+int inserisciAuto(AutoHashTB *ht, Auto a) {
     if (!a || !ht) return 0;
 
-    const char *targa = getTarga(a);
+    const char *targa = ottieniTarga(a);
     if (!targa) return 0;
 
-    AutoEntry *entry = NULL;
-    HASH_FIND_STR(*ht, targa, entry);
-    if (entry) return 0;  // Auto già presente
+    AutoRecord *record = NULL;
+    HASH_FIND_STR(*ht, targa, record);
+    if (record) return 0;  // Auto già presente
 
-    entry = malloc(sizeof(AutoEntry));
-    if (!entry) {
-        fprintf(stderr, ROSSO "Errore allocazione memoria AutoEntry\n" RESET);
+    record = malloc(sizeof(AutoRecord));
+    if (!record) {
+        fprintf(stderr, ROSSO "Errore allocazione memoria AutoRecord\n" RESET);
         exit(EXIT_FAILURE);
     }
 
-    entry->targa = strdup(targa);
-    entry->autoPtr = a;
-    HASH_ADD_KEYPTR(hh, *ht, entry->targa, strlen(entry->targa), entry);
+    record->targa = strdup(targa);
+    record->autoPtr = a;
+    HASH_ADD_KEYPTR(hh, *ht, record->targa, strlen(record->targa), record);
 
     return 1;
 }
 
 
 // Cerca un'auto tramite targa
-Auto cercaAuto(AutoHashTable ht, const char *targa) {
+Auto cercaAuto(AutoHashTB ht, const char *targa) {
     if (!targa) return NULL;
 
-    AutoEntry *entry = NULL;
-    HASH_FIND_STR(ht, targa, entry);
-    return entry ? entry->autoPtr : NULL;
+    AutoRecord *record = NULL;
+    HASH_FIND_STR(ht, targa, record);
+    return record ? record->autoPtr : NULL;
 }
 
 // Elimina un'auto e restituisce il puntatore
-Auto rimuoviAuto(AutoHashTable *ht, const char *targa) {
+Auto rimuoviAuto(AutoHashTB *ht, const char *targa) {
     if (!ht || !targa) return NULL;
 
-    AutoEntry *entry = NULL;
-    HASH_FIND_STR(*ht, targa, entry);
-    if (!entry) return NULL;
+    AutoRecord *record = NULL;
+    HASH_FIND_STR(*ht, targa, record);
+    if (!record) return NULL;
 
-    Auto a = entry->autoPtr;
-    HASH_DEL(*ht, entry);
-    free(entry->targa);
-    free(entry);
+    Auto a = record->autoPtr;
+    HASH_DEL(*ht, record);
+    free(record->targa);
+    free(record);
     return a;
 }
 
 // Distrugge tutta la tabella e le auto contenute
-void distruggiHashTableAuto(AutoHashTable *ht) {
+void distruggiAutoHashTB(AutoHashTB *ht) {
     if (!ht) return;
 
-    AutoEntry *curr, *tmp;
+    AutoRecord *curr, *tmp;
     HASH_ITER(hh, *ht, curr, tmp) {
         HASH_DEL(*ht, curr);
         distruggiAuto(curr->autoPtr);  // libera anche Auto
@@ -92,29 +92,29 @@ void distruggiHashTableAuto(AutoHashTable *ht) {
 }
 
 // Stampa tutte le auto nella tabella
-void stampaHashTableAuto(AutoHashTable ht) {
-    AutoEntry *entry;
+void stampaAutoHashTB(AutoHashTB ht) {
+    AutoRecord *record;
 	if (!ht) {
         printf(ROSSO "Non sono presenti auto da stampare.\n" RESET);
         return;
     }
     printf("\n" CIANO "Auto presenti nel CarSharing:\n" RESET);
-    for (entry = ht; entry != NULL; entry = entry->hh.next) {
+    for (record = ht; record != NULL; record = record->hh.next) {
         printf(BIANCO "------------------------\n" RESET);
-        stampaAuto(entry->autoPtr);
+        stampaAuto(record->autoPtr);
         printf(BIANCO "------------------------\n" RESET);
     }
 }
 
 
-void stampaHashTablePerDisp(AutoHashTable ht, int giornoInizio, int giornoFine, int oraInizio, int oraFine) {
+void stampaTabellaDiHashPerDisp(AutoHashTB ht, int giornoInizio, int giornoFine, int oraInizio, int oraFine) {
     int almenoUna = 0;
 
     printf("\n" CIANO "Auto disponibili nella fascia selezionata:\n" RESET);
 
-    AutoEntry *entry;
-    for (entry = ht; entry != NULL; entry = entry->hh.next) {
-        Auto a = entry->autoPtr;
+    AutoRecord *record;
+    for (record = ht; record != NULL; record = record->hh.next) {
+        Auto a = record->autoPtr;
         if (verificaDisponibilita(a, giornoInizio, giornoFine, oraInizio, oraFine)) {
             printf(BIANCO "------------------------\n" RESET);
             stampaAuto(a);
@@ -128,11 +128,11 @@ void stampaHashTablePerDisp(AutoHashTable ht, int giornoInizio, int giornoFine, 
     }
 }
 
-void resetDisponibilitaTutteLeAuto(AutoHashTable ht) {
-    AutoEntry *entry;
+void reimpostaDisponibilitaTutteLeAuto(AutoHashTB ht) {
+    AutoRecord *record;
 
-    for (entry = ht; entry != NULL; entry = entry->hh.next) {
-        resetDisponibilitaAuto(entry->autoPtr);
+    for (record = ht; record != NULL; record = record->hh.next) {
+        reimpostaDisponibileAuto(record->autoPtr);
     }
 
     printf(CIANO "Tutte le disponibilita' sono state reinizializzate.\n" RESET);

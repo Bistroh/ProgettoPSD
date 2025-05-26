@@ -4,16 +4,16 @@
 #include "Auto.h"
 #include "uthash.h"
 
-typedef struct AutoEntry AutoEntry;
-typedef AutoEntry* AutoHashTable;
+typedef struct AutoRecord AutoRecord;
+typedef AutoRecord* AutoHashTB;
 
-AutoHashTable creaHashTableAuto();
-int inserisciAuto(AutoHashTable *ht, Auto a);
-Auto cercaAuto(AutoHashTable ht, const char *targa);
-Auto rimuoviAuto(AutoHashTable *ht, const char *targa);
-void distruggiHashTableAuto(AutoHashTable *ht);
-void stampaHashTableAuto(AutoHashTable ht);
-void stampaHashTablePerDisp(AutoHashTable ht, int giornoInizio, int giornoFine, int oraInizio, int oraFine);
-void resetDisponibilitaTutteLeAuto(AutoHashTable ht);
+AutoHashTB creaAutoHashTB();
+int inserisciAuto(AutoHashTB *ht, Auto a);
+Auto cercaAuto(AutoHashTB ht, const char *targa);
+Auto rimuoviAuto(AutoHashTB *ht, const char *targa);
+void distruggiAutoHashTB(AutoHashTB *ht);
+void stampaAutoHashTB(AutoHashTB ht);
+void stampaTabellaDiHashPerDisp(AutoHashTB ht, int giornoInizio, int giornoFine, int oraInizio, int oraFine);
+void reimpostaDisponibilitaTutteLeAuto(AutoHashTB ht);
 
 #endif // HASHTABLEAUTO_H

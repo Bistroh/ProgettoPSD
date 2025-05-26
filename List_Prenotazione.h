@@ -3,17 +3,17 @@
 #include "prenotazione.h"
 #include "List_Prenotazione.h"
 
-typedef struct node *List;
-List newList(void);
-int emptyList(List l);
-List consList(Prenotazione val, List l);
-List tailList(List l);
-Prenotazione getFirst(List l);
-void distruggiLista(List l);
-List copiaProfondaLista(List l);
-void visPrenotazioniPerUtente(List l, const char *CF);
-void stampaListaPrenotazioni(List l);
-List filtraPrenotazioniPerCF(List l, const char *CF);
+typedef struct nodo *Lista;
+Lista nuovaLista(void);
+int ListaVuota(Lista l);
+Lista consLista(Prenotazione val, Lista l);
+Lista codaLista(Lista l);
+Prenotazione ottieniPrimo(Lista l);
+void distruggiLista(Lista l);
+Lista copiaProfondaLista(Lista l);
+void visPrenotazioniPerUtente(Lista l, const char *CF);
+void stampaListaPrenotazioni(Lista l);
+Lista filtraPrenotazioniPerCF(Lista l, const char *CF);
 
 
 #endif //LIST_PRENOTAZIONE_H

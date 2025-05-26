@@ -508,7 +508,7 @@ do {                                                                            
     HASH_DELETE(hh,head,delptr)
 
 /* HASH_FSCK checks hash integrity on every add/delete when HASH_DEBUG is defined.
- * This is for uthash developer only; it compiles away if HASH_DEBUG isn't defined.
+ * This is for uthash Sviluppatore only; it compiles away if HASH_DEBUG isn't defined.
  */
 #ifdef HASH_DEBUG
 #include <stdio.h>   /* fprintf, stderr */

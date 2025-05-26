@@ -5,6 +5,7 @@
 #include "Utente.h"
 #include "uthash.h"
 #include "Controlli.h"
+#include "HashTbUtenti.h"
 #include "Coda_StoricoUtente.h"
 #include "List_Prenotazione.h"
 /*Aggiungo delle costanti per rendere più facile la colorazione
@@ -16,70 +17,70 @@ di scelta. */
 #define GIALLO  "\x1b[33m"
 #define CIANO    "\x1b[36m"
 
-typedef struct {
+struct HashRecord{
     char *cf;       // Chiave (codice fiscale)
     Utente utente;  // Valore
     UT_hash_handle hh;
-} HashEntry;
+};
 
-typedef HashEntry* HashTable;
 
-HashTable newHashtableUtenti() {
+typedef HashRecord* UtentiHashTB;  // Tipo alias per la tabella hash degli utenti
+UtentiHashTB nuovaHashTBUtenti() {
     return NULL; // Uthash usa una variabile inizializzata a NULL
 }
 
-int insertUtente(HashTable *h, Utente u) {
-    const char *cf = getCF(u);
+int inserisciUtente(UtentiHashTB *h, Utente u) {
+    const char *cf = ottieniCF(u);
     if (!cf || !u) return 0;
 
-    HashEntry *entry = NULL;
-    HASH_FIND_STR(*h, cf, entry);
-    if (entry) {
+    HashRecord *record = NULL;
+    HASH_FIND_STR(*h, cf, record);
+    if (record) {
         return 0; // già presente
     }
 
-    entry = malloc(sizeof(HashEntry));
-    entry->cf = strdup(cf);  // duplica la chiave
-    entry->utente = u;
-    HASH_ADD_KEYPTR(hh, *h, entry->cf, strlen(entry->cf), entry);
+    record = malloc(sizeof(HashRecord));
+    record->cf = strdup(cf);  // duplica la chiave
+    record->utente = u;
+    HASH_ADD_KEYPTR(hh, *h, record->cf, strlen(record->cf), record);
     return 1;
 }
 
-Utente cercaUtente(HashTable h, const char *CF) {
-    HashEntry *entry = NULL;
-    HASH_FIND_STR(h, CF, entry);
-    return entry ? entry->utente : NULL;
+Utente cercaUtente(UtentiHashTB h, const char *CF) {
+    HashRecord *record = NULL;
+    HASH_FIND_STR(h, CF, record);
+    return record ? record->utente : NULL;
 }
 
-Utente eliminaUtente(HashTable *h, const char *CF) {
-    HashEntry *entry = NULL;
-    HASH_FIND_STR(*h, CF, entry);
-    if (entry) {
-        Utente u = entry->utente;
-        HASH_DEL(*h, entry);
-        free(entry->cf);
-        free(entry);
+Utente eliminaUtente(UtentiHashTB *h, const char *CF) {
+    HashRecord *record = NULL;
+    HASH_FIND_STR(*h, CF, record);
+    if (record) {
+        Utente u = record->utente;
+        HASH_DEL(*h, record);
+        free(record->cf);
+        free(record);
         return u; // Utente non distrutto qui, restituito al chiamante
     }
     return NULL;
 }
 
-void distruggiHashTableUtenti(HashTable *h) {
-    HashEntry *current, *tmp;
-    HASH_ITER(hh, *h, current, tmp) {
-        HASH_DEL(*h, current);
-        distruggiUtente(current->utente); // distrugge Utente
-        free(current->cf);                // libera chiave
-        free(current);                    // libera nodo
+void distruggiHashTBUtenti(UtentiHashTB *h) {
+    HashRecord *elAttuale, *tmp;
+    HASH_ITER(hh, *h, elAttuale, tmp) {
+        HASH_DEL(*h, elAttuale);
+        distruggiUtente(elAttuale->utente); // distrugge Utente
+        free(elAttuale->cf);                // libera chiave
+        free(elAttuale);                    // libera nodo
     }
     *h = NULL;
 }
 // Funzione per stampare la tabella utenti
-void stampaHashTableUtenti(HashTable h) {
-    HashEntry *current;
-    for (current = h; current != NULL; current = current->hh.next) {
-        printf(CIANO "CF: %s\n" RESET, current->cf);
-        stampaUtente(current->utente); // Assicurati di avere una funzione per stampare Utente
+void stampaHashTableUtenti(UtentiHashTB h) {
+    HashRecord *elAttuale;
+    for (elAttuale = h; elAttuale != NULL; elAttuale = elAttuale->hh.next) {
+        printf(CIANO "CF: %s\n" RESET, elAttuale->cf);
+        stampaUtente(elAttuale->utente); // Assicurati di avere una funzione per stampare Utente
     }
 }
 
@@ -90,7 +91,7 @@ void to_upper(char *str) {
     }
 }
 
-Utente loginRegisterUtente(HashTable *h) {
+Utente loginRegistrazioneUtente(UtentiHashTB *h) {
     int scelta;
     char CF[17];
     char nome[20];
@@ -119,7 +120,7 @@ Utente loginRegisterUtente(HashTable *h) {
     do {
         printf(GIALLO "Inserisci codice fiscale (16 caratteri): " RESET);
         fgets(CF, 17, stdin);
-        CF[strcspn(CF, "\n")] = '\0';  // rimuovo newline
+        CF[strcspn(CF, "\n")] = '\0';  // rimuovo nuova linea
         to_upper(CF);
         if (!validaCodiceFiscale(CF)) printf(ROSSO "Codice fiscale non valido.\n" RESET);
     } while (!validaCodiceFiscale(CF));
@@ -132,14 +133,14 @@ Utente loginRegisterUtente(HashTable *h) {
             printf(GIALLO "Inserisci la tua password: " RESET);
             while (getchar() != '\n');  // pulizia buffer
             if (fgets(passwordInserita, sizeof(passwordInserita), stdin) != NULL) {
-                passwordInserita[strcspn(passwordInserita, "\n")] = '\0';  // rimuovo newline
+                passwordInserita[strcspn(passwordInserita, "\n")] = '\0';  // rimuovo nuova linea
             } else {
                 printf(ROSSO "Errore nella lettura della password.\n" RESET);
                 return NULL;
             }
 
-            if (strcmp(getPassword(u), passwordInserita) == 0) {
-                printf(VERDE "Login riuscito! Benvenuto, %s %s!\n" RESET, getNome(u), getCognome(u));
+            if (strcmp(ottieniPassword(u), passwordInserita) == 0) {
+                printf(VERDE "Login riuscito! Benvenuto, %s %s!\n" RESET, ottieniNome(u), ottieniCognome(u));
                 return u;
             } else {
                 printf(ROSSO "Password errata. Riprova.\n" RESET);
@@ -152,7 +153,7 @@ Utente loginRegisterUtente(HashTable *h) {
             do{
             printf(GIALLO "Inserisci il tuo nome: " RESET);
             fgets(nome, sizeof(nome), stdin);
-            nome[strcspn(nome, "\n")] = '\0';  // rimuovo newline
+            nome[strcspn(nome, "\n")] = '\0';  // rimuovo nuova linea
             if(!validaNome(nome)) {
                 printf(ROSSO "Nome non valido. Utilizza solo lettere e spazi\n" RESET);
             }
@@ -162,7 +163,7 @@ Utente loginRegisterUtente(HashTable *h) {
 			do{
             printf(GIALLO "Inserisci il tuo cognome: " RESET);
             fgets(cognome, sizeof(cognome), stdin);
-            cognome[strcspn(cognome, "\n")] = '\0';  // rimuovo newline
+            cognome[strcspn(cognome, "\n")] = '\0';  // rimuovo nuova linea
             if(!validaCognome(cognome)) {
                 printf(ROSSO "Cognome non valido. Utilizza solo lettere e spazi\n" RESET);
             }
@@ -192,9 +193,9 @@ Utente loginRegisterUtente(HashTable *h) {
 
             Utente nuovoUtente = creaUtente(CF, nome, cognome, email, passwordInserita, telefono);
 
-            if (insertUtente(h, nuovoUtente)) {
+            if (inserisciUtente(h, nuovoUtente)) {
                 printf(VERDE "Registrazione completata con successo! Benvenuto, %s %s!\n" RESET,
-                       getNome(nuovoUtente), getCognome(nuovoUtente));
+                       ottieniNome(nuovoUtente), ottieniCognome(nuovoUtente));
                 return nuovoUtente;
             } else {
                 printf(ROSSO "Errore nella registrazione, riprova.\n" RESET);
@@ -209,14 +210,14 @@ Utente loginRegisterUtente(HashTable *h) {
             printf(GIALLO "Inserisci la tua password: " RESET);
             while (getchar() != '\n');  // pulizia buffer
             if (fgets(passwordInserita, sizeof(passwordInserita), stdin) != NULL) {
-                passwordInserita[strcspn(passwordInserita, "\n")] = '\0';  // rimuovo newline
+                passwordInserita[strcspn(passwordInserita, "\n")] = '\0';  // rimuovo nuova linea
             } else {
                 printf(ROSSO "Errore nella lettura della password.\n" RESET);
                 return NULL;
             }
 
-            if (strcmp(getPassword(u), passwordInserita) == 0) {
-                printf(VERDE "Login riuscito! Benvenuto, %s %s!\n" RESET, getNome(u), getCognome(u));
+            if (strcmp(ottieniPassword(u), passwordInserita) == 0) {
+                printf(VERDE "Login riuscito! Benvenuto, %s %s!\n" RESET, ottieniNome(u), ottieniCognome(u));
                 return u;
             } else {
                 printf(ROSSO "Password errata. Riprova.\n" RESET);
@@ -227,7 +228,7 @@ Utente loginRegisterUtente(HashTable *h) {
             do{
             	printf(GIALLO "Inserisci il tuo nome: " RESET);
             	fgets(nome, sizeof(nome), stdin);
-            	nome[strcspn(nome, "\n")] = '\0';  // rimuovo newline
+            	nome[strcspn(nome, "\n")] = '\0';  // rimuovo nuova linea
             	if(!validaNome(nome)) {
                 	printf(ROSSO "Nome non valido. Utilizza solo lettere e spazi\n" RESET);
             	}
@@ -237,7 +238,7 @@ Utente loginRegisterUtente(HashTable *h) {
 			do{
             	printf(GIALLO "Inserisci il tuo cognome: " RESET);
             	fgets(cognome, sizeof(cognome), stdin);
-            	cognome[strcspn(cognome, "\n")] = '\0';  // rimuovo newline
+            	cognome[strcspn(cognome, "\n")] = '\0';  // rimuovo nuova linea
             	if(!validaCognome(cognome)) {
                 	printf(ROSSO "Cognome non valido. Utilizza solo lettere e spazi\n" RESET);
             	}
@@ -267,9 +268,9 @@ Utente loginRegisterUtente(HashTable *h) {
 
             Utente nuovoUtente = creaUtente(CF, nome, cognome, email, passwordInserita, telefono);
 
-            if (insertUtente(h, nuovoUtente)) {
+            if (inserisciUtente(h, nuovoUtente)) {
                 printf(VERDE "Registrazione completata con successo! Benvenuto, %s %s!\n" RESET,
-                       getNome(nuovoUtente), getCognome(nuovoUtente));
+                       ottieniNome(nuovoUtente), ottieniCognome(nuovoUtente));
                 return nuovoUtente;
             } else {
                 printf(ROSSO "Errore nella registrazione, riprova.\n" RESET);
@@ -284,54 +285,54 @@ Utente loginRegisterUtente(HashTable *h) {
 
 
 
-void aggiungiPrenotazioniAStoricoUtenti(HashTable h, List listaPrenotazioni) {
-    List current = listaPrenotazioni;
+void aggiungiPrenotazioniAStoricoUtenti(UtentiHashTB h, Lista listaPrenotazioni) {
+    Lista elAttuale = listaPrenotazioni;
 
-    while (!emptyList(current)) {
-        Prenotazione p = getFirst(current);
-        const char *cf = getCFPrenotazione(p);
+    while (!ListaVuota(elAttuale)) {
+        Prenotazione p = ottieniPrimo(elAttuale);
+        const char *cf = ottieniCFPrenotazione(p);
         Utente u = cercaUtente(h, cf);
 
         if (u != NULL) {
-            Queue storico = getStorico(u);
+            Coda storico = ottieniStorico(u);
             Prenotazione copia = copiaPrenotazione(p); // crea una copia della prenotazione
-            enqueue(copia, storico);
+            inserisciCoda(copia, storico);
         } else {
             printf(ROSSO "Utente con CF %s non trovato. Prenotazione ignorata.\n" RESET, cf);
         }
 
-        current = tailList(current);
+        elAttuale = codaLista(elAttuale);
     }
 }
 
-void stampaStoricoTuttiUtenti(HashTable h) {
-    HashEntry *current = h;
+void stampaStoricoTuttiUtenti(UtentiHashTB h) {
+    HashRecord *elAttuale = h;
 
-	if(current == NULL) {
+	if(elAttuale == NULL) {
 		printf(ROSSO "Nessun utente trovato, non posso stampare lo storico\n" RESET);
 		return;
 	}
 
-    for (current; current != NULL; current = current->hh.next) {
-        Utente u = current->utente;
-        printf(CIANO "Utente: %s %s (CF: %s)\n" RESET, getNome(u), getCognome(u), current->cf);
+    for (elAttuale; elAttuale != NULL; elAttuale = elAttuale->hh.next) {
+        Utente u = elAttuale->utente;
+        printf(CIANO "Utente: %s %s (CF: %s)\n" RESET, ottieniNome(u), ottieniCognome(u), elAttuale->cf);
 
-        Queue storico = getStorico(u);
+        Coda storico = ottieniStorico(u);
 
-        if (emptyQueue(storico)) {
+        if (codaVuota(storico)) {
             printf(GIALLO "  Nessuna prenotazione nello storico.\n\n" RESET);
             continue;
         }
 
-        Queue copia = copiaQueue(storico); // funzione da implementare se non c'è
+        Coda copia = copiaCoda(storico); // funzione da implementare se non c'è
         if (copia == NULL) {
             printf(ROSSO "  Errore nella copia dello storico.\n\n" RESET);
             continue;
         }
 
         int i = 1;
-        while (!emptyQueue(copia)) {
-            Prenotazione p = dequeue(copia);
+        while (!codaVuota(copia)) {
+            Prenotazione p = prelevaCoda(copia);
             printf(GIALLO "  Prenotazione #%d:\n" RESET, i++);
             stampaPrenotazione(p);
         }
