@@ -89,10 +89,19 @@ void stampaPrenotazione(Prenotazione prenotazione) {
     printf(CIANO "CF: " RESET "%s\n", prenotazione->CF);
     printf(CIANO "Targa: " RESET "%s\n", prenotazione->targa);
     if (prenotazione->periodo.giornoInizio == 6 || prenotazione->periodo.giornoFine == 6) {
-        printf(CIANO "Periodo: dal %s a %s\n" RESET,
+        printf(CIANO "Periodo: da %s ore %d:00 a %s ore %d:00\n" RESET,
                giornoToString(prenotazione->periodo.giornoInizio),
-               giornoToString(prenotazione->periodo.giornoFine));
-    } else {
+               prenotazione->periodo.oraInizio,
+               giornoToString(prenotazione->periodo.giornoFine),
+               prenotazione->periodo.oraFine);
+    } else if(prenotazione->periodo.oraInizio == prenotazione->periodo.oraFine) {
+        printf(CIANO "Periodo: da %s ore %d:00 a %s ore %d:59\n" RESET,
+               giornoToString(prenotazione->periodo.giornoInizio),
+               prenotazione->periodo.oraInizio,
+               giornoToString(prenotazione->periodo.giornoFine),
+               prenotazione->periodo.oraFine);
+    }
+    else {
         printf(CIANO "Periodo: dal %s ore %d:00 al %s ore %d:00\n" RESET,
                giornoToString(prenotazione->periodo.giornoInizio),
                prenotazione->periodo.oraInizio,
