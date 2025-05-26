@@ -19,9 +19,9 @@ di scelta. */
 
 int main() {
     // Con UTHash inizializziamo a NULL
-    HashTable tabUtenti = newHashtableUtenti();
-    AutoHashTable tabAuto = creaHashTableAuto();
-    List listaPrenotazioni = newList();
+    UtentiHashTB tabUtenti = nuovaHashTBUtenti();
+    AutoHashTB tabAuto = creaAutoHashTB();
+    Lista listaPrenotazioni = nuovaLista();
     int sceltaMenu = 0;
     int scelta = 0;
 
@@ -31,7 +31,7 @@ int main() {
         Utente u = NULL;
 
         if (scelta == 1) {
-            u = loginRegisterUtente(&tabUtenti);
+            u = loginRegistrazioneUtente(&tabUtenti);
             pulisciConsole();
             if (u != NULL) {
                 do {
@@ -46,8 +46,8 @@ int main() {
             }
         } else if (scelta == 2) {
           do {
-                sceltaMenu = mostraMenuDeveloper();
-                listaPrenotazioni = gestisciMenuDeveloper(sceltaMenu, &tabAuto, listaPrenotazioni, tabUtenti);
+                sceltaMenu = mostraMenuSviluppatore();
+                listaPrenotazioni = gestisciMenuSviluppatore(sceltaMenu, &tabAuto, listaPrenotazioni, tabUtenti);
                 pausaConsole();
                 pulisciConsole();
             } while (sceltaMenu != 7);
@@ -59,8 +59,8 @@ int main() {
     printf("*------------------------------------------------------*\n" RESET);
 
     // Alla fine distruggiamo la tabella
-    distruggiHashTableUtenti(&tabUtenti);
-    distruggiHashTableAuto(&tabAuto);
+    distruggiHashTBUtenti(&tabUtenti);
+    distruggiAutoHashTB(&tabAuto);
     distruggiLista(listaPrenotazioni);
     return 0;
 }
