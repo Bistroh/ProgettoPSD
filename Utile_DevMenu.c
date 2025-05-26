@@ -153,7 +153,7 @@ void aggiungiAutoInterattivo(AutoHashTable *ht) {
         toupper(posizione[0]);
         posizione[strcspn(posizione, "\n")] = '\0';
     }while(!validaViaStradale(posizione));	//si suppone che l'utente riporta l'auto nella stessa via
-
+    capitalizza(posizione);
     do {
         printf(BLU "Inserisci il prezzo orario del noleggio (minimo 10.00|massimo 45.00): " RESET);
         if (fgets(buffer, sizeof(buffer), stdin) != NULL) {
