@@ -3,8 +3,8 @@
 #include "HashTbAuto.h"
 #include "List_Prenotazione.h"
 #include "HashTbUtenti.h"
-List gestisciMenuDeveloper(int scelta, AutoHashTable *ht, List l, HashTable tabUtenti);
-int mostraMenuDeveloper();
+Lista gestisciMenuSviluppatore(int scelta, AutoHashTB *ht, Lista l, UtentiHashTB tabUtenti);
+int mostraMenuSviluppatore();
 int selezionaRuolo();
 
 
