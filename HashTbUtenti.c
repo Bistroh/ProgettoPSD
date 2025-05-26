@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include "Utente.h"
 #include "uthash.h"
-#include "controlli.h"
+#include "Controlli.h"
 #include "Coda_StoricoUtente.h"
 #include "List_Prenotazione.h"
 /*Aggiungo delle costanti per rendere più facile la colorazione
@@ -83,6 +83,13 @@ void stampaHashTableUtenti(HashTable h) {
     }
 }
 
+void to_upper(char *str) {
+    while (*str) {
+        *str = toupper((unsigned char)*str);
+        str++;
+    }
+}
+
 Utente loginRegisterUtente(HashTable *h) {
     int scelta;
     char CF[17];
@@ -113,7 +120,7 @@ Utente loginRegisterUtente(HashTable *h) {
         printf(GIALLO "Inserisci codice fiscale (16 caratteri): " RESET);
         fgets(CF, 17, stdin);
         CF[strcspn(CF, "\n")] = '\0';  // rimuovo newline
-        strupr(CF);
+        to_upper(CF);
         if (!validaCodiceFiscale(CF)) printf(ROSSO "Codice fiscale non valido.\n" RESET);
     } while (!validaCodiceFiscale(CF));
 
@@ -298,9 +305,14 @@ void aggiungiPrenotazioniAStoricoUtenti(HashTable h, List listaPrenotazioni) {
 }
 
 void stampaStoricoTuttiUtenti(HashTable h) {
-    HashEntry *current;
+    HashEntry *current = h;
 
-    for (current = h; current != NULL; current = current->hh.next) {
+	if(current == NULL) {
+		printf(ROSSO "Nessun utente trovato, non posso stampare lo storico\n" RESET);
+		return;
+	}
+
+    for (current; current != NULL; current = current->hh.next) {
         Utente u = current->utente;
         printf(CIANO "Utente: %s %s (CF: %s)\n" RESET, getNome(u), getCognome(u), current->cf);
 
