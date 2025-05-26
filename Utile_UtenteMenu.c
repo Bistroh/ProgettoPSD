@@ -142,31 +142,31 @@ List prenotazioneAuto(List l, Utente u, AutoHashTable tabAuto) {
         }
     }
 
-	// Ora inizio
-	while (1) {
-    	printf(GIALLO "Inserisci l'ora di inizio (0-23): " RESET);
-    	fgets(buffer, sizeof(buffer), stdin);
+    // Ora inizio
+    while (1) {
+        printf(GIALLO "Inserisci l'ora di inizio (0-23): " RESET);
+        fgets(buffer, sizeof(buffer), stdin);
 
-    	if (sscanf(buffer, "%d", &oraInizio) != 1 || oraInizio < 0 || oraInizio > 23) {
-        	printf(ROSSO "Errore: l'ora di inizio deve essere compresa tra 0 e 23 (0 = mezzanotte, 23 = 23:00).\n" RESET);
-    	} else {
-        	break;
-    	}
-	}
+        if (sscanf(buffer, "%d", &oraInizio) != 1 || oraInizio < 0 || oraInizio > 23) {
+            printf(ROSSO "Errore: l'ora di inizio deve essere compresa tra 0 e 23 (0 = mezzanotte, 23 = 23:00).\n" RESET);
+        } else {
+            break;
+        }
+    }
 
-	// Ora fine
-	while (1) {
-    	printf(GIALLO "Inserisci l'ora di fine (0-23): " RESET);
-    	fgets(buffer, sizeof(buffer), stdin);
+    // Ora fine
+    while (1) {
+        printf(GIALLO "Inserisci l'ora di fine (1-24): " RESET);
+        fgets(buffer, sizeof(buffer), stdin);
 
-    	if (sscanf(buffer, "%d", &oraFine) != 1 || oraFine < 0 || oraFine > 23) {
-        	printf(ROSSO "Errore: l'ora di fine deve essere compresa tra 0 e 23.\n" RESET);
-    	} else if (giornoInizio == giornoFine && oraFine < oraInizio) {
-        	printf(ROSSO "Errore: per prenotazioni nello stesso giorno, l'ora di fine deve essere >= ora di inizio.\n" RESET);
-    	} else {
-        	break;
-    	}
-	}
+        if (sscanf(buffer, "%d", &oraFine) != 1 || oraFine < 1 || oraFine > 24) {
+            printf(ROSSO "Errore: l'ora di fine deve essere compresa tra 1 e 24 (24 = mezzanotte).\n" RESET);
+        } else if (giornoInizio == giornoFine && oraFine <= oraInizio) {
+            printf(ROSSO "Errore: per lo stesso giorno, l'ora di fine deve essere maggiore dell'ora di inizio.\n" RESET);
+        } else {
+            break;
+        }
+    }
 
 	giornoInizio--, giornoFine--;
 
@@ -219,31 +219,32 @@ void visualizzaAutoDisponibili(AutoHashTable ht) {
         }
     }
 
-	// Ora inizio
-	while (1) {
-    	printf(GIALLO "Inserisci l'ora di inizio (0-23): " RESET);
-    	fgets(buffer, sizeof(buffer), stdin);
+    // Ora inizio
+    while (1) {
+        printf(GIALLO "Inserisci l'ora di inizio (0-23): " RESET);
+        fgets(buffer, sizeof(buffer), stdin);
 
-    	if (sscanf(buffer, "%d", &oraInizio) != 1 || oraInizio < 0 || oraInizio > 23) {
-        	printf(ROSSO "Errore: l'ora di inizio deve essere compresa tra 0 e 23 (0 = mezzanotte, 23 = 23:00).\n" RESET);
-    	} else {
-        	break;
-    	}
-	}
+        if (sscanf(buffer, "%d", &oraInizio) != 1 || oraInizio < 0 || oraInizio > 23) {
+            printf(ROSSO "Errore: l'ora di inizio deve essere compresa tra 0 e 23 (0 = mezzanotte, 23 = 23:00).\n" RESET);
+        } else {
+            break;
+        }
+    }
 
-	// Ora fine
-	while (1) {
-		printf(GIALLO "Inserisci l'ora di fine (0-23): " RESET);
-    	fgets(buffer, sizeof(buffer), stdin);
+    // Ora fine
+    while (1) {
+        printf(GIALLO "Inserisci l'ora di fine (1-24): " RESET);
+        fgets(buffer, sizeof(buffer), stdin);
 
-    	if (sscanf(buffer, "%d", &oraFine) != 1 || oraFine < 0 || oraFine > 23) {
-        	printf(ROSSO "Errore: l'ora di fine deve essere compresa tra 0 e 23.\n" RESET);
-    	} else if (giornoInizio == giornoFine && oraFine < oraInizio) {
-        	printf(ROSSO "Errore: per prenotazioni nello stesso giorno, l'ora di fine deve essere >= ora di inizio.\n" RESET);
-    	} else {
-        	break;
-    	}
-	}
+        if (sscanf(buffer, "%d", &oraFine) != 1 || oraFine < 1 || oraFine > 24) {
+            printf(ROSSO "Errore: l'ora di fine deve essere compresa tra 1 e 24 (24 = mezzanotte).\n" RESET);
+        } else if (giornoInizio == giornoFine && oraFine <= oraInizio) {
+            printf(ROSSO "Errore: per lo stesso giorno, l'ora di fine deve essere maggiore dell'ora di inizio.\n" RESET);
+        } else {
+            break;
+        }
+    }
+
 
 	giornoInizio--, giornoFine--;
 
@@ -255,7 +256,7 @@ int calcolaOreTotali(int giornoInizio, int giornoFine, int oraInizio, int oraFin
     int oreInizio = giornoInizio * 24 + oraInizio;
     int oreFine = giornoFine * 24 + oraFine;
 
-    int oreTotali = oreFine - oreInizio + 1;  // Inclusivo
+    int oreTotali = oreFine - oreInizio;  // Inclusivo
     return oreTotali;
 }
 
