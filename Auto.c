@@ -48,27 +48,27 @@ Auto creaAuto(char *targa, char *marca, char *modello, char*posizione, int anno,
     return a;
 }
 
-char *getTarga(Auto a) {
+char *ottieniTarga(Auto a) {
     return a->targa;
 }
 
-char *getMarca(Auto a) {
+char *ottieniMarca(Auto a) {
     return a->marca;
 }
 
-char *getModello(Auto a) {
+char *ottieniModello(Auto a) {
     return a->modello;
 }
 
-char *getPosizione(Auto a) {
+char *ottieniPosizione(Auto a) {
     return a->posizione;
 }
 
-int getAnno(Auto a) {
+int ottieniAnno(Auto a) {
     return a->anno;
 }
 
-float getPrezzo(Auto a) {
+float ottieniPrezzo(Auto a) {
     return a->prezzoXOra;
 }
 
@@ -78,7 +78,7 @@ void distruggiAuto(Auto a) {
     }
 }
 
-void setDisponibile(Auto a, int giornoInizio, int giornoFine, int oraInizio, int oraFine, bool stato) {
+void impostaDisponibile(Auto a, int giornoInizio, int giornoFine, int oraInizio, int oraFine, bool stato) {
     if (!a || !a->disponibile) return;
 
     // Verifica che l'intervallo sia valido e disponibile
@@ -148,7 +148,7 @@ void stampaAuto(Auto a) {
     printf(CIANO "Prezzo per ora:  " RESET "%.2f\n", a->prezzoXOra);
 }
 
-void resetDisponibilitaAuto(Auto a) {
+void reimpostaDisponibileAuto(Auto a) {
     if (!a) return;
 
     for (int g = 0; g < MAX_GIORNI_LAVORATIVI; g++) {
