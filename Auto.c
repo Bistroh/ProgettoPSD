@@ -81,7 +81,7 @@ void distruggiAuto(Auto a) {
 void setDisponibile(Auto a, int giornoInizio, int giornoFine, int oraInizio, int oraFine, bool stato) {
     if (!a || !a->disponibile) return;
 
-    // Verifica che l'intervallo sia valido e disponibile (per prenotazioni true = libero, false = occupato)
+    // Verifica che l'intervallo sia valido e disponibile
     if (!verificaDisponibilita(a, giornoInizio, giornoFine, oraInizio, oraFine)) {
         fprintf(stderr, ROSSO "Intervallo giorno/ora non valido o non disponibile\n" RESET);
         return;
@@ -89,55 +89,53 @@ void setDisponibile(Auto a, int giornoInizio, int giornoFine, int oraInizio, int
 
     for (int g = giornoInizio; g <= giornoFine; g++) {
         int oraStart = (g == giornoInizio) ? oraInizio : 0;
-        int oraEnd   = (g == giornoFine)  ? oraFine    : MAX_ORA_LAVORATIVI - 1;
+        int oraEnd   = (g == giornoFine)  ? oraFine    : 24;
 
-        for (int o = oraStart; o <= oraEnd; o++) {
+        // Se l'ultimo giorno ha oraFine == 0, non occupare nulla
+        if (g == giornoFine && oraFine == 0) continue;
+
+        for (int o = oraStart; o < oraEnd; o++) {
             a->disponibile[g][o] = stato;
         }
     }
 }
 
 
+
 int verificaDisponibilita(Auto a, int giornoInizio, int giornoFine, int oraInizio, int oraFine) {
     if (!a) return 0;
 
-    // Controllo di validità degli intervalli
     if (giornoInizio < 0 || giornoFine >= MAX_GIORNI_LAVORATIVI ||
-        oraInizio < 0 || oraFine >= MAX_ORA_LAVORATIVI ||
-        giornoInizio > giornoFine ||
-        (giornoInizio == giornoFine && oraInizio > oraFine)) {
+        oraInizio < 0 || oraInizio > 23 || oraFine < 1 || oraFine > 24 ||
+        giornoInizio > giornoFine) {
         fprintf(stderr, ROSSO "Intervallo giorno/ora non valido nella verifica disponibilita'\n" RESET);
         return 0;
         }
 
-    for (int g = giornoInizio; g <= giornoFine; g++) {
-        int oraStart, oraEnd;
+    // Controllo validità intervallo minimo: almeno 1 ora
+    if (giornoInizio == giornoFine && oraFine <= oraInizio) {
+        fprintf(stderr, ROSSO "Intervallo orario non valido nello stesso giorno\n" RESET);
+        return 0;
+    }
 
-        if (giornoInizio == giornoFine) {
-            // Prenotazione nello stesso giorno
-            oraStart = oraInizio;
-            oraEnd = oraFine;
-        } else {
-            // Prenotazione su più giorni
-            if (g == giornoInizio) {
-                oraStart = oraInizio;
-                oraEnd = MAX_ORA_LAVORATIVI - 1;
-            } else if (g == giornoFine) {
-                oraStart = 0;
-                oraEnd = oraFine;
-            } else {
-                oraStart = 0;
-                oraEnd = MAX_ORA_LAVORATIVI - 1;
-            }
+    for (int g = giornoInizio; g <= giornoFine; g++) {
+        // Calcola intervallo orario corretto
+        int oraStart = (g == giornoInizio) ? oraInizio : 0;
+        int oraEnd   = (g == giornoFine)  ? oraFine : MAX_ORA_LAVORATIVI;
+
+        // Special case: se giornoInizio == giornoFine e oraFine == 24,
+        // allora va bene; ma se giornoFine == giornoInizio + 1 e oraFine == 0,
+        // non deve fare nulla
+        if (giornoInizio != giornoFine && g == giornoFine && oraFine == 0) {
+            continue; // niente da controllare in quel giorno
         }
 
-        for (int o = oraStart; o <= oraEnd; o++) {
-            if (a->disponibile[g][o]) {
-                return 0; // occupato
-            }
+        for (int o = oraStart; o < oraEnd; o++) {
+            if (a->disponibile[g][o]) return 0; // già occupato
         }
     }
-    return 1; // disponibile
+
+    return 1; // tutto disponibile
 }
 
 
