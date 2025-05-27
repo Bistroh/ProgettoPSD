@@ -71,11 +71,62 @@ Link di riferimento per la [Documentazione](https://example.com)
 - [ ] Ottimizzazioni
   - [X] Colore sui messaggi a schermo
   - [ ] Migliorare la leggibilità codice generale
-  - [ ] "Italianizzare" il programma (da chiedere alla prof)
+  - [X] "Italianizzare" il programma 
      
 - [ ] Calcolo costo totale del progetto //rivedere lezione su elearning
      
 - [ ] Testing
+  - [ ] Prenotazione e aggiornamento disponibilità
+    - [ ] TEST FUNZIONALI
+      - [ ] Prenotazione normale con utente e auto validi 
+      - [ ] Prenotazione in uno slot orario libero 
+    - [ ] INPUT NON VALIDI
+      - [ ] Codice fiscale non esistente 
+      - [ ] Auto non presente nella tabella di hash 
+      - [ ] Prenotazione con orari invalidi 
+      - [ ] Giorni o orari fuori range 
+    - [ ] EDGE CASE
+      - [ ] Prenotazione che inizia alle 23 e finisce alle 1 di notte 
+      - [ ] Prenotazione su confine orario 
+      - [ ] Prenotazione multiple per stessa auto, stesso utente, orari diversi per verifica aggiornamento corretto disponibilità
+            
+  - [ ] Calcolo costo del noleggio
+    - [ ] TEST FUNZIONALI
+      - [ ] Prenotazione senza sconti 
+      - [ ] Prenotazione con sconto weekend 10% 
+      - [ ] Prenotazione con sconto fascia oraria 15% 
+      - [ ] Prenotazione con sconto oreTotali maggiore di 10 20%
+      - [ ] Verifica che venga letto correttamente il costo
+    - [ ] INPUT NON VALIDI
+      - [ ] Tariffa negativa 
+    - [ ] EDGE CASE
+      - [ ] Prenotazione molto lunga
+      - [ ] Costo con cifre decimali ripetute
+            
+  - [ ] Visualizzazione veicoli disponibili
+    - [ ] TEST FUNZIONALI
+      - [ ] Visualizzzazione con range temporale valido e auto disponibile
+      - [ ] Visualizzazione con auto non disponibile nel range     
+    - [ ] INPUT NON VALIDI
+      - [ ] Orari fuori dal range
+      - [ ] Giorni negativi
+      - [ ] OraInizio > OraFine
+    - [ ] EDGE CASE
+      - [ ] Range esatto sovrapposto a una prenotazione
+      - [ ] Range incluso dentro una prenotazione
+      - [ ] Range completamente fuori da tutte le prenotazioni
+            
+  - [ ] Gestione storico prenotazioni
+    - [ ] TEST FUNZIONALI
+      - [ ] Prenotazione -> aggiunta allo storico -> stampa corretta
+      - [ ] Storico con più prenotazioni per lo stesso utente
+    - [ ] INPUT NON VALIDI
+      - [ ] Utente inesistente (nessuno storico)
+      - [ ] Storico vuoto
+    - [ ] EDGE CASE
+      - [ ] Storico con molte prenotazioni
+      - [ ] Prenotazioni con dati uguali (verifica che non ci siano state duplicazioni)
+     
       
 ### DA FARE
 
