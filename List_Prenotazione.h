@@ -1,7 +1,6 @@
 #ifndef LIST_PRENOTAZIONE_H
 #define LIST_PRENOTAZIONE_H
 #include "prenotazione.h"
-#include "List_Prenotazione.h"
 
 typedef struct nodo *Lista;
 Lista nuovaLista(void);
