@@ -106,6 +106,7 @@ void inserisciMarcaModello(char *marca, char *modello) {
 }
 
 
+
 // Funzione per inserire una nuova auto nella hash table
 void aggiungiAutoInterattivo(AutoHashTB *ht) {
     char targa[8], marca[20], modello[20], posizione[35], buffer[100];
@@ -150,7 +151,6 @@ void aggiungiAutoInterattivo(AutoHashTB *ht) {
     do{
 		printf(BLU "Inserisci la posizione dell'auto (es. Via Roma 123): " RESET);
 		fgets(posizione, sizeof(posizione), stdin);
-        toupper(posizione[0]);
         posizione[strcspn(posizione, "\n")] = '\0';
     }while(!validaViaStradale(posizione));	//si suppone che l'utente riporta l'auto nella stessa via
     capitalizza(posizione);
@@ -305,7 +305,7 @@ int selezionaRuolo() {
             buffer[strcspn(buffer, "\n")] = '\0';
 
             // Verifica che sia un numero valido
-            if (sscanf(buffer, "%d", &scelta) == 1 && (scelta == 0 || scelta == 1 || scelta == 2)) {
+            if (sscanf(buffer, "%d", &scelta) == 1 && (scelta == 0 || scelta == 1 || scelta == 2 || scelta == 3)) {
                 valido = 1;
             } else {
                 printf(ROSSO "Errore: inserisci 0, 1 o 2.\n" RESET);
