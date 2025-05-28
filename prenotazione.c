@@ -88,7 +88,7 @@ void stampaPrenotazione(Prenotazione prenotazione) {
     printf(CIANO "ID Prenotazione: " RESET "%d\n", prenotazione->ID_prenotazione);
     printf(CIANO "CF: " RESET "%s\n", prenotazione->CF);
     printf(CIANO "Targa: " RESET "%s\n", prenotazione->targa);
-    if ((prenotazione->periodo.giornoInizio == 6 || prenotazione->periodo.giornoFine == 6)&& (prenotazione->periodo.giornoInizio == 5 || prenotazione->periodo.giornoFine == 5)) {
+    if ((prenotazione->periodo.giornoInizio == 5 || prenotazione->periodo.giornoInizio == 6 || prenotazione->periodo.giornoFine == 5   || prenotazione->periodo.giornoFine == 6)) {
         printf(CIANO "Periodo: da %s ore %d:00 a %s ore %d:00\n" RESET,
                giornoToString(prenotazione->periodo.giornoInizio),
                prenotazione->periodo.oraInizio,
@@ -103,6 +103,28 @@ void stampaPrenotazione(Prenotazione prenotazione) {
                prenotazione->periodo.oraFine);
     }
 }
+
+void stampaPrenotazioneSuFile(Prenotazione prenotazione, FILE *fp) {
+    fprintf(fp, "ID Prenotazione: %d\n", prenotazione->ID_prenotazione);
+    fprintf(fp, "CF: %s\n", prenotazione->CF);
+    fprintf(fp, "Targa: %s\n", prenotazione->targa);
+
+    if ((prenotazione->periodo.giornoInizio == 5 || prenotazione->periodo.giornoInizio == 6 ||
+            prenotazione->periodo.giornoFine == 5   || prenotazione->periodo.giornoFine == 6)) {
+        fprintf(fp, "Periodo: da %s ore %d:00 a %s ore %d:00\n",
+                giornoToString(prenotazione->periodo.giornoInizio),
+                prenotazione->periodo.oraInizio,
+                giornoToString(prenotazione->periodo.giornoFine),
+                prenotazione->periodo.oraFine);
+        } else {
+            fprintf(fp, "Periodo: dal %s ore %d:00 al %s ore %d:00\n",
+                    giornoToString(prenotazione->periodo.giornoInizio),
+                    prenotazione->periodo.oraInizio,
+                    giornoToString(prenotazione->periodo.giornoFine),
+                    prenotazione->periodo.oraFine);
+        }
+}
+
 
 Prenotazione copiaPrenotazione(Prenotazione originale)
 {

@@ -2,6 +2,7 @@
 #define PRENOTAZIONE_H
 
 typedef struct s_prenotazione* Prenotazione;
+#include <stdio.h>
 
 
 Prenotazione creaPrenotazione(char *CF, char *targa, int giornoInizio, int giornoFine, int oraInizio, int oraFine);
@@ -21,6 +22,7 @@ char *ottieniCFPrenotazione(Prenotazione prenotazione);
  */
 char *ottieniTargaPrenotazione(Prenotazione prenotazione);
 
+void stampaPrenotazione(Prenotazione prenotazione);
 /**
  * Restituisce il periodo della prenotazione (giorni e ore)
  */
@@ -30,6 +32,8 @@ void ottieniPeriodoPrenotazione(Prenotazione p, int *giornoInizio, int *giornoFi
  * Stampa i dettagli della prenotazione
  */
 void stampaPrenotazione(Prenotazione prenotazione);
+
+void stampaPrenotazioneSuFile(Prenotazione prenotazione, FILE *fp);
 
 Prenotazione copiaPrenotazione(Prenotazione originale);
 
