@@ -18,7 +18,7 @@ struct s_utente {
     char email[30];
     char telefono[15];
     char password[20];
-    Queue storico;
+    Coda storico;
 };
 
 Utente creaUtente(char *CF, char *nome, char *cognome, char *email, char *password, char *telefono) {
@@ -47,37 +47,37 @@ Utente creaUtente(char *CF, char *nome, char *cognome, char *email, char *passwo
     strncpy(nuovoUtente->telefono, telefono, sizeof(nuovoUtente->telefono) - 1);
     nuovoUtente->telefono[sizeof(nuovoUtente->telefono) - 1] = '\0';
 
-    nuovoUtente->storico = newQueue();
+    nuovoUtente->storico = nuovaCoda();
 
     return nuovoUtente;
 }
 
 
-char *getCF(Utente utente) {
+char *ottieniCF(Utente utente) {
     return utente->CF;
 }
 
-char *getNome(Utente utente) {
+char *ottieniNome(Utente utente) {
     return utente->nome;
 }
 
-char *getCognome(Utente utente) {
+char *ottieniCognome(Utente utente) {
     return utente->cognome;
 }
 
-char *getEmail(Utente utente) {
+char *ottieniEmail(Utente utente) {
     return utente->email;
 }
 
-char *getTelefono(Utente utente) {
+char *ottieniTelefono(Utente utente) {
     return utente->telefono;
 }
 
-char *getPassword(Utente utente) {
+char *ottieniPassword(Utente utente) {
     return utente->password;
 }
 
-Queue getStorico(Utente u) {
+Coda ottieniStorico(Utente u) {
     return u->storico;
 }
 

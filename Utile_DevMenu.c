@@ -107,7 +107,7 @@ void inserisciMarcaModello(char *marca, char *modello) {
 
 
 // Funzione per inserire una nuova auto nella hash table
-void aggiungiAutoInterattivo(AutoHashTable *ht) {
+void aggiungiAutoInterattivo(AutoHashTB *ht) {
     char targa[8], marca[20], modello[20], posizione[35], buffer[100];
     char *endptr;
     int anno;
@@ -157,7 +157,7 @@ void aggiungiAutoInterattivo(AutoHashTable *ht) {
     do {
         printf(BLU "Inserisci il prezzo orario del noleggio (minimo 10.00|massimo 45.00): " RESET);
         if (fgets(buffer, sizeof(buffer), stdin) != NULL) {
-            // Rimuovi newline finale se presente
+            // Rimuovi nuova linea finale se presente
             buffer[strcspn(buffer, "\n")] = '\0';
 
             prezzo = strtof(buffer, &endptr);
@@ -184,11 +184,11 @@ void aggiungiAutoInterattivo(AutoHashTable *ht) {
 }
 
 // Gestione del menu sviluppatore
-List gestisciMenuDeveloper(int scelta, AutoHashTable *ht, List l, HashTable tabUtenti) {
+Lista gestisciMenuSviluppatore(int scelta, AutoHashTB *ht, Lista l, UtentiHashTB tabUtenti) {
     switch (scelta) {
         case 1:
             aggiungiAutoInterattivo(ht);
-            stampaHashTableAuto(*ht);
+            stampaAutoHashTB(*ht);
             break;
 
         case 2:
@@ -218,7 +218,7 @@ List gestisciMenuDeveloper(int scelta, AutoHashTable *ht, List l, HashTable tabU
 
         case 3:
           printf("\n");
-          stampaHashTableAuto(*ht);
+          stampaAutoHashTB(*ht);
             break;
         case 4:
             printf("\n");
@@ -232,9 +232,9 @@ List gestisciMenuDeveloper(int scelta, AutoHashTable *ht, List l, HashTable tabU
         case 6:
             printf(BLU "Avanza di una settimana settimana...\n" RESET);
             aggiungiPrenotazioniAStoricoUtenti(tabUtenti, l);
-            resetDisponibilitaTutteLeAuto(*ht);
+            reimpostaDisponibilitaTutteLeAuto(*ht);
             distruggiLista(l);
-            l = newList();
+            l = nuovaLista();
             break;
         case 7:
             printf("Uscita dal menu sviluppatore...\n");
@@ -248,7 +248,7 @@ List gestisciMenuDeveloper(int scelta, AutoHashTable *ht, List l, HashTable tabU
 }
 
 
-int mostraMenuDeveloper() {
+int mostraMenuSviluppatore() {
     char buffer[100];
     int scelta;
     int valido = 0;
@@ -270,7 +270,7 @@ int mostraMenuDeveloper() {
         printf(BLU "Scelta: " RESET);
 
         if (fgets(buffer, sizeof(buffer), stdin) != NULL) {
-            // rimuovi newline
+            // rimuovi nuova linea
             buffer[strcspn(buffer, "\n")] = '\0';
 
             // prova a leggere un intero
@@ -301,7 +301,7 @@ int selezionaRuolo() {
         printf(BLU "Scelta: " RESET);
 
         if (fgets(buffer, sizeof(buffer), stdin) != NULL) {
-            // Rimuove newline
+            // Rimuove nuova linea
             buffer[strcspn(buffer, "\n")] = '\0';
 
             // Verifica che sia un numero valido

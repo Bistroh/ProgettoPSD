@@ -9,22 +9,22 @@ Prenotazione creaPrenotazione(char *CF, char *targa, int giornoInizio, int giorn
 /**
  * Restituisce l’ID della prenotazione
  */
-int getIDPrenotazione(Prenotazione prenotazione);
+int ottieniIDPrenotazione(Prenotazione prenotazione);
 
 /**
  * Restituisce il codice fiscale associato alla prenotazione
  */
-char *getCFPrenotazione(Prenotazione prenotazione);
+char *ottieniCFPrenotazione(Prenotazione prenotazione);
 
 /**
  * Restituisce la targa del veicolo prenotato
  */
-char *getTargaPrenotazione(Prenotazione prenotazione);
+char *ottieniTargaPrenotazione(Prenotazione prenotazione);
 
 /**
  * Restituisce il periodo della prenotazione (giorni e ore)
  */
-void getPeriodoPrenotazione(Prenotazione p, int *giornoInizio, int *giornoFine, int *oraInizio, int *oraFine);
+void ottieniPeriodoPrenotazione(Prenotazione p, int *giornoInizio, int *giornoFine, int *oraInizio, int *oraFine);
 
 /**
  * Stampa i dettagli della prenotazione
