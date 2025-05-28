@@ -1,0 +1,29 @@
+ID Prenotazione: 1
+CF: DNTCRL65S67M126L
+Targa: AB123CD
+Periodo: dal Lunedi' ore 0:00 al Lunedi' ore 24:00
+ID Prenotazione: 2
+CF: DNTCRL65S67M126L
+Targa: AB123CD
+Periodo: dal Martedi' ore 0:00 al Martedi' ore 24:00
+ID Prenotazione: 3
+CF: DNTCRL65S67M126L
+Targa: AB123CD
+Periodo: dal Mercoledi' ore 0:00 al Mercoledi' ore 24:00
+ID Prenotazione: 4
+CF: DNTCRL65S67M126L
+Targa: AB123CD
+Periodo: dal Giovedi' ore 0:00 al Giovedi' ore 24:00
+ID Prenotazione: 5
+CF: DNTCRL65S67M126L
+Targa: AB123CD
+Periodo: dal Venerdi' ore 0:00 al Venerdi' ore 24:00
+ID Prenotazione: 6
+CF: DNTCRL65S67M126L
+Targa: AB123CD
+Periodo: da Sabato ore 0:00 a Sabato ore 24:00
+ID Prenotazione: 7
+CF: DNTCRL65S67M126L
+Targa: AB123CD
+Periodo: da Domenica ore 0:00 a Domenica ore 24:00
+Prenotazione non riuscita.

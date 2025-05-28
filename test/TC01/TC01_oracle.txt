@@ -1,0 +1,4 @@
+ID Prenotazione: 0
+CF: DNTCRL65S67M126L
+Targa: AB123CD
+Periodo: dal Lunedi' ore 12:00 al Mercoledi' ore 22:00

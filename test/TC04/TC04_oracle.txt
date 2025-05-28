@@ -1,0 +1,1 @@
+Riga input ignorata (formato non valido): A 2 B 9
