@@ -510,8 +510,8 @@ float calcolaPrezziPrenotazioni(Lista prenotazioni, Utente u, AutoHashTB ht) {
 
     printf("\n" GIALLO "Totale complessivo per tutte le prenotazioni dell'utente: %.2f\n" RESET, totale);
 
-    return totale;
     distruggiLista(listaUtente);
+    return totale;
 }
 
 
