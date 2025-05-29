@@ -18,6 +18,17 @@ di scelta.*/
 #define BLU   "\x1b[34m"
 #define CIANO   "\x1b[36m"
 
+/*
+ * Funzione che gestisce il menu per l'utente.
+ * Parametri:
+ * - `scelta`: la scelta dell'utente.
+ * - `u`: l'utente che sta effettuando la prenotazione.
+ * - `l`: la lista delle prenotazioni.
+ * - `tabAuto`: la tabella hash delle auto disponibili.
+ * La funzione gestisce le operazioni che l'utente può effettuare,
+ * Prende in input la scelta dell'utente, un utente e una lista di prenotazioni.
+ * Restituisce la lista aggiornata delle prenotazioni.
+ */
 Lista switchUtente(int scelta, Utente u, Lista l, AutoHashTB tabAuto) {
     char * CF = malloc(sizeof(char) * 17);
     char * targa = malloc(sizeof(char) * 8);
@@ -35,6 +46,7 @@ Lista switchUtente(int scelta, Utente u, Lista l, AutoHashTB tabAuto) {
                 break;
             }
             else{
+                // Chiamata alla funzione per inserire i dati della prenotazione
                 inserimentoPrenotazione(CF, targa, giornoInizio, giornoFine, oraInizio, oraFine, u);
             	l = prenotazioneAuto(l, tabAuto, CF, targa, giornoInizio, giornoFine, oraInizio, oraFine, &stato);
                 if(!stato){
@@ -68,11 +80,19 @@ Lista switchUtente(int scelta, Utente u, Lista l, AutoHashTB tabAuto) {
     return l;
 }
 
+/* * Funzione che mostra il menu per l'utente e gestisce la scelta dell'utente.
+ * Parametri:
+ * - Nessuno.
+ * Restituisce la scelta dell'utente come un intero.
+ * Il menu permette di prenotare un'auto, calcolare la tariffa per un'auto prenotata,
+ * visualizzare le auto disponibili, visualizzare le prenotazioni e uscire dal menu.
+ */
 int menuUtente() {
     char buffer[100];
     int scelta;
     int valido = 0;
 
+    // Ciclo per mostrare il menu e gestire la scelta dell'utente
     do {
         printf("\n" CIANO "*----------------------------------------------------*\n");
         printf(        "|                Car Sharing - Utente                |\n");
@@ -88,6 +108,7 @@ int menuUtente() {
         printf(        "*----------------------------------------------------*\n");
         printf(BLU"Scelta: " RESET);
 
+        // Legge l'input dell'utente
         if (fgets(buffer, sizeof(buffer), stdin) != NULL) {
             buffer[strcspn(buffer, "\n")] = '\0';  // Rimuove nuova linea
 
@@ -103,10 +124,21 @@ int menuUtente() {
     return scelta;
 }
 
-//funzione che prende in input i dati per la prenotazione
+/* Funzione per inserire i dati della prenotazione.
+ * Parametri:
+ * - `CF`: il codice fiscale dell'utente.
+ * - `targa`: la targa dell'auto da prenotare.
+ * - `giornoInizio`: puntatore al giorno di inizio della prenotazione.
+ * - `giornoFine`: puntatore al giorno di fine della prenotazione.
+ * - `oraInizio`: puntatore all'ora di inizio della prenotazione.
+ * - `oraFine`: puntatore all'ora di fine della prenotazione.
+ * - `u`: l'utente che sta effettuando la prenotazione.
+ * Restituisce 1 se l'inserimento è andato a buon fine, altrimenti 0.
+ */
 int inserimentoPrenotazione(char *CF, char *targa, int *giornoInizio, int *giornoFine, int *oraInizio, int *oraFine, Utente u) {
-    char buffer[100];
+    char buffer[100];   // Buffer per l'input dell'utente
     strcpy(CF, ottieniCF(u));
+
 
     do {
         printf(BLU "Inserisci la targa dell'auto (formato: 2 lettere + 3 cifre + 2 lettere, es: AB123CD): " RESET);
@@ -118,11 +150,12 @@ int inserimentoPrenotazione(char *CF, char *targa, int *giornoInizio, int *giorn
     } while (!validaTarga(targa));
     while ((getchar()) != '\n');  // Pulisce il buffer
 
-    // Giorno inizio
+
     while (1) {
         printf(GIALLO "Inserisci il giorno di inizio della prenotazione (1=lun, ..., 7=dom): " RESET);
         fgets(buffer, sizeof(buffer), stdin);
 
+        // Legge il giorno di inizio
         if (sscanf(buffer, "%d", giornoInizio) != 1 || *giornoInizio < 1 || *giornoInizio > 7) {
             printf(ROSSO "Errore: il giorno deve essere un numero da 1 a 7.\n" RESET);
         } else {
@@ -171,7 +204,19 @@ int inserimentoPrenotazione(char *CF, char *targa, int *giornoInizio, int *giorn
     return 1;
 }
 
-
+/* * Funzione per prenotare un'auto.
+ * Parametri:
+ * - `l`: la lista delle prenotazioni.
+ * - `tabAuto`: la tabella hash delle auto disponibili.
+ * - `CF`: il codice fiscale dell'utente.
+ * - `targa`: la targa dell'auto da prenotare.
+ * - `giornoInizio`: puntatore al giorno di inizio della prenotazione.
+ * - `giornoFine`: puntatore al giorno di fine della prenotazione.
+ * - `oraInizio`: puntatore all'ora di inizio della prenotazione.
+ * - `oraFine`: puntatore all'ora di fine della prenotazione.
+ * - `stato`: puntatore allo stato della prenotazione (1 = successo, 0 = fallimento).
+ * Restituisce la lista aggiornata delle prenotazioni.
+ */
 Lista prenotazioneAuto(Lista l, AutoHashTB tabAuto, char *CF, char *targa, int *giornoInizio, int *giornoFine, int *oraInizio, int *oraFine, int *stato) {
     Auto a = cercaAuto(tabAuto, targa);
     if(a == NULL) {
@@ -183,6 +228,7 @@ Lista prenotazioneAuto(Lista l, AutoHashTB tabAuto, char *CF, char *targa, int *
 	*giornoInizio = *giornoInizio -1;
     *giornoFine = *giornoFine -1;
 
+    // Controllo disponibilità dell'auto
     if (verificaDisponibilita(a, *giornoInizio, *giornoFine, *oraInizio, *oraFine)) {
         impostaDisponibile(a, *giornoInizio, *giornoFine, *oraInizio, *oraFine, true);
         Prenotazione nuovaPrenotazione = creaPrenotazione(CF, targa, *giornoInizio, *giornoFine, *oraInizio, *oraFine);
@@ -197,6 +243,15 @@ Lista prenotazioneAuto(Lista l, AutoHashTB tabAuto, char *CF, char *targa, int *
     return l;
 }
 
+/* Funzione per visualizzare le auto disponibili in un intervallo di giorni e ore.
+ * Parametri:
+ * - `ht`: la tabella hash delle auto.
+ * - `giornoInizio`: il giorno di inizio della prenotazione (1 = lunedì, ..., 7 = domenica).
+ * - `giornoFine`: il giorno di fine della prenotazione (1 = lunedì, ..., 7 = domenica).
+ * - `oraInizio`: l'ora di inizio della prenotazione (0-23).
+ * - `oraFine`: l'ora di fine della prenotazione (1-24).
+ * Restituisce le auto disponibili in un formato tabellare.
+ */
 void visualizzaAutoDisponibiliConParametri(AutoHashTB ht, int giornoInizio, int giornoFine, int oraInizio, int oraFine) {
     if (!ht) {
         printf(ROSSO "Nessuna auto registrata.\n" RESET);
@@ -213,19 +268,28 @@ void visualizzaAutoDisponibiliConParametri(AutoHashTB ht, int giornoInizio, int 
         return;
         }
 
-    // Conversione 0-based
+
     giornoInizio--;
     giornoFine--;
 
+    // Stampa la tabella di hash per le auto disponibili
     stampaTabellaDiHashPerDisp(ht, giornoInizio, giornoFine, oraInizio, oraFine);
 }
 
+/* Funzione per visualizzare le auto disponibili in un intervallo di giorni e ore.
+ * Parametri:
+ * - `ht`: la tabella hash delle auto.
+ * La funzione chiede all'utente di inserire i parametri per la visualizzazione
+ * e chiama `visualizzaAutoDisponibiliConParametri` per mostrare le auto disponibili.
+ * Restituisce le auto disponibili in un formato tabellare.
+ */
 void visualizzaAutoDisponibili(AutoHashTB ht) {
     if (!ht) {
         printf(ROSSO "Nessuna auto registrata.\n" RESET);
         return;
     }
 
+    // Variabili per i parametri di ricerca
     int giornoInizio, giornoFine, oraInizio, oraFine;
     char buffer[100];
 
@@ -279,11 +343,19 @@ void visualizzaAutoDisponibili(AutoHashTB ht) {
         }
     }
 
+
     visualizzaAutoDisponibiliConParametri(ht, giornoInizio, giornoFine, oraInizio, oraFine);
 }
 
 
-// Calcolo ore effettive
+/* * Funzione per calcolare le ore totali di una prenotazione.
+ * Parametri:
+ * - `giornoInizio`: il giorno di inizio della prenotazione (0 = lunedì, ..., 6 = domenica).
+ * - `giornoFine`: il giorno di fine della prenotazione (0 = lunedì, ..., 6 = domenica).
+ * - `oraInizio`: l'ora di inizio della prenotazione (0-23).
+ * - `oraFine`: l'ora di fine della prenotazione (1-24).
+ * Restituisce le ore totali della prenotazione.
+ */
 int calcolaOreTotali(int giornoInizio, int giornoFine, int oraInizio, int oraFine) {
     int oreInizio = giornoInizio * 24 + oraInizio;
     int oreFine = giornoFine * 24 + oraFine;
@@ -292,14 +364,28 @@ int calcolaOreTotali(int giornoInizio, int giornoFine, int oraInizio, int oraFin
     return oreTotali;
 }
 
-// Funzione per calcolare il prezzo base della prenotazione
+/* * Funzione per calcolare il prezzo di una prenotazione.
+ * Parametri:
+ * - `a`: l'auto di cui calcolare il prezzo.
+ * - `giornoInizio`: il giorno di inizio della prenotazione (0 = lunedì, ..., 6 = domenica).
+ * - `giornoFine`: il giorno di fine della prenotazione (0 = lunedì, ..., 6 = domenica).
+ * - `oraInizio`: l'ora di inizio della prenotazione (0-23).
+ * - `oraFine`: l'ora di fine della prenotazione (1-24).
+ * Restituisce il prezzo totale della prenotazione.
+ */
 float calcolaPrezzo(Auto a, int giornoInizio, int giornoFine, int oraInizio, int oraFine) {
     float prezzoOrario = ottieniPrezzo(a);
     int oreTotali = calcolaOreTotali(giornoInizio, giornoFine, oraInizio, oraFine);
     return prezzoOrario * oreTotali;
 }
 
-// Sconto per weekend (sabato = 5, domenica = 6)
+/* * Funzione per calcolare lo sconto in base ai giorni della settimana (weekend).
+ * Parametri:
+ * - `prezzo`: il prezzo originale della prenotazione.
+ * - `giornoInizio`: il giorno di inizio della prenotazione (0 = lunedì, ..., 6 = domenica).
+ * - `giornoFine`: il giorno di fine della prenotazione (0 = lunedì, ..., 6 = domenica).
+ * Restituisce il prezzo scontato se applicabile, altrimenti il prezzo originale.
+ */
 float calcolaSconto(float prezzo, int giornoInizio, int giornoFine) {
     if ((giornoInizio == 5 || giornoInizio == 6) && (giornoFine == 5 || giornoFine == 6)) {
         return prezzo * 0.9f;  // 10% di sconto
@@ -307,7 +393,15 @@ float calcolaSconto(float prezzo, int giornoInizio, int giornoFine) {
     return prezzo;
 }
 
-// Sconto per prenotazioni lunghe (>= 10 ore)
+/* * Funzione per calcolare lo sconto in base alle ore totali prenotate.
+ * Parametri:
+ * - `prezzo`: il prezzo originale della prenotazione.
+ * - `giornoInizio`: il giorno di inizio della prenotazione (0 = lunedì, ..., 6 = domenica).
+ * - `giornoFine`: il giorno di fine della prenotazione (0 = lunedì, ..., 6 = domenica).
+ * - `oraInizio`: l'ora di inizio della prenotazione (0-23).
+ * - `oraFine`: l'ora di fine della prenotazione (1-24).
+ * Restituisce il prezzo scontato se applicabile, altrimenti il prezzo originale.
+ */
 float calcolaScontoOre(float prezzo, int giornoInizio, int giornoFine, int oraInizio, int oraFine) {
     int oreTotali = calcolaOreTotali(giornoInizio, giornoFine, oraInizio, oraFine);
     if (oreTotali >= 10) {
@@ -316,7 +410,13 @@ float calcolaScontoOre(float prezzo, int giornoInizio, int giornoFine, int oraIn
     return prezzo;
 }
 
-// Sconto per fascia oraria notturna (tutta la prenotazione deve essere notturna)
+/* * Funzione per calcolare lo sconto in base alla fascia oraria.
+ * Parametri:
+ * - `prezzo`: il prezzo originale della prenotazione.
+ * - `oraInizio`: l'ora di inizio della prenotazione (0-23).
+ * - `oraFine`: l'ora di fine della prenotazione (1-24).
+ * Restituisce il prezzo scontato se applicabile, altrimenti il prezzo originale.
+ */
 float calcolaScontoFasciaOraria(float prezzo, int oraInizio, int oraFine) {
     if (oraInizio >= 20 || oraFine <= 8) {
         return prezzo * 0.85f;  // 15% di sconto
@@ -324,27 +424,44 @@ float calcolaScontoFasciaOraria(float prezzo, int oraInizio, int oraFine) {
     return prezzo;
 }
 
-// Prezzo finale dopo tutti gli sconti
+/* Funzione per calcolare il prezzo finale di una prenotazione.
+ * Parametri:
+ * - `a`: l'auto di cui calcolare il prezzo.
+ * - `giornoInizio`: il giorno di inizio della prenotazione (0 = lunedì, ..., 6 = domenica).
+ * - `giornoFine`: il giorno di fine della prenotazione (0 = lunedì, ..., 6 = domenica).
+ * - `oraInizio`: l'ora di inizio della prenotazione (0-23).
+ * - `oraFine`: l'ora di fine della prenotazione (1-24).
+ * Restituisce il prezzo finale della prenotazione dopo aver applicato gli sconti.
+ */
 float calcolaPrezzoFinale(Auto a, int giornoInizio, int giornoFine, int oraInizio, int oraFine) {
     float prezzo = calcolaPrezzo(a, giornoInizio, giornoFine, oraInizio, oraFine);
+    // Applica gli sconti
     prezzo = calcolaSconto(prezzo, giornoInizio, giornoFine);
     prezzo = calcolaScontoOre(prezzo, giornoInizio, giornoFine, oraInizio, oraFine);
     prezzo = calcolaScontoFasciaOraria(prezzo, oraInizio, oraFine);
     return prezzo;
 }
 
-// Calcolo per tutte le prenotazioni di un utente
+/* Funzione per calcolare i prezzi delle prenotazioni di un utente.
+ * Parametri:
+ * - `prenotazioni`: la lista delle prenotazioni.
+ * - `u`: l'utente di cui calcolare i prezzi.
+ * - `ht`: la tabella hash delle auto disponibili.
+ * Restituisce il totale dei prezzi delle prenotazioni dell'utente.
+ */
 float calcolaPrezziPrenotazioni(Lista prenotazioni, Utente u, AutoHashTB ht) {
     int giornoInizio, giornoFine, oraInizio, oraFine;
 
+    // Controllo se l'utente è valido
     if (!u) {
         printf(ROSSO "Utente non valido.\n" RESET);
         return -1.0f;  // Errore
     }
 
     const char *cf = ottieniCF(u);
-    Lista listaUtente = filtraPrenotazioniPerCF(prenotazioni, cf);
+    Lista listaUtente = filtraPrenotazioniPerCF(prenotazioni, cf);  // Filtra le prenotazioni per l'utente
 
+    // Controllo se la lista delle prenotazioni dell'utente è vuota
     if (ListaVuota(listaUtente)) {
         printf(ROSSO "Nessuna prenotazione trovata per l'utente con CF: %s\n" RESET, cf);
         return -1.0f;  // Errore
@@ -355,6 +472,7 @@ float calcolaPrezziPrenotazioni(Lista prenotazioni, Utente u, AutoHashTB ht) {
     float totale = 0.0f;
     Lista temp = listaUtente;
 
+    // Itera attraverso le prenotazioni dell'utente
     while (!ListaVuota(temp)) {
         Prenotazione p = ottieniPrimo(temp);
         const char *targa = ottieniTargaPrenotazione(p);
@@ -365,10 +483,12 @@ float calcolaPrezziPrenotazioni(Lista prenotazioni, Utente u, AutoHashTB ht) {
         } else {
             ottieniPeriodoPrenotazione(p, &giornoInizio, &giornoFine, &oraInizio, &oraFine);
 
+            // Calcola le ore totali e il prezzo finale
             int oreTotali = calcolaOreTotali(giornoInizio, giornoFine, oraInizio, oraFine);
             float prezzoFinale = calcolaPrezzoFinale(a, giornoInizio, giornoFine, oraInizio, oraFine);
             totale += prezzoFinale;
 
+            // Stampa i dettagli della prenotazione
             printf("\n--------------------------\n");
             stampaPrenotazione(p);
 

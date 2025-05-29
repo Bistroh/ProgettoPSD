@@ -14,7 +14,13 @@ di scelta. */
 #define RESET   "\x1b[0m"
 #define CIANO    "\x1b[36m"
 #define ROSSO     "\x1b[31m"
-
+/*
+    * Funzione principale del programma.
+* * Gestisce il ciclo principale del programma, permettendo agli utenti di
+* scegliere tra il ruolo di utente o sviluppatore.
+* * Inizializza le strutture dati necessarie, come la tabella hash per gli utenti,
+* la tabella hash per le auto e la lista delle prenotazioni.
+ */
 
 
 int main() {
@@ -24,6 +30,7 @@ int main() {
     Lista listaPrenotazioni = nuovaLista();
     int sceltaMenu = 0;
     int scelta = 0;
+
 
     do{
         scelta = selezionaRuolo(); // 1 per utente, 2 per sviluppatore
