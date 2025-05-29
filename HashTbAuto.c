@@ -203,3 +203,29 @@ void reimpostaDisponibilitaTutteLeAuto(AutoHashTB ht) {
     printf(CIANO "Tutte le disponibilita' sono state reinizializzate.\n" RESET);
 }
 
+void stampaTabellaDiHashPerDispFile(AutoHashTB ht, int giornoInizio, int giornoFine, int oraInizio, int oraFine, FILE *fp) {
+    int almenoUna = 0;
+
+    fprintf(fp, "Auto disponibili nella fascia selezionata:\n");
+
+    AutoRecord *record;
+    for (record = ht; record != NULL; record = record->hh.next) {
+        Auto a = record->autoPtr;
+        if (verificaDisponibilita(a, giornoInizio, giornoFine, oraInizio, oraFine)) {
+            fprintf(fp, "------------------------\n");
+            // Stampa dettagli auto direttamente
+            fprintf(fp, "Targa: %s\n", ottieniTarga(a));
+            fprintf(fp, "Marca: %s\n", ottieniMarca(a));
+            fprintf(fp, "Modello: %s\n", ottieniModello(a));
+            fprintf(fp, "Indirizzo: %s\n", ottieniPosizione(a));
+            fprintf(fp, "Anno: %d\n", ottieniAnno(a));
+            fprintf(fp, "Costo orario: %.2f €\n", ottieniPrezzo(a));
+            fprintf(fp, "------------------------\n");
+            almenoUna = 1;
+        }
+    }
+
+    if (!almenoUna) {
+        fprintf(fp, "Nessuna auto disponibile per questa fascia/Fascia gioranliera-oraria errata.\n");
+    }
+}

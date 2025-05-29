@@ -153,4 +153,6 @@ void stampaTabellaDiHashPerDisp(AutoHashTB ht, int giornoInizio, int giornoFine,
  */
 void reimpostaDisponibilitaTutteLeAuto(AutoHashTB ht);
 
+void stampaTabellaDiHashPerDispFile(AutoHashTB ht, int giornoInizio, int giornoFine, int oraInizio, int oraFine, FILE *fp);
+
 #endif // HASHTABLEAUTO_H
