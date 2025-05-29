@@ -159,4 +159,6 @@ void aggiungiPrenotazioniAStoricoUtenti(UtentiHashTB h, Lista listaPrenotazioni)
  */
 void stampaStoricoTuttiUtenti(UtentiHashTB h);
 
+void stampaStoricoTuttiUtentiSuFile(UtentiHashTB h, FILE *output_fp);
+
 #endif // HASHTBUTENTI_H

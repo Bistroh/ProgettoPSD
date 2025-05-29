@@ -409,3 +409,40 @@ void stampaStoricoTuttiUtenti(UtentiHashTB h) {
     }
 }
 
+void stampaStoricoTuttiUtentiSuFile(UtentiHashTB h, FILE *output_fp) {
+    HashRecord *elAttuale = h;
+
+    if (elAttuale == NULL) {
+        fprintf(output_fp, "Nessun utente trovato, non posso stampare lo storico\n");
+        return;
+    }
+
+    for (; elAttuale != NULL; elAttuale = elAttuale->hh.next) {
+        Utente u = elAttuale->utente;
+        fprintf(output_fp, "Utente: %s %s (CF: %s)\n", ottieniNome(u), ottieniCognome(u), elAttuale->cf);
+
+        Coda storico = ottieniStorico(u);
+
+        if (codaVuota(storico)) {
+            fprintf(output_fp, "  Nessuna prenotazione nello storico.\n\n");
+            continue;
+        }
+
+        Coda copia = copiaCoda(storico);
+        if (copia == NULL) {
+            fprintf(output_fp, "  Errore nella copia dello storico.\n\n");
+            continue;
+        }
+
+        int i = 1;
+        while (!codaVuota(copia)) {
+            Prenotazione p = prelevaCoda(copia);
+            fprintf(output_fp, "  Prenotazione #%d:\n", i++);
+            stampaPrenotazioneSuFile(p, output_fp);  // Assicurati che questa stampa su FILE *
+        }
+
+        free(copia); // se disponibile, altrimenti free(copia)
+        fprintf(output_fp, "\n");
+    }
+}
+
