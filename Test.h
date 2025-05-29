@@ -13,7 +13,7 @@ void eseguiPrenotazioneSimulata(Lista prenotazioni, UtentiHashTB tabUtenti, Auto
 void caricaUtentiTest(UtentiHashTB *tabUtenti);
 void caricaAutoTest(AutoHashTB *tabAuto);
 void eseguiDisponibilitaSimulata(AutoHashTB tabAuto, const char* targa, int g_inizio, int g_fine, int ora_inizio, int ora_fine);
-void eseguiCalcoloCostoSimulato(UtentiHashTB tabUtenti, AutoHashTB tabAuto, Lista prenotazioni);
+void eseguiCalcoloCostoSimulato(UtentiHashTB tabUtenti, AutoHashTB tabAuto, Lista prenotazioni, FILE *output_fp);
 void eseguiVisualizzaStoricoSimulato(UtentiHashTB tabUtenti, Lista prenotazioni, AutoHashTB tabAuto);
 
 

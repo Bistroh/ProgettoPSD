@@ -2,11 +2,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "test/Test.h"
+#include "Test.h"
 #include "HashTbUtenti.h"
 #include "HashTbAuto.h"
 #include "List_Prenotazione.h"
-#include "test/Utile_UtenteMenu.h"
+#include "Utile_UtenteMenu.h"
+
+#ifdef _WIN32
+#define TERMINALE "CON"
+#else
+#define TERMINALE "/dev/tty"
+#endif
+
 
 #define M 64
 #define ROSSO "\x1b[31m"
@@ -21,13 +28,9 @@ void caricaAutoTest(AutoHashTB *tab) {
     inserisciAuto(tab, creaAuto("AB123CD", "Fiat", "Panda", "Via Roma 10", 2000, 15.00));
 }
 
-Lista caricaPrenotazioni(Lista prenotazioni){
+Lista caricaPrenotazioni(Lista prenotazioni, int g_i, int g_f, int o_i, int o_f){
     // Aggiungi una prenotazione di esempio
-    prenotazioni = consLista(creaPrenotazione("DNTCRL65S67M126L", "AB123CD", 0, 0, 15, 18), prenotazioni);
-    prenotazioni = consLista(creaPrenotazione("DNTCRL65S67M126L", "AB123CD", 5, 5, 15, 18), prenotazioni);
-    prenotazioni = consLista(creaPrenotazione("DNTCRL65S67M126L", "AB123CD", 0, 0, 21, 23), prenotazioni);
-    prenotazioni = consLista(creaPrenotazione("DNTCRL65S67M126L", "AB123CD", 5, 6, 20, 6), prenotazioni);
-    prenotazioni = consLista(creaPrenotazione("DNTCRL65S67M126L", "AB123CD", 0, 6, 1, 24), prenotazioni);
+    prenotazioni = consLista(creaPrenotazione("DNTCRL65S67M126L", "AB123CD", g_i, g_f, o_i, o_f), prenotazioni);
 
     return prenotazioni;
 }
@@ -53,7 +56,7 @@ void eseguiPrenotazioneSimulata(Lista prenotazioni, UtentiHashTB tabUtenti, Auto
     return;
 }
 
-void eseguiCalcoloCostoSimulato(UtentiHashTB tabUtenti, AutoHashTB tabAuto, Lista prenotazioni) {
+void eseguiCalcoloCostoSimulato(UtentiHashTB tabUtenti, AutoHashTB tabAuto, Lista prenotazioni, FILE *output_fp) {
     // Cerca l’utente di test
     Utente u = cercaUtente(tabUtenti, "DNTCRL65S67M126L");
     if (!u) {
@@ -65,12 +68,14 @@ void eseguiCalcoloCostoSimulato(UtentiHashTB tabUtenti, AutoHashTB tabAuto, List
     float costoTotale = calcolaPrezziPrenotazioni(prenotazioni, u, tabAuto);
 
     // Stampa il costo totale (con due cifre decimali)
-    printf("Costo totale per %s %s: €%.2f\n", u->nome, u->cognome, costoTotale);
+    fprintf(output_fp,"Costo totale per %s %s: %.2f \xE2\x82\xAC\n", ottieniNome(u), ottieniCognome(u), costoTotale);
 }
 
 
 int run_test_case(char *tc_id, char *test_type) {
     char input_fname[M], output_fname[M], oracle_fname[M];
+    int stato = 0;
+    char line[256];
 
     snprintf(input_fname, M,  "test/%s/%s_input.txt", tc_id, tc_id);
     snprintf(output_fname, M, "test/%s/%s_output.txt", tc_id, tc_id);
@@ -96,24 +101,89 @@ int run_test_case(char *tc_id, char *test_type) {
     caricaAutoTest(&tabAuto);
 
     if (strcmp(test_type, "PRENOTA") == 0) {
-    char line[256];
-    while (fgets(line, sizeof(line), input_fp)) {
-        // Rimuove newline finale, se presente
-        line[strcspn(line, "\n")] = '\0';
+        while (fgets(line, sizeof(line), input_fp)) {
+            line[strcspn(line, "\n")] = '\0';
 
-        int g1, g2, o1, o2;
-        if (sscanf(line, "%d %d %d %d", &g1, &g2, &o1, &o2) == 4) {
-            eseguiPrenotazioneSimulata(prenotazioni, tabUtenti, tabAuto, g1, g2, o1, o2, output_fp);
-        } else {
-            fprintf(output_fp, "Riga input ignorata (formato non valido): %s\n", line);
+            int g1, g2, o1, o2;
+            if (sscanf(line, "%d %d %d %d", &g1, &g2, &o1, &o2) == 4) {
+                eseguiPrenotazioneSimulata(prenotazioni, tabUtenti, tabAuto, g1, g2, o1, o2, output_fp);
+            } else {
+                fprintf(output_fp, "Riga input ignorata (formato non valido): %s\n", line);
+            }
         }
+
+    } else if (strcmp(test_type, "CALCOLO") == 0) {
+        while (fgets(line, sizeof(line), input_fp)) {
+            line[strcspn(line, "\n")] = '\0';
+
+            int g1, g2, o1, o2;
+            if (sscanf(line, "%d %d %d %d", &g1, &g2, &o1, &o2) == 4) {
+                // Accumula tutte le prenotazioni
+                prenotazioni = caricaPrenotazioni(prenotazioni, g1, g2, o1, o2);
+            } else {
+                fprintf(output_fp, "Riga input ignorata (formato non valido): %s\n", line);
+            }
+        }
+
+        // Ora esegui il calcolo su tutte le prenotazioni accumulate
+        eseguiCalcoloCostoSimulato(tabUtenti, tabAuto, prenotazioni, output_fp);
+
+        // Poi distruggi la lista
+        distruggiLista(prenotazioni);
+    } else if (strcmp(test_type, "VISUALIZZA") == 0) {
+        while (fgets(line, sizeof(line), input_fp)) {
+            line[strcspn(line, "\n")] = '\0';
+
+            int g1, g2, o1, o2;
+            if (sscanf(line, "%d %d %d %d", &g1, &g2, &o1, &o2) == 4) {
+                if (strcmp(input_fname, "test/TC15/TC15_input.txt") == 0) {
+
+                    prenotazioni = prenotazioneAuto(prenotazioni, tabAuto, "DNTCRL65S67M126L" , "AB123CD", &g1, &g2, &o1, &o2, &stato);
+                }
+                stampaTabellaDiHashPerDispFile(tabAuto, g1, g2,o1, o2, output_fp);
+            } else {
+                fprintf(output_fp, "Riga input ignorata (formato non valido): %s\n", line);
+            }
+        }
+    } else if (strcmp(test_type, "STORICO") == 0) {
+        while (fgets(line, sizeof(line), input_fp)) {
+            line[strcspn(line, "\n")] = '\0';
+
+            if (strcmp(line, "nessun dato") == 0) {
+                stampaStoricoTuttiUtentiSuFile(tabUtenti, output_fp);
+                return 1;
+            }
+
+            int g1, g2, o1, o2;
+            if (sscanf(line, "%d %d %d %d", &g1, &g2, &o1, &o2) == 4) {
+                Utente u = cercaUtente(tabUtenti, "DNTCRL65S67M126L");
+                if (!u) {
+                    fprintf(output_fp, "Utente non trovato!\n");
+                    return 0;
+                }
+
+                prenotazioni = prenotazioneAuto(prenotazioni, tabAuto, ottieniCF(u), "AB123CD", &g1, &g2, &o1, &o2, &stato);
+                if (!stato) {
+                    fprintf(output_fp, "Prenotazione non riuscita.\n");
+                    continue;
+                }
+
+                aggiungiPrenotazioniAStoricoUtenti(tabUtenti, prenotazioni);
+                reimpostaDisponibilitaTutteLeAuto(tabAuto);
+                distruggiLista(prenotazioni);
+                prenotazioni = nuovaLista();
+            } else {
+                fprintf(output_fp, "Riga input ignorata (formato non valido): %s\n", line);
+            }
+        }
+
+        // Dopo tutte le prenotazioni, stampa lo storico una sola volta
+        stampaStoricoTuttiUtentiSuFile(tabUtenti, output_fp);
     }
-    if(strcmp(test_type, "CALCOLO") == 0) {
-        fprintf(output_fp, "Test di prenotazione completato.\n");
+    else {
+        fprintf(output_fp, "Tipo test non supportato: %s\n", test_type);
     }
-} else {
-    fprintf(output_fp, "Tipo test non supportato: %s\n", test_type);
-}
+
 
 
     fclose(input_fp);
