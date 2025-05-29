@@ -2,11 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "Test.h"
+#include "test/Test.h"
 #include "HashTbUtenti.h"
 #include "HashTbAuto.h"
 #include "List_Prenotazione.h"
-#include "Utile_UtenteMenu.h"
+#include "test/Utile_UtenteMenu.h"
 
 #define M 64
 #define ROSSO "\x1b[31m"

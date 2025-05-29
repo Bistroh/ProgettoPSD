@@ -7,5 +7,4 @@ Lista gestisciMenuSviluppatore(int scelta, AutoHashTB *ht, Lista l, UtentiHashTB
 int mostraMenuSviluppatore();
 int selezionaRuolo();
 
-
 #endif //UTILE_DEVMENU_H

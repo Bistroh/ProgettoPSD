@@ -19,6 +19,13 @@ di scelta.*/
 #define CIANO   "\x1b[36m"
 
 Lista switchUtente(int scelta, Utente u, Lista l, AutoHashTB tabAuto) {
+    char * CF = malloc(sizeof(char) * 17);
+    char * targa = malloc(sizeof(char) * 8);
+    int * giornoInizio = malloc(sizeof(int));
+    int * giornoFine = malloc(sizeof(int));
+    int * oraInizio = malloc(sizeof(int));
+    int * oraFine = malloc(sizeof(int));
+    int stato = 0;
     // Funzione per gestire le scelte dell'utente
     switch (scelta) {
         case 1:
@@ -28,7 +35,11 @@ Lista switchUtente(int scelta, Utente u, Lista l, AutoHashTB tabAuto) {
                 break;
             }
             else{
-            	l = prenotazioneAuto(l, u, tabAuto);
+                inserimentoPrenotazione(CF, targa, giornoInizio, giornoFine, oraInizio, oraFine, u);
+            	l = prenotazioneAuto(l, tabAuto, CF, targa, giornoInizio, giornoFine, oraInizio, oraFine, &stato);
+                if(!stato){
+                  printf(ROSSO "Prenotazione non riuscita. Controlla i dati inseriti.\n" RESET);
+                }
             }
             break;
         case 2:
@@ -92,13 +103,9 @@ int menuUtente() {
     return scelta;
 }
 
-
-Lista prenotazioneAuto(Lista l, Utente u, AutoHashTB tabAuto) {
-    char CF[17], targa[10], buffer[100];
-    Auto a;
-    int giornoInizio, giornoFine, oraInizio, oraFine;
-    bool flag = true;
-
+//funzione che prende in input i dati per la prenotazione
+int inserimentoPrenotazione(char *CF, char *targa, int *giornoInizio, int *giornoFine, int *oraInizio, int *oraFine, Utente u) {
+    char buffer[100];
     strcpy(CF, ottieniCF(u));
 
     do {
@@ -111,22 +118,15 @@ Lista prenotazioneAuto(Lista l, Utente u, AutoHashTB tabAuto) {
     } while (!validaTarga(targa));
     while ((getchar()) != '\n');  // Pulisce il buffer
 
-    a = cercaAuto(tabAuto, targa);
-    if (a == NULL) {
-      printf(ROSSO "Errore: auto con targa %s non trovata.\n" RESET, targa);
-	  while ((getchar()) != '\n');  // Pulisce il buffer
-	  return l;
-    }
-
     // Giorno inizio
     while (1) {
         printf(GIALLO "Inserisci il giorno di inizio della prenotazione (1=lun, ..., 7=dom): " RESET);
         fgets(buffer, sizeof(buffer), stdin);
 
-        if (sscanf(buffer, "%d", &giornoInizio) != 1 || giornoInizio < 1 || giornoInizio > 7) {
-         	printf(ROSSO "Errore: il giorno deve essere un numero da 1 a 7.\n" RESET);
+        if (sscanf(buffer, "%d", giornoInizio) != 1 || *giornoInizio < 1 || *giornoInizio > 7) {
+            printf(ROSSO "Errore: il giorno deve essere un numero da 1 a 7.\n" RESET);
         } else {
-         	break;
+            break;
         }
     }
 
@@ -135,8 +135,8 @@ Lista prenotazioneAuto(Lista l, Utente u, AutoHashTB tabAuto) {
         printf(GIALLO "Inserisci il giorno di fine della prenotazione (>= giorno inizio, max 7): " RESET);
         fgets(buffer, sizeof(buffer), stdin);
 
-        if (sscanf(buffer, "%d", &giornoFine) != 1 || giornoFine < giornoInizio || giornoFine > 7) {
-         	printf(ROSSO "Errore: il giorno di fine deve essere compreso tra %d e 7.\n" RESET, giornoInizio);
+        if (sscanf(buffer, "%d", giornoFine) != 1 || *giornoFine < *giornoInizio || *giornoFine > 7) {
+            printf(ROSSO "Errore: il giorno di fine deve essere compreso tra %d e 7.\n" RESET, *giornoInizio);
         } else {
             break;
         }
@@ -147,7 +147,7 @@ Lista prenotazioneAuto(Lista l, Utente u, AutoHashTB tabAuto) {
         printf(GIALLO "Inserisci l'ora di inizio (0-23): " RESET);
         fgets(buffer, sizeof(buffer), stdin);
 
-        if (sscanf(buffer, "%d", &oraInizio) != 1 || oraInizio < 0 || oraInizio > 23) {
+        if (sscanf(buffer, "%d", oraInizio) != 1 || *oraInizio < 0 || *oraInizio > 23) {
             printf(ROSSO "Errore: l'ora di inizio deve essere compresa tra 0 e 23 (0 = mezzanotte, 23 = 23:00).\n" RESET);
         } else {
             break;
@@ -159,31 +159,65 @@ Lista prenotazioneAuto(Lista l, Utente u, AutoHashTB tabAuto) {
         printf(GIALLO "Inserisci l'ora di fine (1-24): " RESET);
         fgets(buffer, sizeof(buffer), stdin);
 
-        if (sscanf(buffer, "%d", &oraFine) != 1 || oraFine < 1 || oraFine > 24) {
+        if (sscanf(buffer, "%d", oraFine) != 1 || *oraFine < 1 || *oraFine > 24) {
             printf(ROSSO "Errore: l'ora di fine deve essere compresa tra 1 e 24 (24 = mezzanotte).\n" RESET);
-        } else if (giornoInizio == giornoFine && oraFine <= oraInizio) {
+        } else if (*giornoInizio == *giornoFine && *oraFine <= *oraInizio) {
             printf(ROSSO "Errore: per lo stesso giorno, l'ora di fine deve essere maggiore dell'ora di inizio.\n" RESET);
         } else {
             break;
         }
     }
 
-	giornoInizio--, giornoFine--;
+    return 1;
+}
 
-    if (verificaDisponibilita(a, giornoInizio, giornoFine, oraInizio, oraFine)) {
-        impostaDisponibile(a, giornoInizio, giornoFine, oraInizio, oraFine, true);
-        printf(VERDE "Prenotazione registrata con successo!\n" RESET);
-    } else {
-        printf(ROSSO "Auto non disponibile nel periodo selezionato.\n" RESET);
-        flag = false;
+
+Lista prenotazioneAuto(Lista l, AutoHashTB tabAuto, char *CF, char *targa, int *giornoInizio, int *giornoFine, int *oraInizio, int *oraFine, int *stato) {
+    Auto a = cercaAuto(tabAuto, targa);
+    if(a == NULL) {
+        printf(ROSSO "Auto con targa %s non trovata.\n" RESET, targa);
+        *stato = 0;
+        return l;
     }
 
-    if(flag){
-    	Prenotazione nuovaPrenotazione = creaPrenotazione(CF, targa, giornoInizio, giornoFine, oraInizio, oraFine);
-    	l = consLista(nuovaPrenotazione, l);
+	*giornoInizio = *giornoInizio -1;
+    *giornoFine = *giornoFine -1;
+
+    if (verificaDisponibilita(a, *giornoInizio, *giornoFine, *oraInizio, *oraFine)) {
+        impostaDisponibile(a, *giornoInizio, *giornoFine, *oraInizio, *oraFine, true);
+        Prenotazione nuovaPrenotazione = creaPrenotazione(CF, targa, *giornoInizio, *giornoFine, *oraInizio, *oraFine);
+        l = consLista(nuovaPrenotazione, l);
+        printf(VERDE "Prenotazione registrata con successo!\n" RESET);
+        *stato = 1;
+    } else {
+        printf(ROSSO "Auto non disponibile nel periodo selezionato.\n" RESET);
+        *stato = 0;
     }
 
     return l;
+}
+
+void visualizzaAutoDisponibiliConParametri(AutoHashTB ht, int giornoInizio, int giornoFine, int oraInizio, int oraFine) {
+    if (!ht) {
+        printf(ROSSO "Nessuna auto registrata.\n" RESET);
+        return;
+    }
+
+    // Validazione
+    if (giornoInizio < 1 || giornoInizio > 7 ||
+        giornoFine < giornoInizio || giornoFine > 7 ||
+        oraInizio < 0 || oraInizio > 23 ||
+        oraFine < 1 || oraFine > 24 ||
+        (giornoInizio == giornoFine && oraFine <= oraInizio)) {
+        printf(ROSSO "Parametri non validi per la visualizzazione della disponibilità.\n" RESET);
+        return;
+        }
+
+    // Conversione 0-based
+    giornoInizio--;
+    giornoFine--;
+
+    stampaTabellaDiHashPerDisp(ht, giornoInizio, giornoFine, oraInizio, oraFine);
 }
 
 void visualizzaAutoDisponibili(AutoHashTB ht) {
@@ -225,7 +259,7 @@ void visualizzaAutoDisponibili(AutoHashTB ht) {
         fgets(buffer, sizeof(buffer), stdin);
 
         if (sscanf(buffer, "%d", &oraInizio) != 1 || oraInizio < 0 || oraInizio > 23) {
-            printf(ROSSO "Errore: l'ora di inizio deve essere compresa tra 0 e 23 (0 = mezzanotte, 23 = 23:00).\n" RESET);
+            printf(ROSSO "Errore: l'ora di inizio deve essere compresa tra 0 e 23.\n" RESET);
         } else {
             break;
         }
@@ -237,7 +271,7 @@ void visualizzaAutoDisponibili(AutoHashTB ht) {
         fgets(buffer, sizeof(buffer), stdin);
 
         if (sscanf(buffer, "%d", &oraFine) != 1 || oraFine < 1 || oraFine > 24) {
-            printf(ROSSO "Errore: l'ora di fine deve essere compresa tra 1 e 24 (24 = mezzanotte).\n" RESET);
+            printf(ROSSO "Errore: l'ora di fine deve essere compresa tra 1 e 24.\n" RESET);
         } else if (giornoInizio == giornoFine && oraFine <= oraInizio) {
             printf(ROSSO "Errore: per lo stesso giorno, l'ora di fine deve essere maggiore dell'ora di inizio.\n" RESET);
         } else {
@@ -245,11 +279,9 @@ void visualizzaAutoDisponibili(AutoHashTB ht) {
         }
     }
 
-
-	giornoInizio--, giornoFine--;
-
-    stampaTabellaDiHashPerDisp(ht, giornoInizio, giornoFine, oraInizio, oraFine);
+    visualizzaAutoDisponibiliConParametri(ht, giornoInizio, giornoFine, oraInizio, oraFine);
 }
+
 
 // Calcolo ore effettive
 int calcolaOreTotali(int giornoInizio, int giornoFine, int oraInizio, int oraFine) {
@@ -302,12 +334,12 @@ float calcolaPrezzoFinale(Auto a, int giornoInizio, int giornoFine, int oraInizi
 }
 
 // Calcolo per tutte le prenotazioni di un utente
-void calcolaPrezziPrenotazioni(Lista prenotazioni, Utente u, AutoHashTB ht) {
+float calcolaPrezziPrenotazioni(Lista prenotazioni, Utente u, AutoHashTB ht) {
     int giornoInizio, giornoFine, oraInizio, oraFine;
 
     if (!u) {
         printf(ROSSO "Utente non valido.\n" RESET);
-        return;
+        return -1.0f;  // Errore
     }
 
     const char *cf = ottieniCF(u);
@@ -315,7 +347,7 @@ void calcolaPrezziPrenotazioni(Lista prenotazioni, Utente u, AutoHashTB ht) {
 
     if (ListaVuota(listaUtente)) {
         printf(ROSSO "Nessuna prenotazione trovata per l'utente con CF: %s\n" RESET, cf);
-        return;
+        return -1.0f;  // Errore
     }
 
     printf(GIALLO "Prezzi delle prenotazioni per l'utente con CF: %s\n" RESET, cf);
@@ -358,6 +390,7 @@ void calcolaPrezziPrenotazioni(Lista prenotazioni, Utente u, AutoHashTB ht) {
 
     printf("\n" GIALLO "Totale complessivo per tutte le prenotazioni dell'utente: %.2f\n" RESET, totale);
 
+    return totale;
     distruggiLista(listaUtente);
 }
 
