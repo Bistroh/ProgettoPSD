@@ -203,14 +203,28 @@ void reimpostaDisponibilitaTutteLeAuto(AutoHashTB ht) {
     printf(CIANO "Tutte le disponibilita' sono state reinizializzate.\n" RESET);
 }
 
+/* Funzione per stampare le auto disponibili in un intervallo di giorni e ore su un file.
+ * Parametri:
+ * - `ht`: la tabella hash da cui stampare le auto.
+ * - `giornoInizio`: il giorno di inizio dell'intervallo.
+ * - `giornoFine`: il giorno di fine dell'intervallo.
+ * - `oraInizio`: l'ora di inizio dell'intervallo.
+ * - `oraFine`: l'ora di fine dell'intervallo.
+ * - `fp`: il file su cui scrivere le informazioni delle auto disponibili.
+ * La funzione itera su tutti i record nella tabella hash, verifica la disponibilità di ogni auto
+    * nell'intervallo specificato e scrive le informazioni delle auto disponibili nel file.
+    */
 void stampaTabellaDiHashPerDispFile(AutoHashTB ht, int giornoInizio, int giornoFine, int oraInizio, int oraFine, FILE *fp) {
     int almenoUna = 0;
 
     fprintf(fp, "Auto disponibili nella fascia selezionata:\n");
 
     AutoRecord *record;
+    // Controlla se la tabella hash è NULL
     for (record = ht; record != NULL; record = record->hh.next) {
         Auto a = record->autoPtr;
+        // Verifica la disponibilità dell'auto nell'intervallo specificato
+         // Se l'auto è disponibile, stampa le informazioni nel file
         if (verificaDisponibilita(a, giornoInizio, giornoFine, oraInizio, oraFine)) {
             fprintf(fp, "------------------------\n");
             // Stampa dettagli auto direttamente

@@ -159,6 +159,21 @@ void aggiungiPrenotazioniAStoricoUtenti(UtentiHashTB h, Lista listaPrenotazioni)
  */
 void stampaStoricoTuttiUtenti(UtentiHashTB h);
 
+/*
+ * Funzione: stampaStoricoTuttiUtentiSuFile
+ * -----------------------------
+ * Parametri:
+ * - `h`: la tabella hash degli utenti.
+ * - `output_fp`: il file su cui scrivere lo storico.
+ * -----------------------------
+ * Precondizioni:
+ * - `h` deve essere un puntatore valido a una tabella hash degli utenti.
+ * - `output_fp` deve essere un file aperto in modalità scrittura.
+ * -----------------------------
+ * Postcondizioni:
+ * - Scrive lo storico di tutte le prenotazioni per ogni utente nel file specificato.
+ * -----------------------------
+ */
 void stampaStoricoTuttiUtentiSuFile(UtentiHashTB h, FILE *output_fp);
 
 #endif // HASHTBUTENTI_H

@@ -106,11 +106,14 @@ Auto rimuoviAuto(AutoHashTB *ht, const char *targa);
 void distruggiAutoHashTB(AutoHashTB *ht);
 
 /*
-* Funzione per stampare tutte le auto nella tabella hash.
+* Funzione: stampaAutoHashTB
+* -----------------------------
 * * Parametri:
 * - `ht`: la tabella hash da cui stampare le auto.
+* -----------------------------
 * Precondizioni:
 * - `ht` deve essere un puntatore valido a una tabella hash creata con `creaAutoHashTB`.
+* -----------------------------
 * * Postcondizioni:
 * - Stampa le informazioni delle auto nella tabella hash.
 * -----------------------------
@@ -118,41 +121,75 @@ void distruggiAutoHashTB(AutoHashTB *ht);
 void stampaAutoHashTB(AutoHashTB ht);
 
 /*
-* Funzione per stampare le auto disponibili in un intervallo di giorni e ore.
+* Funzione: stampaTabellaDiHashPerDisp
+* -----------------------------
 * * Parametri:
 * - `ht`: la tabella hash da cui stampare le auto.
 * - `giornoInizio`: il giorno di inizio dell'intervallo (0 = Lunedì, 6 = Domenica).
 * - `giornoFine`: il giorno di fine dell'intervallo (0 = Lunedì, 6 = Domenica).
 * - `oraInizio`: l'ora di inizio dell'intervallo (0-23).
 * - `oraFine`: l'ora di fine dell'intervallo (1-24, dove 24 indica la mezzanotte del giorno successivo).
+* -----------------------------
 * * Precondizioni:
 * - `ht` deve essere un puntatore valido a una tabella hash creata con `creaAutoHashTB`.
 * * - `giornoInizio`, `giornoFine`, `oraInizio`, `oraFine` devono essere valori validi:
 *  - `giornoInizio` e `giornoFine` devono essere compresi tra 0 e 6.
 * * - `oraInizio` deve essere compreso tra 0 e 23.
 * * - `oraFine` deve essere compreso tra 1 e 24.
+* -----------------------------
 * * Postcondizioni:
 * - Stampa le auto disponibili nell'intervallo specificato.
 * -----------------------------
 * Restituisce:
 * - Nessuno.
+* -----------------------------
  */
 void stampaTabellaDiHashPerDisp(AutoHashTB ht, int giornoInizio, int giornoFine, int oraInizio, int oraFine);
 
 /*
-* Funzione per reimpostare la disponibilità di tutte le auto nella tabella hash.
+* Funzione: reimpostaDisponibilitaTutteLeAuto
+* -----------------------------
 * * Parametri:
 * - `ht`: la tabella hash delle auto da reimpostare.
+* -----------------------------
 * * Precondizioni:
 * - `ht` deve essere un puntatore valido a una tabella hash creata con `creaAutoHashTB`.
+* -----------------------------
 * * Postcondizioni:
 * - Reimposta la disponibilità di tutte le auto nella tabella hash a disponibile (True).
 * -----------------------------
 * Restituisce:
 * - Nessuno.
+* -----------------------------
  */
 void reimpostaDisponibilitaTutteLeAuto(AutoHashTB ht);
 
+/*
+ * Funzione: stampaTabellaDiHashPerDispFile
+ * -----------------------------
+ * Parametri:
+ * - `ht`: la tabella hash da cui stampare le auto.
+ * - `giornoInizio`: il giorno di inizio dell'intervallo (0 = Lunedì, 6 = Domenica).
+ * - `giornoFine`: il giorno di fine dell'intervallo (0 = Lunedì, 6 = Domenica).
+ * - `oraInizio`: l'ora di inizio dell'intervallo (0-23).
+ * - `oraFine`: l'ora di fine dell'intervallo (1-24, dove 24 indica la mezzanotte del giorno successivo).
+ * - `fp`: il file in cui scrivere le informazioni delle auto disponibili.
+ * -----------------------------
+ * * Precondizioni:
+ * - `ht` deve essere un puntatore valido a una tabella hash creata con `creaAutoHashTB`.
+ * - `giornoInizio`, `giornoFine`, `oraInizio`, `oraFine` devono essere valori validi:
+ *  - `giornoInizio` e `giornoFine` devono essere compresi tra 0 e 6.
+ * * - `oraInizio` deve essere compreso tra 0 e 23.
+ * * - `oraFine` deve essere compreso tra 1 e 24.
+ * * - `fp` deve essere un puntatore valido a un file aperto in modalità scrittura.
+ * -----------------------------
+ * Postcondizioni:
+ * Scrive le informazioni delle auto disponibili nell'intervallo specificato nel file.
+ * -----------------------------
+ * Restituisce:
+ * Nessuno.
+ * -----------------------------
+ */
 void stampaTabellaDiHashPerDispFile(AutoHashTB ht, int giornoInizio, int giornoFine, int oraInizio, int oraFine, FILE *fp);
 
 #endif // HASHTABLEAUTO_H

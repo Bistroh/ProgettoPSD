@@ -100,10 +100,11 @@ Utente eliminaUtente(UtentiHashTB *h, const char *CF) {
 }
 
 /*
-    * Distrugge completamente la tabella hash degli utenti e tutti gli utenti contenuti.
-* * Parametri:
-* *   - `h`: puntatore alla tabella hash degli utenti.
-* * Dopo la chiamata, il puntatore viene impostato a NULL.
+ * La funzione distruggiHashTBUtenti libera la memoria allocata per la tabella hash degli utenti.
+ * Parametri:
+ * - `h`: puntatore alla tabella hash degli utenti da distruggere.
+ * * La funzione itera su tutti i record nella tabella hash, libera la memoria per ogni utente,
+ * * libera la memoria per la chiave (codice fiscale) e infine libera il nodo stesso.
  */
 void distruggiHashTBUtenti(UtentiHashTB *h) {
   // Controlla se la tabella hash è già vuota
@@ -117,10 +118,10 @@ void distruggiHashTBUtenti(UtentiHashTB *h) {
     *h = NULL;
 }
 
-/*
-    * Stampa tutti gli utenti nella tabella hash.
-* * Parametri:
-* *   - `h`: la tabella hash degli utenti.
+/* La funzione stampaHashTableUtenti stampa tutti gli utenti presenti nella tabella hash.
+ * Parametri:
+ * - `h`: la tabella hash degli utenti da stampare.
+ * La funzione itera su tutti i record nella tabella hash e stampa il codice fiscale e i dettagli dell'utente.
  */
 void stampaHashTableUtenti(UtentiHashTB h) {
     HashRecord *elAttuale;
@@ -182,6 +183,7 @@ Utente loginRegistrazioneUtente(UtentiHashTB *h) {
         }
     }
 
+    // Chiedo il codice fiscale
     do {
         printf(GIALLO "Inserisci codice fiscale (16 caratteri): " RESET);
         fgets(CF, 17, stdin);
@@ -196,6 +198,7 @@ Utente loginRegistrazioneUtente(UtentiHashTB *h) {
     if (scelta == 1) {
         // LOGIN
         if (u != NULL) {
+            // Se l'utente esiste, procedo con il login
             printf(GIALLO "Inserisci la tua password: " RESET);
             while (getchar() != '\n');  // pulizia buffer
             if (fgets(passwordInserita, sizeof(passwordInserita), stdin) != NULL) {
@@ -213,9 +216,11 @@ Utente loginRegistrazioneUtente(UtentiHashTB *h) {
                 return NULL;
             }
         } else {
+            // Se l'utente non esiste, procedo con la registrazione automatica
             printf(ROSSO "Utente non trovato. Procedo con la registrazione.\n" RESET);
 			while ((c = getchar()) != '\n' && c != EOF);  // pulizia buffer
             // REGISTRAZIONE AUTOMATICA
+            // Chiedo il nome
             do{
             printf(GIALLO "Inserisci il tuo nome: " RESET);
             fgets(nome, sizeof(nome), stdin);
@@ -226,6 +231,7 @@ Utente loginRegistrazioneUtente(UtentiHashTB *h) {
             } while (!validaNome(nome));
 			capitalizza(nome);  // prima lettera maiuscola
 
+            // Chiedo il cognome
 			do{
             printf(GIALLO "Inserisci il tuo cognome: " RESET);
             fgets(cognome, sizeof(cognome), stdin);
@@ -236,6 +242,7 @@ Utente loginRegistrazioneUtente(UtentiHashTB *h) {
             } while (!validaCognome(cognome));
             capitalizza(cognome);  // prima lettera maiuscola
 
+            // Chiedo l'email
             do {
                 printf(GIALLO "Inserisci la tua email: " RESET);
                 fgets(email, sizeof(email), stdin);
@@ -243,6 +250,7 @@ Utente loginRegistrazioneUtente(UtentiHashTB *h) {
                 if (!validaEmail(email)) printf(ROSSO "Email non valida.\n" RESET);
             } while (!validaEmail(email));
 
+            // Chiedo il numero di telefono
             do {
                 printf(GIALLO "Inserisci numero di telefono (10 cifre, inizia per 3): " RESET);
                 fgets(telefono, sizeof(telefono), stdin);
@@ -250,6 +258,7 @@ Utente loginRegistrazioneUtente(UtentiHashTB *h) {
                 if (!validaTelefono(telefono)) printf(ROSSO "Numero non valido.\n" RESET);
             } while (!validaTelefono(telefono));
 
+            // Chiedo la password
             do {
                 printf(GIALLO "Inserisci password (almeno 8 caratteri, 1 maiuscola, 1 minuscola, 1 numero, 1 simbolo): " RESET);
                 fgets(passwordInserita, sizeof(passwordInserita), stdin);
@@ -350,8 +359,16 @@ Utente loginRegistrazioneUtente(UtentiHashTB *h) {
     }
 }
 
-
-
+/*
+* Funzione per aggiungere le prenotazioni di una lista allo storico degli utenti.
+* Parametri:
+* - `h`: la tabella hash degli utenti.
+* - `listaPrenotazioni`: la lista di prenotazioni da aggiungere allo storico.
+* * La funzione itera su ogni prenotazione nella lista, ottiene il codice fiscale dell'utente associato,
+* * cerca l'utente nella tabella hash e, se trovato, inserisce la prenotazione nello storico dell'utente.
+* * Se l'utente non viene trovato, stampa un messaggio di errore.
+* * Nota: si assume che la funzione `copiaPrenotazione` crei una copia della prenotazione
+ */
 void aggiungiPrenotazioniAStoricoUtenti(UtentiHashTB h, Lista listaPrenotazioni) {
     Lista elAttuale = listaPrenotazioni;
 
@@ -372,6 +389,14 @@ void aggiungiPrenotazioniAStoricoUtenti(UtentiHashTB h, Lista listaPrenotazioni)
     }
 }
 
+/*
+ * Funzione per stampare lo storico di tutti gli utenti.
+ * Parametri:
+ * - `h`: la tabella hash degli utenti.
+ * La funzione itera su ogni utente nella tabella hash, stampa le informazioni dell'utente
+ * e poi stampa tutte le prenotazioni presenti nel suo storico.
+ * Se un utente non ha prenotazioni nello storico, viene indicato.
+ */
 void stampaStoricoTuttiUtenti(UtentiHashTB h) {
     HashRecord *elAttuale = h;
 
@@ -409,25 +434,38 @@ void stampaStoricoTuttiUtenti(UtentiHashTB h) {
     }
 }
 
+/*
+ * Funzione per stampare lo storico di tutti gli utenti su un file.
+ * Parametri:
+ * - `h`: la tabella hash degli utenti.
+ * - `output_fp`: il file su cui scrivere lo storico.
+ * La funzione itera su ogni utente nella tabella hash, stampa le informazioni dell'utente
+ * e poi stampa tutte le prenotazioni presenti nel suo storico sul file specificato.
+ * Se un utente non ha prenotazioni nello storico, viene indicato nel file.
+ */
 void stampaStoricoTuttiUtentiSuFile(UtentiHashTB h, FILE *output_fp) {
     HashRecord *elAttuale = h;
 
+    // Controlla se la tabella hash è vuota
     if (elAttuale == NULL) {
         fprintf(output_fp, "Nessun utente trovato, non posso stampare lo storico\n");
         return;
     }
 
+    // Itera su ogni record nella tabella hash
     for (; elAttuale != NULL; elAttuale = elAttuale->hh.next) {
         Utente u = elAttuale->utente;
         fprintf(output_fp, "Utente: %s %s (CF: %s)\n", ottieniNome(u), ottieniCognome(u), elAttuale->cf);
 
         Coda storico = ottieniStorico(u);
 
+        // Controlla se lo storico è vuoto
         if (codaVuota(storico)) {
             fprintf(output_fp, "  Nessuna prenotazione nello storico.\n\n");
             continue;
         }
 
+        // Crea una copia dello storico per evitare di modificarlo
         Coda copia = copiaCoda(storico);
         if (copia == NULL) {
             fprintf(output_fp, "  Errore nella copia dello storico.\n\n");
