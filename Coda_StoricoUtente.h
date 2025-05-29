@@ -8,24 +8,122 @@ typedef struct c_coda *Coda;
 
 // Prototipi delle funzioni per operare sulla coda:
 
-// Crea una nuova coda e restituisce un puntatore ad essa.
-// Non richiede parametri in ingresso.
+/*
+* Funzione: nuovaCoda
+* -----------------------------
+* Parametri:
+* - Nessuno.
+* -----------------------------
+* Precondizioni:
+* - Nessuna.
+* -----------------------------
+* Postcondizioni:
+* - Crea una nuova coda e la restituisce come puntatore di tipo 'Coda'.
+ * * Se l'allocazione della memoria fallisce, restituisce NULL.
+ * -----------------------------
+* Side Effects:
+* La memoria per la coda viene allocata dinamicamente.
+* -----------------------------
+* Restituisce:
+* - Un puntatore a una nuova coda di tipo 'Coda' se l'allocazione ha successo,
+ */
 Coda nuovaCoda(void);
 
-// Verifica se la coda specificata è vuota.
-// Prende come parametro un puntatore a una coda e restituisce un intero.
-// Tipicamente, restituisce 0 se la coda non è vuota e un valore non-zero (solitamente 1) se la coda è vuota.
+/*
+* Funzione: codaVuota
+* -----------------------------
+* Parametri:
+* - q: un puntatore alla coda di tipo 'Coda'.
+* -----------------------------
+* Precondizioni:
+* - q deve essere un puntatore valido a una coda creata con 'nuovaCoda'.
+* -----------------------------
+* Postcondizioni:
+* - Restituisce 1 se la coda è vuota, 0 altrimenti.
+* * Side Effects:
+* Nessuno.
+* -----------------------------
+ */
 int codaVuota(Coda q);
 
-
-// Aggiunge un nuovo elemento alla parte posteriore della coda.
-// Prende come parametri l'elemento da aggiungere (di tipo 'item', che deve essere definito altrove nel codice) e un puntatore alla coda a cui aggiungere l'elemento.
-// Restituisce un intero, che solitamente indica il successo o il fallimento dell'operazione (ad esempio 0 per successo, -1 per fallimento).
+/*
+* Funzione: inserisciCoda
+* -----------------------------
+* Parametri:
+* - val: un valore di tipo 'Prenotazione' da inserire nella coda.
+* - q: un puntatore alla coda di tipo 'Coda'.
+* -----------------------------
+* Precondizioni:
+* - q deve essere un puntatore valido a una coda creata con 'nuovaCoda'.
+* -----------------------------
+* Postcondizioni:
+* - Inserisce il valore 'val' alla fine della coda 'q'.
+* * Restituisce 1 se l'inserimento ha successo, 0 se l'allocazione della memoria fallisce,
+* -1 se il puntatore alla coda è NULL (cioè la coda non esiste).
+* * Side Effects:
+* La memoria per il nuovo nodo viene allocata dinamicamente.
+* -----------------------------
+ */
 int inserisciCoda(Prenotazione val, Coda q);
 
+/*
+* Funzione: prelevaCoda
+* -----------------------------
+* Parametri:
+* - q: un puntatore alla coda di tipo 'Coda'.
+* -----------------------------
+* Precondizioni:
+* - q deve essere un puntatore valido a una coda creata con 'nuovaCoda'.
+* -----------------------------
+* Postcondizioni:
+* - Rimuove e restituisce il primo elemento della coda 'q'.
+* * Restituisce il valore del primo elemento della coda se l'operazione ha successo,
+* * altrimenti restituisce NULL se la coda è vuota o se il puntatore alla coda è NULL.
+* * Side Effects:
+* La memoria del nodo rimosso viene liberata.
+* -----------------------------
+ */
 Prenotazione prelevaCoda(Coda q);
 
+/*
+* Funzione: stampaStorico
+* -----------------------------
+* Parametri:
+* - q: un puntatore alla coda di tipo 'Coda'.
+* -----------------------------
+* Precondizioni:
+* - q deve essere un puntatore valido a una coda creata con 'nuovaCoda'.
+* -----------------------------
+* Postcondizioni:
+* - Stampa tutte le prenotazioni presenti nella coda 'q'.
+* Utilizza una coda temporanea per non perdere i dati originali durante la stampa.
+* Se la coda è vuota, stampa un messaggio che indica che lo storico è vuoto.
+* Side Effects:
+* La memoria per la coda temporanea viene allocata dinamicamente.
+* -----------------------------
+* Restituisce:
+* - Nessuno.
+* -----------------------------
+ */
 void stampaStorico(Coda q);
+
+/*
+* Funzione: copiaCoda
+* -----------------------------
+* Parametri:
+* - q: un puntatore alla coda di tipo 'Coda'.
+* -----------------------------
+* Precondizioni:
+* - q deve essere un puntatore valido a una coda creata con 'nuovaCoda'.
+* -----------------------------
+* Postcondizioni:
+* - Crea una copia della coda 'q' e restituisce un nuovo puntatore di tipo 'Coda'.
+* * Se la coda è NULL, restituisce NULL.
+* -------------------------------
+* * Side Effects:
+* La memoria per la nuova coda viene allocata dinamicamente.
+* -----------------------------
+ */
 Coda copiaCoda(Coda q);
 
 #endif //CODA_STORICOUTENTE_H

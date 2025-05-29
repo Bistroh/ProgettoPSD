@@ -12,12 +12,18 @@ di scelta. */
 #define CIANO    "\x1b[36m"
 #define BIANCO   "\x1b[37m"
 
-
-// Definizione della struttura di hash record
+/*
+    * La struttura AutoRecord rappresenta un record nella tabella hash per le auto.
+* Contiene:
+* - `targa`: una stringa che funge da chiave per identificare l'auto.
+* - `autoPtr`: un puntatore all'oggetto Auto associato a quella targa.
+* - `hh`: un handler per uthash che permette di gestire la tabella hash.
+* * La tabella hash è utilizzata per memorizzare e gestire le auto in modo efficiente,
+ */
 typedef struct AutoRecord {
-    char *targa;         // Chiave: targa dell'auto
-    Auto autoPtr;        // Valore: puntatore all'oggetto Auto
-    UT_hash_handle hh;   // Handler per uthash
+    char *targa;
+    Auto autoPtr;
+    UT_hash_handle hh;
 } AutoRecord;
 
 typedef AutoRecord* AutoHashTB;  // Tipo alias
@@ -27,8 +33,17 @@ AutoHashTB creaAutoHashTB() {
     return NULL;
 }
 
-// Inserisce una nuova auto nella tabella
+/*
+* Funzione per inserire un'auto nella tabella hash.
+* * Parametri:
+* - `ht`: puntatore alla tabella hash in cui inserire l'auto.
+* - `a`: l'auto da inserire.
+* * Restituisce 1 se l'inserimento è riuscito, 0 se l'auto è già presente.
+* * Controlla se la tabella hash o l'auto sono NULL, e se la targa dell'auto è valida.
+* * Se l'auto è già presente nella tabella, non la inserisce e restituisce 0.
+ */
 int inserisciAuto(AutoHashTB *ht, Auto a) {
+    // Controlla se la tabella hash o l'auto sono NULL
     if (!a || !ht) return 0;
 
     const char *targa = ottieniTarga(a);
@@ -36,14 +51,16 @@ int inserisciAuto(AutoHashTB *ht, Auto a) {
 
     AutoRecord *record = NULL;
     HASH_FIND_STR(*ht, targa, record);
-    if (record) return 0;  // Auto già presente
+    if (record) return 0;
 
+    // Crea un nuovo record per l'auto e controlla l'allocazione
     record = malloc(sizeof(AutoRecord));
     if (!record) {
         fprintf(stderr, ROSSO "Errore allocazione memoria AutoRecord\n" RESET);
         exit(EXIT_FAILURE);
     }
 
+    //strdup per copiare la targa
     record->targa = strdup(targa);
     record->autoPtr = a;
     HASH_ADD_KEYPTR(hh, *ht, record->targa, strlen(record->targa), record);
@@ -52,23 +69,39 @@ int inserisciAuto(AutoHashTB *ht, Auto a) {
 }
 
 
-// Cerca un'auto tramite targa
+/*
+* Funzione per cercare un'auto nella tabella hash per targa.
+* * Parametri:
+* - `ht`: la tabella hash in cui cercare l'auto.
+* - `targa`: la targa dell'auto da cercare.
+* * Restituisce un puntatore all'auto se trovata, altrimenti NULL.
+ */
 Auto cercaAuto(AutoHashTB ht, const char *targa) {
     if (!targa) return NULL;
 
     AutoRecord *record = NULL;
+    // Cerca il record nella tabella hash usando la targa come chiave
     HASH_FIND_STR(ht, targa, record);
     return record ? record->autoPtr : NULL;
 }
 
-// Elimina un'auto e restituisce il puntatore
+/*
+* Funzione per rimuovere un'auto dalla tabella hash per targa.
+* * Parametri:
+* - `ht`: puntatore alla tabella hash da cui rimuovere l'auto.
+* - `targa`: la targa dell'auto da rimuovere.
+* * Restituisce un puntatore all'auto rimossa se trovata, altrimenti NULL.
+ */
 Auto rimuoviAuto(AutoHashTB *ht, const char *targa) {
+    // Controlla se la tabella hash o la targa sono NULL
     if (!ht || !targa) return NULL;
 
     AutoRecord *record = NULL;
+    // Cerca il record nella tabella hash usando la targa come chiave
     HASH_FIND_STR(*ht, targa, record);
     if (!record) return NULL;
 
+    // Rimuove il record dalla tabella hash e libera la memoria
     Auto a = record->autoPtr;
     HASH_DEL(*ht, record);
     free(record->targa);
@@ -76,14 +109,22 @@ Auto rimuoviAuto(AutoHashTB *ht, const char *targa) {
     return a;
 }
 
-// Distrugge tutta la tabella e le auto contenute
+/*
+* Funzione per distruggere la tabella hash delle auto.
+* * Parametri:
+* - `ht`: puntatore alla tabella hash da distruggere.
+* * Side Effects:
+* Libera la memoria allocata per la tabella hash e per ogni auto.
+ */
 void distruggiAutoHashTB(AutoHashTB *ht) {
+    // Controlla se la tabella hash è NULL
     if (!ht) return;
 
+    // Itera su tutti i record nella tabella hash e libera la memoria
     AutoRecord *curr, *tmp;
     HASH_ITER(hh, *ht, curr, tmp) {
         HASH_DEL(*ht, curr);
-        distruggiAuto(curr->autoPtr);  // libera anche Auto
+        distruggiAuto(curr->autoPtr);
         free(curr->targa);
         free(curr);
     }
@@ -91,7 +132,12 @@ void distruggiAutoHashTB(AutoHashTB *ht) {
     *ht = NULL;
 }
 
-// Stampa tutte le auto nella tabella
+/*
+* Funzione per stampare tutte le auto nella tabella hash.
+* * Parametri:
+* - `ht`: la tabella hash da cui stampare le auto.
+* * Side Effects:
+ */
 void stampaAutoHashTB(AutoHashTB ht) {
     AutoRecord *record;
 	if (!ht) {
@@ -106,7 +152,17 @@ void stampaAutoHashTB(AutoHashTB ht) {
     }
 }
 
-
+/*
+* Funzione per stampare le auto disponibili in un intervallo di giorni e ore.
+* * Parametri:
+* - `ht`: la tabella hash da cui stampare le auto.
+* - `giornoInizio`: il giorno di inizio dell'intervallo.
+* - `giornoFine`: il giorno di fine dell'intervallo.
+* - `oraInizio`: l'ora di inizio dell'intervallo.
+* - `oraFine`: l'ora di fine dell'intervallo.
+* * Side Effects:
+* Stampa le informazioni delle auto disponibili nella fascia oraria specificata.
+ */
 void stampaTabellaDiHashPerDisp(AutoHashTB ht, int giornoInizio, int giornoFine, int oraInizio, int oraFine) {
     int almenoUna = 0;
 
@@ -123,14 +179,23 @@ void stampaTabellaDiHashPerDisp(AutoHashTB ht, int giornoInizio, int giornoFine,
         }
     }
 
+    // Se non è stata trovata nessuna auto disponibile, stampa un messaggio
     if (!almenoUna) {
         printf(ROSSO "Nessuna auto disponibile per questa fascia.\n" RESET);
     }
 }
 
+/*
+* Funzione per reimpostare la disponibilità di tutte le auto nella tabella hash.
+* * Parametri:
+* - `ht`: la tabella hash delle auto.
+* * Side Effects:
+* Reimposta la disponibilità di tutte le auto, impostando tutti i giorni e le ore come non disponibili (false).
+ */
 void reimpostaDisponibilitaTutteLeAuto(AutoHashTB ht) {
     AutoRecord *record;
 
+    // Controlla se la tabella hash è NULL
     for (record = ht; record != NULL; record = record->hh.next) {
         reimpostaDisponibileAuto(record->autoPtr);
     }

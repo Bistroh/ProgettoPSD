@@ -17,22 +17,39 @@ di scelta. */
 #define GIALLO  "\x1b[33m"
 #define CIANO    "\x1b[36m"
 
+/*
+    * Struttura per la tabella hash degli utenti.
+    * Utilizza UTHash per gestire la tabella hash.
+    * La chiave è il codice fiscale (CF) dell'utente.
+ */
 struct HashRecord{
     char *cf;       // Chiave (codice fiscale)
     Utente utente;  // Valore
     UT_hash_handle hh;
 };
 
-
+/*
+    * La tabella hash degli utenti è un alias per un puntatore a HashRecord.
+*   * La tabella hash è inizialmente vuota (NULL).
+* *   * Le operazioni di inserimento, ricerca ed eliminazione sono gestite tramite funzioni dedicate.
+ */
 typedef HashRecord* UtentiHashTB;  // Tipo alias per la tabella hash degli utenti
 UtentiHashTB nuovaHashTBUtenti() {
     return NULL; // Uthash usa una variabile inizializzata a NULL
 }
 
+/*
+    * Inserisce un utente nella tabella hash.
+* Parametri:
+* *   - `h`: puntatore alla tabella hash degli utenti.
+* *   - `u`: l'utente da inserire.
+*   * Restituisce 1 se l'inserimento è avvenuto con successo, 0 se il codice fiscale era già presente.
+ */
 int inserisciUtente(UtentiHashTB *h, Utente u) {
     const char *cf = ottieniCF(u);
     if (!cf || !u) return 0;
 
+    // Controlla se il codice fiscale è valido
     HashRecord *record = NULL;
     HASH_FIND_STR(*h, cf, record);
     if (record) {
@@ -46,15 +63,32 @@ int inserisciUtente(UtentiHashTB *h, Utente u) {
     return 1;
 }
 
+/*
+    * Cerca un utente nella tabella hash tramite codice fiscale (CF).
+* * Parametri:
+* *   - `h`: la tabella hash degli utenti.
+* *   - `CF`: il codice fiscale dell'utente da cercare.
+* * Restituisce il puntatore all'utente se trovato, altrimenti NULL.
+ */
 Utente cercaUtente(UtentiHashTB h, const char *CF) {
     HashRecord *record = NULL;
     HASH_FIND_STR(h, CF, record);
+    // Se il record è trovato, restituisce l'utente associato
     return record ? record->utente : NULL;
 }
 
+/*
+    * Elimina un utente dalla tabella hash e lo restituisce senza deallocarlo.
+* * Parametri:
+* *   - `h`: puntatore alla tabella hash degli utenti.
+* *   - `CF`: il codice fiscale dell'utente da eliminare.
+* * Restituisce l'utente eliminato, o NULL se non trovato.
+ */
 Utente eliminaUtente(UtentiHashTB *h, const char *CF) {
     HashRecord *record = NULL;
+    // Cerca il record con il codice fiscale specificato
     HASH_FIND_STR(*h, CF, record);
+    // Se il record è trovato, lo elimina dalla tabella hash
     if (record) {
         Utente u = record->utente;
         HASH_DEL(*h, record);
@@ -65,7 +99,14 @@ Utente eliminaUtente(UtentiHashTB *h, const char *CF) {
     return NULL;
 }
 
+/*
+    * Distrugge completamente la tabella hash degli utenti e tutti gli utenti contenuti.
+* * Parametri:
+* *   - `h`: puntatore alla tabella hash degli utenti.
+* * Dopo la chiamata, il puntatore viene impostato a NULL.
+ */
 void distruggiHashTBUtenti(UtentiHashTB *h) {
+  // Controlla se la tabella hash è già vuota
     HashRecord *elAttuale, *tmp;
     HASH_ITER(hh, *h, elAttuale, tmp) {
         HASH_DEL(*h, elAttuale);
@@ -75,15 +116,26 @@ void distruggiHashTBUtenti(UtentiHashTB *h) {
     }
     *h = NULL;
 }
-// Funzione per stampare la tabella utenti
+
+/*
+    * Stampa tutti gli utenti nella tabella hash.
+* * Parametri:
+* *   - `h`: la tabella hash degli utenti.
+ */
 void stampaHashTableUtenti(UtentiHashTB h) {
     HashRecord *elAttuale;
+    // Controlla se la tabella hash è vuota
     for (elAttuale = h; elAttuale != NULL; elAttuale = elAttuale->hh.next) {
         printf(CIANO "CF: %s\n" RESET, elAttuale->cf);
         stampaUtente(elAttuale->utente); // Assicurati di avere una funzione per stampare Utente
     }
 }
 
+/*
+* to_upper - Converte una stringa in maiuscolo.
+* Parametri:
+* str: La stringa da convertire.
+ */
 void to_upper(char *str) {
     while (*str) {
         *str = toupper((unsigned char)*str);
@@ -91,7 +143,19 @@ void to_upper(char *str) {
     }
 }
 
+/* * Funzione per la registrazione o il login di un utente.
+ * Parametri:
+ * - `h`: puntatore alla tabella hash degli utenti.
+ * Restituisce un puntatore all'utente registrato o loggato, o NULL in caso di errore.
+* * Questa funzione gestisce sia il login che la registrazione di un utente.
+* * Se l'utente esiste già, permette il login; altrimenti, procede con la registrazione.
+* * Durante la registrazione, richiede all'utente di inserire i propri dati personali
+* * (nome, cognome, email, telefono e password) e li valida.
+* * Se la registrazione ha successo, l'utente viene inserito nella tabella hash.
+* * Se l'utente non esiste e la registrazione fallisce, restituisce NULL.
+ */
 Utente loginRegistrazioneUtente(UtentiHashTB *h) {
+    // Definizione delle variabili necessarie
     int scelta;
     char CF[17];
     char nome[20];
@@ -105,6 +169,7 @@ Utente loginRegistrazioneUtente(UtentiHashTB *h) {
     printf(VERDE "Benvenuto!\n" RESET);
     printf(GIALLO "1. Login\n");
     printf("2. Registrazione\n");
+    // Chiedo all'utente di scegliere tra login e registrazione
     while (1) {
         printf(GIALLO "Seleziona un'opzione (1 o 2): " RESET);
         fgets(buffer, sizeof(buffer), stdin);
@@ -125,6 +190,7 @@ Utente loginRegistrazioneUtente(UtentiHashTB *h) {
         if (!validaCodiceFiscale(CF)) printf(ROSSO "Codice fiscale non valido.\n" RESET);
     } while (!validaCodiceFiscale(CF));
 
+    // Cerco l'utente nella tabella hash
     Utente u = cercaUtente(*h, CF);
 
     if (scelta == 1) {
@@ -191,6 +257,7 @@ Utente loginRegistrazioneUtente(UtentiHashTB *h) {
                 if (!validaPassword(passwordInserita)) printf(ROSSO "Password non valida.\n" RESET);
             } while (!validaPassword(passwordInserita));
 
+            // Creo un nuovo utente con i dati inseriti
             Utente nuovoUtente = creaUtente(CF, nome, cognome, email, passwordInserita, telefono);
 
             if (inserisciUtente(h, nuovoUtente)) {
