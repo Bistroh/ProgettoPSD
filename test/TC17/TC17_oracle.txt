@@ -1,0 +1,7 @@
+Utente: Carla Danti (CF: DNTCRL65S67M126L)
+  Prenotazione #1:
+ID Prenotazione: 17
+CF: DNTCRL65S67M126L
+Targa: AB123CD
+Periodo: dal Lunedi' ore 10:00 al Martedi' ore 19:00
+

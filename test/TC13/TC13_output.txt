@@ -1,0 +1,9 @@
+Auto disponibili nella fascia selezionata:
+------------------------
+Targa: AB123CD
+Marca: Fiat
+Modello: Panda
+Indirizzo: Via Roma 10
+Anno: 2000
+Costo orario: 15.00 €
+------------------------
