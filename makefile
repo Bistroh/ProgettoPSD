@@ -32,7 +32,7 @@ Car_sharing$(EXE): main.o $(OBJ_COMMON)
 # ===========================
 # Eseguibile di test
 # ===========================
-Test$(EXE): Test.o $(OBJ_COMMON)
+TestExec$(EXE): Test.o $(OBJ_COMMON)
 	$(CC) $(CFLAGS) -o $@ Test.o $(OBJ_COMMON)
 
 # ===========================
@@ -82,11 +82,11 @@ Coda_StoricoUtente.o: Coda_StoricoUtente.c Coda_StoricoUtente.h Utente.h prenota
 # Esempio: make run_tests TEST_ARGS="test_suite.txt risultati.txt"
 # Se non specifichi TEST_ARGS esegue senza argomenti
 # ===========================
-run_tests: Test$(EXE)
-	./Test$(EXE) $(TEST_ARGS)
+run_tests: TestExec$(EXE)
+	./TestExec$(EXE) $(TEST_ARGS)
 
 # ===========================
 # Pulizia
 # ===========================
 clean:
-	$(RM) *.o Car_sharing$(EXE) Test$(EXE) risultati.txt
+	$(RM) *.o Car_sharing$(EXE) TestExec$(EXE) risultati.txt
