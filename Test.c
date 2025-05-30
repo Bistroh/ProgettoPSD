@@ -20,30 +20,43 @@
 #define VERDE "\x1b[32m"
 #define RESET "\x1b[0m"
 
+
 void caricaUtentiTest(UtentiHashTB *tab) {
-    inserisciUtente(tab, creaUtente("DNTCRL65S67M126L", "Carla", "Danti", "carla@gmail.com", "3331234567", "Password123!"));
+    inserisciUtente(tab, creaUtente("DNTCRL65S67M126L", "Carla", "Danti", "carla@gmail.com", "Password123!", "3331234567"));
+    inserisciUtente(tab, creaUtente("SRRLKR05T21F912R", "Luigi Karol", "Sorrentino", "karol.sorrentino@gmail.com", "pAssword9!.","333333333"));
+    inserisciUtente(tab, creaUtente("DLTFNC00E69A294P", "Francesca", "Di Lieto", "francesca@gmail.com", "PWd_6322aaa?","333333339"));
+    inserisciUtente(tab, creaUtente("NLOBTL90A11G230C","Bartolomeo", "Nola", "bartolomeo@tiscali.com", "BAR2188nol!.","333333337"));
+    inserisciUtente(tab, creaUtente("SRLNCL02L18I483R", "Nicola", "Sarlo", "nicsarlo@proton.me","_18Luglio2002!","3393333357"));
 }
 
 void caricaAutoTest(AutoHashTB *tab) {
     inserisciAuto(tab, creaAuto("AB123CD", "Fiat", "Panda", "Via Roma 10", 2000, 15.00));
+    inserisciAuto(tab, creaAuto("AA555BB", "Toyota", "Corolla", "Viale Salerno 23", 2015, 25.00));
+    inserisciAuto(tab, creaAuto("CC777NN", "Alfa Romeo", "147", "Corso Padovano 1", 1999, 15.00));
+    inserisciAuto(tab, creaAuto("VV444XX","Ford", "Kuga", "Viale Ranieri 5", 2010, 23.50));
+    inserisciAuto(tab, creaAuto("BB222RR", "BMW", "X1", "Via Della Repubblica 15", 2023, 33.00));
 }
 
-Lista caricaPrenotazioni(Lista prenotazioni, int g_i, int g_f, int o_i, int o_f){
+Lista caricaPrenotazioni(Lista prenotazioni, int g_i, int g_f, int o_i, int o_f, char * CF, char *targa){
     // Aggiungi una prenotazione di esempio
-    prenotazioni = consLista(creaPrenotazione("DNTCRL65S67M126L", "AB123CD", g_i, g_f, o_i, o_f), prenotazioni);
+    prenotazioni = consLista(creaPrenotazione(CF, targa, g_i, g_f, o_i, o_f), prenotazioni);
 
     return prenotazioni;
 }
 
-void eseguiPrenotazioneSimulata(Lista prenotazioni, UtentiHashTB tabUtenti, AutoHashTB tabAuto, int g_inizio, int g_fine, int ora_inizio, int ora_fine, FILE *output_fp) {
+void eseguiPrenotazioneSimulata(Lista prenotazioni, UtentiHashTB tabUtenti, AutoHashTB tabAuto, int g_inizio, int g_fine, int ora_inizio, int ora_fine, char*targa, char*CF, FILE *output_fp) {
     int stato = 1;
-    Utente u = cercaUtente(tabUtenti, "DNTCRL65S67M126L");
+    Utente u = cercaUtente(tabUtenti, CF);
     if (!u) {
-        fprintf(output_fp, ROSSO "Utente non trovato!\n" RESET);
+        fprintf(output_fp,  "Utente non trovato!\n");
         return;
     }
+    Auto a = cercaAuto(tabAuto, targa);
+    if (!a) {
+        fprintf(output_fp, "Auto non trovata!\n");
+    }
 
-    prenotazioni = prenotazioneAuto(prenotazioni, tabAuto, ottieniCF(u), "AB123CD", &g_inizio, &g_fine, &ora_inizio, &ora_fine, &stato);
+    prenotazioni = prenotazioneAuto(prenotazioni, tabAuto, ottieniCF(u), ottieniTarga(a), &g_inizio, &g_fine, &ora_inizio, &ora_fine, &stato);
 
     if (prenotazioni == NULL) {
         fprintf(output_fp, "Prenotazione non riuscita.\n");
@@ -53,12 +66,11 @@ void eseguiPrenotazioneSimulata(Lista prenotazioni, UtentiHashTB tabUtenti, Auto
             stampaPrenotazioneSuFile(p, output_fp);
         }
     }
-    return;
 }
 
-void eseguiCalcoloCostoSimulato(UtentiHashTB tabUtenti, AutoHashTB tabAuto, Lista prenotazioni, FILE *output_fp) {
+void eseguiCalcoloCostoSimulato(UtentiHashTB tabUtenti, AutoHashTB tabAuto, Lista prenotazioni, char * CF, FILE *output_fp) {
     // Cerca l’utente di test
-    Utente u = cercaUtente(tabUtenti, "DNTCRL65S67M126L");
+    Utente u = cercaUtente(tabUtenti, CF);
     if (!u) {
         printf("Utente non trovato.\n");
         return;
@@ -76,6 +88,8 @@ int run_test_case(char *tc_id, char *test_type) {
     char input_fname[M], output_fname[M], oracle_fname[M];
     int stato = 0;
     char line[256];
+    char codiceFiscale[17];  // 16 + 1 per '\0'
+    char targa[8];
 
     snprintf(input_fname, M,  "test/%s/%s_input.txt", tc_id, tc_id);
     snprintf(output_fname, M, "test/%s/%s_output.txt", tc_id, tc_id);
@@ -105,30 +119,30 @@ int run_test_case(char *tc_id, char *test_type) {
             line[strcspn(line, "\n")] = '\0';
 
             int g1, g2, o1, o2;
-            if (sscanf(line, "%d %d %d %d", &g1, &g2, &o1, &o2) == 4) {
-                eseguiPrenotazioneSimulata(prenotazioni, tabUtenti, tabAuto, g1, g2, o1, o2, output_fp);
+
+            // Tenta di leggere 4 interi + 2 stringhe
+            if (sscanf(line, "%d %d %d %d %16s %7s", &g1, &g2, &o1, &o2, codiceFiscale, targa) == 6) {
+                codiceFiscale[strcspn(codiceFiscale, "\n")] = '\0';
+                targa[strcspn(targa, "\n")] = '\0';
+                eseguiPrenotazioneSimulata(prenotazioni, tabUtenti, tabAuto, g1, g2, o1, o2, targa, codiceFiscale, output_fp);
             } else {
                 fprintf(output_fp, "Riga input ignorata (formato non valido): %s\n", line);
             }
         }
-
     } else if (strcmp(test_type, "CALCOLO") == 0) {
         while (fgets(line, sizeof(line), input_fp)) {
             line[strcspn(line, "\n")] = '\0';
 
             int g1, g2, o1, o2;
-            if (sscanf(line, "%d %d %d %d", &g1, &g2, &o1, &o2) == 4) {
-                // Accumula tutte le prenotazioni
-                prenotazioni = caricaPrenotazioni(prenotazioni, g1, g2, o1, o2);
+            if (sscanf(line, "%d %d %d %d %16s %7s", &g1, &g2, &o1, &o2, codiceFiscale, targa) == 6) {
+                prenotazioni = caricaPrenotazioni(prenotazioni, g1, g2, o1, o2, codiceFiscale, targa);
             } else {
                 fprintf(output_fp, "Riga input ignorata (formato non valido): %s\n", line);
             }
         }
 
-        // Ora esegui il calcolo su tutte le prenotazioni accumulate
-        eseguiCalcoloCostoSimulato(tabUtenti, tabAuto, prenotazioni, output_fp);
+        eseguiCalcoloCostoSimulato(tabUtenti, tabAuto, prenotazioni, codiceFiscale, output_fp);
 
-        // Poi distruggi la lista
         distruggiLista(prenotazioni);
     } else if (strcmp(test_type, "VISUALIZZA") == 0) {
         while (fgets(line, sizeof(line), input_fp)) {
@@ -139,6 +153,10 @@ int run_test_case(char *tc_id, char *test_type) {
                 if (strcmp(input_fname, "test/TC15/TC15_input.txt") == 0) {
 
                     prenotazioni = prenotazioneAuto(prenotazioni, tabAuto, "DNTCRL65S67M126L" , "AB123CD", &g1, &g2, &o1, &o2, &stato);
+                    prenotazioni = prenotazioneAuto(prenotazioni, tabAuto, "SRRLKR05T21F912R", "AA555BB", &g1, &g2, &o1, &o2, &stato);
+                    prenotazioni = prenotazioneAuto(prenotazioni, tabAuto, "NLOBTL90A11G230C", "CC777NN", &g1, &g2, &o1, &o2, &stato);
+                    prenotazioni = prenotazioneAuto(prenotazioni, tabAuto, "NLOBTL90A11G230C", "BB222RR", &g1, &g2, &o1, &o2, &stato);
+                    prenotazioni = prenotazioneAuto(prenotazioni, tabAuto, "DNTCRL65S67M126L", "VV444XX", &g1, &g2, &o1, &o2, &stato);
                 }
                 stampaTabellaDiHashPerDispFile(tabAuto, g1, g2,o1, o2, output_fp);
             } else {
@@ -216,6 +234,10 @@ int run_test_case(char *tc_id, char *test_type) {
 
     fclose(output_fp);
     fclose(oracle_fp);
+
+    distruggiLista(prenotazioni);
+    distruggiAutoHashTB(&tabAuto);
+    distruggiHashTBUtenti(&tabUtenti);
 
     return pass;
 }
