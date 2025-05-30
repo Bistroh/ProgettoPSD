@@ -1,0 +1,16 @@
+ID Prenotazione: 29
+CF: DLTFNC00E69A294P
+Targa: AA555BB
+Periodo: dal Lunedi' ore 8:00 al Lunedi' ore 20:00
+ID Prenotazione: 30
+CF: SRLNCL02L18I483R
+Targa: BB222RR
+Periodo: dal Martedi' ore 10:00 al Mercoledi' ore 8:00
+ID Prenotazione: 31
+CF: NLOBTL90A11G230C
+Targa: VV444XX
+Periodo: dal Mercoledi' ore 9:00 al Giovedi' ore 20:00
+ID Prenotazione: 32
+CF: SRLNCL02L18I483R
+Targa: AA555BB
+Periodo: dal Venerdi' ore 20:00 al Venerdi' ore 23:00

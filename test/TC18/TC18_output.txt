@@ -1,17 +1,29 @@
 Utente: Carla Danti (CF: DNTCRL65S67M126L)
   Prenotazione #1:
-ID Prenotazione: 18
+ID Prenotazione: 21
 CF: DNTCRL65S67M126L
 Targa: AB123CD
 Periodo: dal Mercoledi' ore 18:00 al Mercoledi' ore 22:00
   Prenotazione #2:
-ID Prenotazione: 19
+ID Prenotazione: 22
 CF: DNTCRL65S67M126L
 Targa: AB123CD
 Periodo: dal Giovedi' ore 6:00 al Venerdi' ore 5:00
   Prenotazione #3:
-ID Prenotazione: 20
+ID Prenotazione: 23
 CF: DNTCRL65S67M126L
 Targa: AB123CD
 Periodo: dal Martedi' ore 10:00 al Martedi' ore 20:00
+
+Utente: Luigi Karol Sorrentino (CF: SRRLKR05T21F912R)
+  Nessuna prenotazione nello storico.
+
+Utente: Francesca Di Lieto (CF: DLTFNC00E69A294P)
+  Nessuna prenotazione nello storico.
+
+Utente: Bartolomeo Nola (CF: NLOBTL90A11G230C)
+  Nessuna prenotazione nello storico.
+
+Utente: Nicola Sarlo (CF: SRLNCL02L18I483R)
+  Nessuna prenotazione nello storico.
 

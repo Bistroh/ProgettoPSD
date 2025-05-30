@@ -7,3 +7,35 @@ Indirizzo: Via Roma 10
 Anno: 2000
 Costo orario: 15.00 €
 ------------------------
+------------------------
+Targa: AA555BB
+Marca: Toyota
+Modello: Corolla
+Indirizzo: Viale Salerno 23
+Anno: 2015
+Costo orario: 25.00 €
+------------------------
+------------------------
+Targa: CC777NN
+Marca: Alfa Romeo
+Modello: 147
+Indirizzo: Corso Padovano 1
+Anno: 1999
+Costo orario: 15.00 €
+------------------------
+------------------------
+Targa: VV444XX
+Marca: Ford
+Modello: Kuga
+Indirizzo: Viale Ranieri 5
+Anno: 2010
+Costo orario: 23.50 €
+------------------------
+------------------------
+Targa: BB222RR
+Marca: BMW
+Modello: X1
+Indirizzo: Via Della Repubblica 15
+Anno: 2023
+Costo orario: 33.00 €
+------------------------

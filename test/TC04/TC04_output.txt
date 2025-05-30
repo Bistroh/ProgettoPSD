@@ -1,1 +1,1 @@
-Riga input ignorata (formato non valido): A 2 B 9
+Riga input ignorata (formato non valido): A 2 B 9 DNTCRL65S67M126L AB123CD

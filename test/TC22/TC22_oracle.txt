@@ -1,0 +1,8 @@
+ID Prenotazione: 33
+CF: SRLNCL02L18I483R
+Targa: CC777NN
+Periodo: dal Lunedi' ore 10:00 al Lunedi' ore 20:00
+ID Prenotazione: 34
+CF: SRLNCL02L18I483R
+Targa: AB123CD
+Periodo: dal Lunedi' ore 10:00 al Lunedi' ore 20:00

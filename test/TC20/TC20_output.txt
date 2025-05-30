@@ -1,0 +1,9 @@
+ID Prenotazione: 27
+CF: DNTCRL65S67M126L
+Targa: AB123CD
+Periodo: dal Lunedi' ore 0:00 al Mercoledi' ore 10:00
+Prenotazione non riuscita.
+ID Prenotazione: 28
+CF: NLOBTL90A11G230C
+Targa: AB123CD
+Periodo: dal Mercoledi' ore 10:00 al Mercoledi' ore 18:00

@@ -1,0 +1,10 @@
+Prenotazione non riuscita.
+ID Prenotazione: 35
+CF: SRRLKR05T21F912R
+Targa: AB123CD
+Periodo: dal Lunedi' ore 20:00 al Martedi' ore 5:00
+ID Prenotazione: 36
+CF: DLTFNC00E69A294P
+Targa: CC777NN
+Periodo: dal Mercoledi' ore 10:00 al Mercoledi' ore 15:00
+Prenotazione non riuscita.

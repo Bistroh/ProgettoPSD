@@ -1,0 +1,12 @@
+ID Prenotazione: 24
+CF: SRRLKR05T21F912R
+Targa: AB123CD
+Periodo: dal Lunedi' ore 10:00 al Martedi' ore 8:00
+ID Prenotazione: 25
+CF: NLOBTL90A11G230C
+Targa: AB123CD
+Periodo: dal Martedi' ore 12:00 al Giovedi' ore 6:00
+ID Prenotazione: 26
+CF: DNTCRL65S67M126L
+Targa: AB123CD
+Periodo: da Venerdi' ore 20:00 a Sabato ore 18:00
