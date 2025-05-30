@@ -31,8 +31,11 @@
  * -----------------------------
  * Precondizioni:
  * - `tab` deve essere un puntatore valido a una struttura `UtentiHashTB` inizializzata con `nuovaHashTBUtenti`.
- * -----------------------------
+ *-----------------------------
  * Postcondizioni:
+ * - nessuna
+ * -----------------------------
+ * Side Effect:
  * Inserisce nella tabella hash cinque utenti predefiniti con dati anagrafici e di contatto.
  * -----------------------------
  * Restituisce:
@@ -62,6 +65,9 @@ void caricaUtentiTest(UtentiHashTB *tab) {
  * - `tab` deve essere un puntatore valido a una struttura `AutoHashTB` inizializzata con `creaAutoHashTB`.
  * -----------------------------
  * Postcondizioni:
+ *  - nessuno.
+ *  -----------------------------
+ * Side effect:
  * Inserisce nella tabella hash cinque auto predefinite con dati relativi a modello, targa, indirizzo e costo.
  * -----------------------------
  * Restituisce:
@@ -240,10 +246,10 @@ void eseguiCalcoloCostoSimulato(UtentiHashTB tabUtenti, AutoHashTB tabAuto, List
  * -----------------------------
  * Parametri:
  * - `tc_id`: stringa che identifica il caso di test (es. "TC01").
- * - `tipo_di_tes`: stringa che indica il tipo di test da eseguire. Valori validi: "PRENOTA", "CALCOLO", "VISUALIZZA", "STORICO".
+ * - `tipo_di_test`: stringa che indica il tipo di test da eseguire. Valori validi: "PRENOTA", "CALCOLO", "VISUALIZZA", "STORICO".
  * -----------------------------
  * Precondizioni:
- * - `tc_id` e `tipo_di_tes` devono essere stringhe valide non NULL.
+ * - `tc_id` e `tipo_di_test` devono essere stringhe valide non NULL.
  * - Devono esistere i file:
  *     - "test/<tc_id>/<tc_id>_input.txt" contenente i dati di input;
  *     - "test/<tc_id>/<tc_id>_oracle.txt" contenente l’output atteso.
@@ -251,7 +257,7 @@ void eseguiCalcoloCostoSimulato(UtentiHashTB tabUtenti, AutoHashTB tabAuto, List
  * Postcondizioni:
  * Esegue un caso di test automatizzato:
  *   - Carica dati di test per utenti e auto.
- *   - Esegue operazioni simulate a seconda del tipo di test (`tipo_di_tes`):
+ *   - Esegue operazioni simulate a seconda del tipo di test (`tipo_di_test`):
  *       - "PRENOTA": effettua prenotazioni simulate e scrive i risultati.
  *       - "CALCOLO": carica prenotazioni da file e calcola il costo complessivo.
  *       - "VISUALIZZA": stampa la disponibilità delle auto in un certo intervallo.
@@ -269,7 +275,7 @@ void eseguiCalcoloCostoSimulato(UtentiHashTB tabUtenti, AutoHashTB tabAuto, List
  * il risultato del confronto.
  * -----------------------------
  */
-int eseguiCasoDiTest(char *tc_id, char *tipo_di_tes) {
+int eseguiCasoDiTest(char *tc_id, char *tipo_di_test) {
     char input_fnome[M], output_fnome[M], oracle_fname[M];
     int stato = 0;
     char line[256];
@@ -305,7 +311,7 @@ int eseguiCasoDiTest(char *tc_id, char *tipo_di_tes) {
     caricaAutoTest(&tabAuto);
 
     // Caso di test "PRENOTA": simula prenotazioni leggendo input e chiamando eseguiPrenotazioneSimulata
-    if (strcmp(tipo_di_tes, "PRENOTA") == 0) {
+    if (strcmp(tipo_di_test, "PRENOTA") == 0) {
         while (fgets(line, sizeof(line), input_fp)) {
             line[strcspn(line, "\n")] = '\0';
 
@@ -322,7 +328,7 @@ int eseguiCasoDiTest(char *tc_id, char *tipo_di_tes) {
             }
         }
         // Caso "CALCOLO": carica prenotazioni e poi esegue calcolo costi, scrivendo su output
-    } else if (strcmp(tipo_di_tes, "CALCOLO") == 0) {
+    } else if (strcmp(tipo_di_test, "CALCOLO") == 0) {
         while (fgets(line, sizeof(line), input_fp)) {
             line[strcspn(line, "\n")] = '\0';
 
@@ -338,7 +344,7 @@ int eseguiCasoDiTest(char *tc_id, char *tipo_di_tes) {
 
         distruggiLista(prenotazioni);
         // Caso "VISUALIZZA": mostra disponibilità auto per intervallo richiesto
-    } else if (strcmp(tipo_di_tes, "VISUALIZZA") == 0) {
+    } else if (strcmp(tipo_di_test, "VISUALIZZA") == 0) {
         while (fgets(line, sizeof(line), input_fp)) {
             line[strcspn(line, "\n")] = '\0';
 
@@ -358,7 +364,7 @@ int eseguiCasoDiTest(char *tc_id, char *tipo_di_tes) {
             }
         }
         // Caso "STORICO": stampa storico prenotazioni, eventualmente filtrato per utente e auto
-    } else if (strcmp(tipo_di_tes, "STORICO") == 0) {
+    } else if (strcmp(tipo_di_test, "STORICO") == 0) {
         while (fgets(line, sizeof(line), input_fp)) {
             line[strcspn(line, "\n")] = '\0';
 
@@ -400,7 +406,7 @@ int eseguiCasoDiTest(char *tc_id, char *tipo_di_tes) {
         stampaStoricoTuttiUtentiSuFile(tabUtenti, output_fp);
     }
     else {
-        fprintf(output_fp, "Tipo test non supportato: %s\n", tipo_di_tes);
+        fprintf(output_fp, "Tipo test non supportato: %s\n", tipo_di_test);
     }
 
 
@@ -452,7 +458,7 @@ int eseguiCasoDiTest(char *tc_id, char *tipo_di_tes) {
  * -----------------------------
  * Precondizioni:
  * - I file "test/<suite_file>" e "test/<result_file>" devono essere nomi validi.
- * - Il file suite deve esistere e contenere righe nel formato: <tc_id> <tipo_di_tes>
+ * - Il file suite deve esistere e contenere righe nel formato: <tc_id> <tipo_di_test>
  * -----------------------------
  * Postcondizioni:
  * - Esegue in sequenza tutti i casi di test indicati nel file di suite.
@@ -486,12 +492,12 @@ void esegui_test_suite(const char *suite_file, const char *result_file) {
         return;
     }
 
-    char tc_id[M], tipo_di_tes[M];
+    char tc_id[M], tipo_di_test[M];
     // Legge ogni riga del file
-    while (fscanf(suite, "%s %s", tc_id, tipo_di_tes) == 2) {
-        int pass = eseguiCasoDiTest(tc_id, tipo_di_tes);   // Esegue il test
-        printf("%s [%s]: %s\n", tc_id, tipo_di_tes, pass ? VERDE "PASS" RESET : ROSSO "FAIL" RESET);    // Stampa a video l'esito del test
-        fprintf(result, "%s - %s - %s\n", tc_id, tipo_di_tes, pass ? "PASS" : "FAIL");  // Scrive sul file il risultato
+    while (fscanf(suite, "%s %s", tc_id, tipo_di_test) == 2) {
+        int pass = eseguiCasoDiTest(tc_id, tipo_di_test);   // Esegue il test
+        printf("%s [%s]: %s\n", tc_id, tipo_di_test, pass ? VERDE "PASS" RESET : ROSSO "FAIL" RESET);    // Stampa a video l'esito del test
+        fprintf(result, "%s - %s - %s\n", tc_id, tipo_di_test, pass ? "PASS" : "FAIL");  // Scrive sul file il risultato
     }
 
     fclose(suite);
