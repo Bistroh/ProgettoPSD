@@ -64,9 +64,6 @@ void caricaUtentiTest(UtentiHashTB *tab) {
  * Precondizioni:
  * - `tab` deve essere un puntatore valido a una struttura `AutoHashTB` inizializzata con `creaAutoHashTB`.
  * -----------------------------
- * Postcondizioni:
- *  - nessuno.
- *  -----------------------------
  * Side effect:
  * Inserisce nella tabella hash cinque auto predefinite con dati relativi a modello, targa, indirizzo e costo.
  * -----------------------------
@@ -143,7 +140,7 @@ Lista caricaPrenotazioni(Lista prenotazioni, int g_i, int g_f, int o_i, int o_f,
  * - I parametri temporali devono essere coerenti.
  * - `output_fp` deve essere un file aperto in scrittura.
  * -----------------------------
- * Postcondizioni:
+ * Side Effects:
  * Esegue una prenotazione simulata se l’utente e l’auto esistono. Scrive l’esito nel file di output.
  * -----------------------------
  * Restituisce:
@@ -192,7 +189,7 @@ void eseguiPrenotazioneSimulata(Lista prenotazioni, UtentiHashTB tabUtenti, Auto
  * - Le strutture `tabUtenti`, `tabAuto` e `prenotazioni` devono essere valide.
  * - `output_fp` deve essere un file aperto in modalità scrittura.
  * -----------------------------
- * Postcondizioni:
+ * Side Effects:
  * Calcola e scrive nel file il costo totale delle prenotazioni per ciascun utente distinto.
  * -----------------------------
  * Restituisce:
@@ -460,13 +457,7 @@ int eseguiCasoDiTest(char *tc_id, char *tipo_di_test) {
  * - I file "test/<suite_file>" e "test/<result_file>" devono essere nomi validi.
  * - Il file suite deve esistere e contenere righe nel formato: <tc_id> <tipo_di_test>
  * -----------------------------
- * Postcondizioni:
-<<<<<<< Updated upstream
-=======
- * - nessuno.
- * -----------------------------
  * Side effect:
->>>>>>> Stashed changes
  * - Esegue in sequenza tutti i casi di test indicati nel file di suite.
  * - Scrive su standard output l’esito (PASS/FAIL) di ciascun test.
  * - Scrive su `result_file` l’esito dettagliato dei test.

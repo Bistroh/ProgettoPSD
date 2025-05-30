@@ -96,7 +96,7 @@ Auto rimuoviAuto(AutoHashTB *ht, const char *targa);
 * Precondizioni:
 * - `ht` deve essere un puntatore valido a una tabella hash creata con `creaAutoHashTB`.
 * -----------------------------
-* Postcondizioni:
+* Side Effects:
 * - Libera la memoria allocata per la tabella hash e per ogni auto.
 * -----------------------------
 * Restituisce:
@@ -114,7 +114,7 @@ void distruggiAutoHashTB(AutoHashTB *ht);
 * Precondizioni:
 * - `ht` deve essere un puntatore valido a una tabella hash creata con `creaAutoHashTB`.
 * -----------------------------
-* * Postcondizioni:
+* * Side Effects:
 * - Stampa le informazioni delle auto nella tabella hash.
 * -----------------------------
  */
@@ -137,7 +137,7 @@ void stampaAutoHashTB(AutoHashTB ht);
 * * - `oraInizio` deve essere compreso tra 0 e 23.
 * * - `oraFine` deve essere compreso tra 1 e 24.
 * -----------------------------
-* * Postcondizioni:
+* * Side Effects:
 * - Stampa le auto disponibili nell'intervallo specificato.
 * -----------------------------
 * Restituisce:
@@ -155,7 +155,7 @@ void stampaTabellaDiHashPerDisp(AutoHashTB ht, int giornoInizio, int giornoFine,
 * * Precondizioni:
 * - `ht` deve essere un puntatore valido a una tabella hash creata con `creaAutoHashTB`.
 * -----------------------------
-* * Postcondizioni:
+* * Side Effects:
 * - Reimposta la disponibilità di tutte le auto nella tabella hash a disponibile (True).
 * -----------------------------
 * Restituisce:
@@ -183,7 +183,7 @@ void reimpostaDisponibilitaTutteLeAuto(AutoHashTB ht);
  * * - `oraFine` deve essere compreso tra 1 e 24.
  * * - `fp` deve essere un puntatore valido a un file aperto in modalità scrittura.
  * -----------------------------
- * Postcondizioni:
+ * Side Effects:
  * Scrive le informazioni delle auto disponibili nell'intervallo specificato nel file.
  * -----------------------------
  * Restituisce:

@@ -123,13 +123,14 @@ char *ottieniPassword(Utente utente);
 /*
  * Funzione: stampaUtente
  * -----------------------------
- * Stampa i dettagli di un utente.
- * -----------------------------
  * Parametri:
  * - `u`: puntatore alla struttura `Utente`.
  * -----------------------------
  * Precondizioni:
  * - `u` deve essere un puntatore valido a una struttura `Utente` creata con `creaUtente`.
+ * -----------------------------
+ * Side Effects:
+ * Stampa i dettagli di un utente.
  * -----------------------------
  */
 void stampaUtente(Utente u);
@@ -162,7 +163,7 @@ Coda ottieniStorico(Utente u);
  * Precondizioni:
  * - `u` deve essere un puntatore valido a una struttura `Utente` creata con `creaUtente`.
  * -----------------------------
- * Postcondizioni:
+ * Side Effects:
  * - Libera la memoria allocata per l'utente.
  * -----------------------------
  */

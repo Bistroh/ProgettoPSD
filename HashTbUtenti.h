@@ -106,7 +106,7 @@ Utente eliminaUtente(UtentiHashTB *h, const char *CF);
  * Precondizioni:
  * - `h` deve essere un puntatore valido a una tabella hash degli utenti.
  * -----------------------------
- * Postcondizioni:
+ * Side Effects:
  * - Dealloca la memoria utilizzata dalla tabella hash e dai suoi record.
  * -----------------------------
  */
@@ -121,7 +121,7 @@ void distruggiHashTBUtenti(UtentiHashTB *h);
  * Precondizioni:
  * - `h` deve essere un puntatore valido a una tabella hash degli utenti.
  * -----------------------------
- * Postcondizioni:
+ * Side Effects:
  * - Stampa le informazioni di tutti gli utenti nella tabella hash.
  * -----------------------------
  */
@@ -138,7 +138,7 @@ void stampaUtentiHashTBUtenti(UtentiHashTB h);
  * - `h` deve essere un puntatore valido a una tabella hash degli utenti.
  * - `listaPrenotazioni` deve essere una lista valida di prenotazioni.
  * -----------------------------
- * Postcondizioni:
+ * Side Effects:
  * - Aggiunge le prenotazioni alla coda di storico di ciascun utente corrispondente.
  * -----------------------------
  */
@@ -153,7 +153,7 @@ void aggiungiPrenotazioniAStoricoUtenti(UtentiHashTB h, Lista listaPrenotazioni)
  * Precondizioni:
  * - `h` deve essere un puntatore valido a una tabella hash degli utenti.
  * -----------------------------
- * Postcondizioni:
+ * Side Effects:
  * - Stampa lo storico di tutte le prenotazioni per ogni utente nella tabella hash.
  * -----------------------------
  */
@@ -170,7 +170,7 @@ void stampaStoricoTuttiUtenti(UtentiHashTB h);
  * - `h` deve essere un puntatore valido a una tabella hash degli utenti.
  * - `output_fp` deve essere un file aperto in modalità scrittura.
  * -----------------------------
- * Postcondizioni:
+ * Side Effects:
  * - Scrive lo storico di tutte le prenotazioni per ogni utente nel file specificato.
  * -----------------------------
  */
