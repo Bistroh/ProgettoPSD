@@ -68,19 +68,42 @@ void eseguiPrenotazioneSimulata(Lista prenotazioni, UtentiHashTB tabUtenti, Auto
     }
 }
 
-void eseguiCalcoloCostoSimulato(UtentiHashTB tabUtenti, AutoHashTB tabAuto, Lista prenotazioni, char * CF, FILE *output_fp) {
-    // Cerca l’utente di test
-    Utente u = cercaUtente(tabUtenti, CF);
-    if (!u) {
-        printf("Utente non trovato.\n");
-        return;
+void eseguiCalcoloCostoSimulato(UtentiHashTB tabUtenti, AutoHashTB tabAuto, Lista prenotazioni, FILE *output_fp) {
+    for (Lista p = prenotazioni; !ListaVuota(p); p = codaLista(p)) {
+        Prenotazione prCorrente = ottieniPrimo(p);
+        const char* CF = ottieniCFPrenotazione(prCorrente);
+
+        // Controlla se abbiamo già stampato per questo CF (scorri i nodi precedenti)
+        int giaStampato = 0;
+        for (Lista q = prenotazioni; q != p; q = codaLista(q)) {
+            if (strcmp(ottieniCFPrenotazione(ottieniPrimo(q)), CF) == 0) {
+                giaStampato = 1;
+                break;
+            }
+        }
+
+        if (!giaStampato) {
+            // Filtra solo le prenotazioni per questo CF
+            Lista soloUtente = filtraPrenotazioniPerCF(prenotazioni, CF);
+
+            // Cerca l’utente
+            Utente u = cercaUtente(tabUtenti, CF);
+            if (!u) {
+                fprintf(output_fp, "Utente con CF %s non trovato.\n", CF);
+                distruggiLista(soloUtente);
+                continue;
+            }
+
+            // Calcola costo totale delle sue prenotazioni
+            float costoTotale = calcolaPrezziPrenotazioni(soloUtente, u, tabAuto);
+
+            // Stampa il risultato
+            fprintf(output_fp, "Costo totale per %s %s (%s): %.2f €\n",
+                ottieniNome(u), ottieniCognome(u), CF, costoTotale);
+
+            distruggiLista(soloUtente);  // Pulizia memoria temporanea
+        }
     }
-
-    // Calcola il prezzo totale delle prenotazioni associate all'utente
-    float costoTotale = calcolaPrezziPrenotazioni(prenotazioni, u, tabAuto);
-
-    // Stampa il costo totale (con due cifre decimali)
-    fprintf(output_fp,"Costo totale per %s %s: %.2f \xE2\x82\xAC\n", ottieniNome(u), ottieniCognome(u), costoTotale);
 }
 
 
@@ -141,7 +164,7 @@ int run_test_case(char *tc_id, char *test_type) {
             }
         }
 
-        eseguiCalcoloCostoSimulato(tabUtenti, tabAuto, prenotazioni, codiceFiscale, output_fp);
+        eseguiCalcoloCostoSimulato(tabUtenti, tabAuto, prenotazioni, output_fp);
 
         distruggiLista(prenotazioni);
     } else if (strcmp(test_type, "VISUALIZZA") == 0) {
@@ -168,21 +191,24 @@ int run_test_case(char *tc_id, char *test_type) {
             line[strcspn(line, "\n")] = '\0';
 
             if (strcmp(line, "nessun dato") == 0) {
+
                 stampaStoricoTuttiUtentiSuFile(tabUtenti, output_fp);
                 return 1;
             }
 
+
             int g1, g2, o1, o2;
-            if (sscanf(line, "%d %d %d %d", &g1, &g2, &o1, &o2) == 4) {
-                Utente u = cercaUtente(tabUtenti, "DNTCRL65S67M126L");
+
+            if (sscanf(line, "%d %d %d %d %16s %7s", &g1, &g2, &o1, &o2, codiceFiscale, targa) == 6) {
+                Utente u = cercaUtente(tabUtenti, codiceFiscale);
                 if (!u) {
-                    fprintf(output_fp, "Utente non trovato!\n");
-                    return 0;
+                    fprintf(output_fp, "Utente con CF %s non trovato!\n", codiceFiscale);
+                    continue;
                 }
 
-                prenotazioni = prenotazioneAuto(prenotazioni, tabAuto, ottieniCF(u), "AB123CD", &g1, &g2, &o1, &o2, &stato);
+                prenotazioni = prenotazioneAuto(prenotazioni, tabAuto, codiceFiscale, targa, &g1, &g2, &o1, &o2, &stato);
                 if (!stato) {
-                    fprintf(output_fp, "Prenotazione non riuscita.\n");
+                    fprintf(output_fp, "Prenotazione non riuscita per %s - %s\n", codiceFiscale, targa);
                     continue;
                 }
 
@@ -195,7 +221,7 @@ int run_test_case(char *tc_id, char *test_type) {
             }
         }
 
-        // Dopo tutte le prenotazioni, stampa lo storico una sola volta
+        // Dopo aver elaborato tutte le righe, stampa lo storico completo
         stampaStoricoTuttiUtentiSuFile(tabUtenti, output_fp);
     }
     else {
