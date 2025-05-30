@@ -461,6 +461,12 @@ int eseguiCasoDiTest(char *tc_id, char *tipo_di_test) {
  * - Il file suite deve esistere e contenere righe nel formato: <tc_id> <tipo_di_test>
  * -----------------------------
  * Postcondizioni:
+<<<<<<< Updated upstream
+=======
+ * - nessuno.
+ * -----------------------------
+ * Side effect:
+>>>>>>> Stashed changes
  * - Esegue in sequenza tutti i casi di test indicati nel file di suite.
  * - Scrive su standard output l’esito (PASS/FAIL) di ciascun test.
  * - Scrive su `result_file` l’esito dettagliato dei test.
@@ -504,6 +510,29 @@ void esegui_test_suite(const char *suite_file, const char *result_file) {
     fclose(result);
 }
 
+/*
+ * Funzione: main
+ * -----------------------------
+ * Parametri:
+ * - `argc`: variabile intera che contiene il numero dei parametri passati alla funzione.
+ * - `argv[]`: nome del programma e del file risultati.txt e test_suite.txt.
+ * -----------------------------
+ * Precondizioni:
+ * - argc deve essere diverso da 3.
+ * - argv[] deve contenere 3 stringhe.
+ * -----------------------------
+ * Postcondizioni:
+ * - la funzione fa tornare il valore 0 se è andato tutto a buon fine.
+ * -----------------------------
+ * Side effect:
+ * - Nessuno
+ * -----------------------------
+ * Restituisce:
+ * valore intero: 0.
+ * -----------------------------
+ * main chiama la funzione esegui_test_suite in modo tale da far partire
+ * tutti i casi di test.
+ */
 int main(int argc, char *argv[]) {
     if (argc != 3) {
         printf(ROSSO "Uso corretto: %s <file_suite> <file_risultati>\n" RESET, argv[0]);
