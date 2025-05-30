@@ -41,10 +41,10 @@ TestExec$(EXE): Test.o $(OBJ_COMMON)
 %.o: %.c %.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
-main.o: main.c Utile_DevMenu.h Test.h Utile_UtenteMenu.h HashTbUtenti.h HashTbAuto.h List_Prenotazione.h Auto.h prenotazione.h
+main.o: main.c Utile_DevMenu.h Utile_UtenteMenu.h HashTbUtenti.h HashTbAuto.h List_Prenotazione.h Auto.h prenotazione.h
 	$(CC) $(CFLAGS) -c main.c
 
-Test.o: Test.c Test.h Utile_UtenteMenu.h HashTbUtenti.h HashTbAuto.h List_Prenotazione.h Auto.h prenotazione.h
+Test.o: Test.c Utile_UtenteMenu.h HashTbUtenti.h HashTbAuto.h List_Prenotazione.h Auto.h prenotazione.h
 	$(CC) $(CFLAGS) -c Test.c
 
 prenotazione.o: prenotazione.c prenotazione.h
