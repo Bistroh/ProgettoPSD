@@ -236,7 +236,7 @@ void eseguiCalcoloCostoSimulato(UtentiHashTB tabUtenti, AutoHashTB tabAuto, List
 }
 
 /*
- * Funzione: run_test_case
+ * Funzione: eseguiCasoDiTest
  * -----------------------------
  * Parametri:
  * - `tc_id`: stringa che identifica il caso di test (es. "TC01").
@@ -269,7 +269,7 @@ void eseguiCalcoloCostoSimulato(UtentiHashTB tabUtenti, AutoHashTB tabAuto, List
  * il risultato del confronto.
  * -----------------------------
  */
-int runCasoDiTest(char *tc_id, char *tipo_di_tes) {
+int eseguiCasoDiTest(char *tc_id, char *tipo_di_tes) {
     char input_fnome[M], output_fnome[M], oracle_fname[M];
     int stato = 0;
     char line[256];
@@ -465,7 +465,7 @@ int runCasoDiTest(char *tc_id, char *tipo_di_tes) {
  * La funzione costruisce i percorsi completi aggiungendo la cartella "test/" ai nomi dei file,
  * apre il file della suite in lettura e il file dei risultati in scrittura.
  * Per ogni riga della suite, che deve contenere un ID test e un tipo di test,
- * richiama la funzione runCasoDiTest per eseguire il test,
+ * richiama la funzione eseguiCasoDiTest per eseguire il test,
  * stampa a video l’esito (PASS o FAIL) e lo scrive nel file dei risultati.
  */
 void esegui_test_suite(const char *suite_file, const char *result_file) {
@@ -489,7 +489,7 @@ void esegui_test_suite(const char *suite_file, const char *result_file) {
     char tc_id[M], tipo_di_tes[M];
     // Legge ogni riga del file
     while (fscanf(suite, "%s %s", tc_id, tipo_di_tes) == 2) {
-        int pass = runCasoDiTest(tc_id, tipo_di_tes);   // Esegue il test
+        int pass = eseguiCasoDiTest(tc_id, tipo_di_tes);   // Esegue il test
         printf("%s [%s]: %s\n", tc_id, tipo_di_tes, pass ? VERDE "PASS" RESET : ROSSO "FAIL" RESET);    // Stampa a video l'esito del test
         fprintf(result, "%s - %s - %s\n", tc_id, tipo_di_tes, pass ? "PASS" : "FAIL");  // Scrive sul file il risultato
     }
