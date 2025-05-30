@@ -32,7 +32,7 @@ int codiceFiscaleValido(const char *CF);
  * Precondizioni:
  * - `ht` deve essere una tabella hash valida contenente le auto disponibili.
  * ------------------------------
- * Postcondizioni:
+ * Side Effects:
  * - Stampa le auto disponibili in un formato tabellare in base ai parametri specificati.
  * ------------------------------
  */
@@ -104,7 +104,7 @@ void visualizzaAutoDisponibili(AutoHashTB ht) ;
  * Precondizioni:
  * - `CF` deve essere un codice fiscale valido.
  * ------------------------------
- * Postcondizioni:
+ * Side Effects:
  * - Stampa le prenotazioni dell'utente specificato in un formato tabellare.
  */
 void visualizzaPrenotazioniPerUtente(Lista l, const char *CF) ;
@@ -117,7 +117,7 @@ void visualizzaPrenotazioniPerUtente(Lista l, const char *CF) ;
  * Precondizioni:
  * - L'utente deve avere uno storico di prenotazioni.
  * ------------------------------
- * Postcondizioni:
+ * Side Effects:
  * - Stampa lo storico delle prenotazioni dell'utente in un formato tabellare.
  */
 void visualizzaStorico();

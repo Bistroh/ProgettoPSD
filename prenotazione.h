@@ -95,11 +95,9 @@ char *ottieniTargaPrenotazione(Prenotazione prenotazione);
  * Precondizioni:
  * - `prenotazione` deve essere un puntatore valido a una struttura `s_prenotazione` creata con `creaPrenotazione`.
  * -----------------------------
- * Postcondizioni:
- * - Stampa i dettagli della prenotazione, inclusi ID, codice fiscale, targa e periodo.
- * -----------------------------
  * Side Effects:
  * Stampa le informazioni della prenotazione sulla console.
+ * -----------------------------
  */
 void stampaPrenotazione(Prenotazione prenotazione);
 
@@ -114,7 +112,7 @@ void stampaPrenotazione(Prenotazione prenotazione);
  * - `prenotazione` deve essere un puntatore valido a una struttura `s_prenotazione` creata con `creaPrenotazione`.
  * - `fp` deve essere un file aperto in modalità scrittura.
  * -----------------------------
- * Postcondizioni:
+ * Side Effects:
  * - Stampa i dettagli della prenotazione, inclusi ID, codice fiscale, targa e periodo, nel file specificato.
  */
 void ottieniPeriodoPrenotazione(Prenotazione p, int *giornoInizio, int *giornoFine, int *oraInizio, int *oraFine);
@@ -128,7 +126,7 @@ void ottieniPeriodoPrenotazione(Prenotazione p, int *giornoInizio, int *giornoFi
  * Precondizioni:
  * - `originale` deve essere un puntatore valido a una struttura `s_prenotazione` creata con `creaPrenotazione`.
  * -----------------------------
- * Postcondizioni:
+ * Side Effects:
  * - Restituisce un nuovo puntatore a una copia della prenotazione originale.
  */
 void stampaPrenotazione(Prenotazione prenotazione);
@@ -143,7 +141,7 @@ void stampaPrenotazione(Prenotazione prenotazione);
  * - `prenotazione` deve essere un puntatore valido a una struttura `s_prenotazione` creata con `creaPrenotazione`.
  * - `fp` deve essere un file aperto in modalità scrittura.
  * -----------------------------
- * Postcondizioni:
+ * Side Effects:
  * - Stampa i dettagli della prenotazione, inclusi ID, codice fiscale, targa e periodo, nel file specificato.
  */
 void stampaPrenotazioneSuFile(Prenotazione prenotazione, FILE *fp);
@@ -170,7 +168,7 @@ Prenotazione copiaPrenotazione(Prenotazione originale);
  * Precondizioni:
  * - `p` deve essere un puntatore valido a una struttura `s_prenotazione` creata con `creaPrenotazione`.
  * -----------------------------
- * Postcondizioni:
+ * Side Effects:
  * - Libera la memoria allocata per la prenotazione, prevenendo memory leak.
  */
 void distruggiPrenotazione(Prenotazione p);

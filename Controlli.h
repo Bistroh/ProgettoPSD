@@ -137,7 +137,7 @@ void pulisciConsole();
  * Precondizioni:
  * - Nessuna.
  * ------------------------------
- * Postcondizioni:
+ * Side Effect:
  * - Attende che l'utente prema un tasto per continuare.
  * ------------------------------
  */
@@ -151,7 +151,7 @@ void pausaConsole();
  * Precondizioni:
  * - `cognome` deve essere una stringa non vuota.
  * ------------------------------
- * Postcondizioni:
+ * Side Effect:
  * - Restituisce 1 se il cognome è valido, 0 altrimenti.
  * ------------------------------
  */
@@ -179,7 +179,7 @@ int validaNome(const char *nome);
  * Precondizioni:
  * - `nome` deve essere una stringa non vuota.
  * ------------------------------
- * Postcondizioni:
+ * Side Effect:
  * - Capitalizza la prima lettera di ogni parola nella stringa `nome`.
  * ------------------------------
  */

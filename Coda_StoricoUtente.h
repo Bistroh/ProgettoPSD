@@ -94,7 +94,7 @@ Prenotazione prelevaCoda(Coda q);
 * Precondizioni:
 * - q deve essere un puntatore valido a una coda creata con 'nuovaCoda'.
 * -----------------------------
-* Postcondizioni:
+* Side Effects:
 * - Stampa tutte le prenotazioni presenti nella coda 'q'.
 * Utilizza una coda temporanea per non perdere i dati originali durante la stampa.
 * Se la coda è vuota, stampa un messaggio che indica che lo storico è vuoto.

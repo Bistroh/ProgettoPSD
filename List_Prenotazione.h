@@ -113,7 +113,7 @@ Prenotazione ottieniPrimo(Lista l);
 * Precondizioni:
 * - `l` deve essere un puntatore valido a una Lista.
 * -----------------------------
-* Postcondizioni:
+* Side Effects:
 * - Libera la memoria allocata per la Lista e per ogni Prenotazione contenuta nel nodo.
 * -----------------------------
  */
@@ -149,7 +149,7 @@ Lista copiaProfondaLista(Lista l);
 * - `l` deve essere un puntatore valido a una Lista contenente Prenotazioni.
 * - `CF` deve essere una stringa valida che rappresenta il codice fiscale dell'utente.
 * -----------------------------
-* Postcondizioni:
+* Side Effects:
 * - Stampa tutte le prenotazioni dell'utente con il codice fiscale specificato.
 * -----------------------------
  */
@@ -164,7 +164,7 @@ void visPrenotazioniPerUtente(Lista l, const char *CF);
 * Precondizioni:
 * - `l` deve essere un puntatore valido a una Lista contenente Prenotazioni.
 * -----------------------------
-* Postcondizioni:
+* Side Effects:
 * - Stampa tutte le prenotazioni presenti nella Lista.
 * -----------------------------
  */
